@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.LightTransport;
 
 public class World
 {
@@ -33,6 +35,7 @@ public class World
                 if (chunk.startPoint.z < worldMinZ) worldMinZ = chunk.startPoint.z;
             }
         }
+        //Debug.Log($"World size: {worldMaxX} {worldMaxY} {worldMaxZ}");
     }
 
     #region Generate Chunk And Node
@@ -65,7 +68,6 @@ public class World
         z = Mathf.FloorToInt(worldPosition.z);
     }
     #endregion
-
 
     #region Get Chunk Position
     public void GetChunkPosition(int x, int y, int z, out int chunkX, out int chunkY, out int chunkZ)
@@ -102,6 +104,13 @@ public class World
         return chunk.GetNode(localX, localY, localZ);
     }
     #endregion
+
+    //public bool isValidNode(int x, int y, int z)
+    //{
+    //    if (x - 1 >= worldMinX || x + 1 <= worldMaxX || y - 1 >= worldMinY || 
+    //        y + 1 <= worldMaxY || z - 1 >= worldMinZ || z + 1 <= worldMaxZ) { return true; }
+    //    else { return false; }
+    //}
 
     public void ReleaseRegion(Region region)
     {

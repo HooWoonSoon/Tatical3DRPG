@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+
 public class CharacterMoveTesting : MonoBehaviour
 {
     public LayerMask LayerMask;
@@ -24,6 +26,9 @@ public class CharacterMoveTesting : MonoBehaviour
     {
         this.onReachedTargetPosition = onReachedTargetPosition;
         pathVectorList = pathFinding.GetPathRoute(transform.position, movePosition).pathVectorList;
+        string result = string.Join(",\n", pathVectorList.Select(v => $"({v.x}, {v.y}, {v.z})"));
+        Debug.Log(result);
+
         if (pathVectorList.Count > 0)
         {
             pathIndex = 0;
@@ -36,9 +41,12 @@ public class CharacterMoveTesting : MonoBehaviour
 
     public void Update()
     {
+        Vector3 currentPosition = Utils.GetDDAWorldPosition(64, world.loadedNodes);
+        Debug.Log(currentPosition);
         if (Input.GetMouseButtonDown(0))
         {
-            Vector3 targetPosition = Utils.GetDDAWorldPosition(64, world.loadedNodes);
+            Vector3 targetPosition = currentPosition;
+            Debug.Log(world.loadedNodes[((int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z)].isWalkable);
             if (targetPosition == new Vector3Int(-1, -1, -1)) return;
 
             SetMovePosition(targetPosition, null);
@@ -49,7 +57,7 @@ public class CharacterMoveTesting : MonoBehaviour
             Vector3 nextPathPosition = pathVectorList[pathIndex];
             Vector3 moveDirection = (nextPathPosition - transform.position).normalized;
 
-            transform.position += moveDirection * moveSpeed * Time.deltaTime;
+            transform.position = Vector3.MoveTowards(transform.position, nextPathPosition, moveSpeed * Time.deltaTime);
             if (Vector3.Distance(transform.position, nextPathPosition) <= reachPathPositionDistance)
             {
                 transform.position = nextPathPosition;

@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
-public class GameNode
+
+public class GameNode : IComparable<GameNode>
 {
     public Chunk chunk;
     public int x, y, z; //  Basically to represent the local position of the node in the chunk
@@ -41,5 +43,10 @@ public class GameNode
     public Vector3 GetWorldVectorFromPath()
     {
         return new Vector3(worldX, worldY, worldZ);
+    }
+
+    public int CompareTo(GameNode other)
+    {
+        return fCost.CompareTo(other.fCost);
     }
 }
