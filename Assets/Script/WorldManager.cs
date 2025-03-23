@@ -48,7 +48,7 @@ public class WorldManager : MonoBehaviour
 
                 for (int cx = 0; cx < Chunk.CHUNK_SIZE; cx++)
                 {
-                    for (int cy = 0; cy < Chunk.CHUNK_SIZE; cy++)
+                    for (int cy = 0; cy < Chunk.CHUNK_SIZE - 12; cy++)
                     {
                         for (int cz = 0; cz < Chunk.CHUNK_SIZE; cz++)
                         {
@@ -61,10 +61,11 @@ public class WorldManager : MonoBehaviour
                                     node.z + chunk.startPoint.z * Chunk.CHUNK_SIZE
                                 );
 
-                                if (pos == Vector3.zero) { continue; }
+                                if (pos == new Vector3(1,3,4) || pos == new Vector3(1,3,2)) { continue; }
                                 if (!chunk.blocks.ContainsKey(pos))
                                 {
                                     chunk.AddBlock(pos, prefab);
+                                    chunk.SetupNode(cx, cy, cz, true, true);
                                 }
                             }
                         }

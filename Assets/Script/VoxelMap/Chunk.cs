@@ -33,12 +33,18 @@ public class Chunk
             {
                 for (int z = 0; z < CHUNK_SIZE; z++)
                 {
-                    nodes[x, y, z] = new GameNode(this, x, y, z, 0, true, true);
+                    nodes[x, y, z] = new GameNode(this, x, y, z, 0, false, false);
                 }
             }
         }
     }
     #endregion
+
+    public void SetupNode(int x, int y, int z, bool isWalkable, bool hasCube)
+    {
+        nodes[x, y, z].hasCube = hasCube;
+        nodes[x, y, z].isWalkable = isWalkable;
+    }
 
     #region Chunk Manager
     public void AddBlock(Vector3Int worldPosition, GameObject block)

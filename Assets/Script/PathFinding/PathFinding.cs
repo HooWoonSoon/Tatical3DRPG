@@ -5,17 +5,13 @@ using UnityEngine;
 public class PathFinding
 {
     private World world;
-    private PriorityQueue<GameNode> openQueue;
-    private HashSet<GameNode> closedSet;
+    private List<GameNode> openList;
+    private HashSet<GameNode> closedList;
     private List<GameNode> processedPath;
-
-    private Dictionary<GameNode, List<GameNode>> neighbourCache = new Dictionary<GameNode, List<GameNode>>();
 
     public PathFinding(World world)
     {
         this.world = world;
-        openQueue = new PriorityQueue<GameNode>();
-        closedSet = new HashSet<GameNode>();
     }
 
     //  Summary
@@ -25,19 +21,17 @@ public class PathFinding
     public List<GameNode> FindPath(int startWorldX, int startWorldY, int startWorldZ, int endWorldX, int endWorldY, int endWorldZ)
     {
         float startTime = Time.realtimeSinceStartup;
-
-        //  Summary
-        //      return the empty list if the start and end node is not accrossable
         List<GameNode> ret = new List<GameNode>();
 
         GameNode startNode = world.GetNodeAtWorldPosition(startWorldX, startWorldY, startWorldZ);
         GameNode endNode = world.GetNodeAtWorldPosition(endWorldX, endWorldY, endWorldZ);
 
-        openQueue.Enqueue(startNode);
-        closedSet.Clear();
+        openList = new List<GameNode> { startNode };
+        closedList = new HashSet<GameNode>();
 
-        foreach (var pathNode in world.loadedNodes.Values.ToList())
+        foreach (var key in world.loadedNodes.Keys.ToList())
         {
+            GameNode pathNode = world.loadedNodes[key];
             pathNode.gCost = int.MaxValue;
             pathNode.CalculateFCost();
             pathNode.cameFromNode = null;
@@ -47,26 +41,27 @@ public class PathFinding
         startNode.hCost = CalculateDistanceCost(startNode, endNode);
         startNode.CalculateFCost();
 
-        while (openQueue.Count > 0)
+        while (openList.Count > 0)
         {
-            GameNode currentNode = openQueue.Dequeue();
+            GameNode currentNode = GetLowestFCostNode(openList);
             if (currentNode == endNode)
             {
                 float endTime = Time.realtimeSinceStartup;
-                List<GameNode> path = CalculatePath(endNode);
-
-                return path;
+                Debug.Log($"Find path completed in {endTime - startTime:F4} seconds");
+                return CalculatePath(endNode);
             }
 
-            closedSet.Add(currentNode);
+            openList.Remove(currentNode);
+            closedList.Add(currentNode);
 
-            foreach (GameNode neighbourNode in GetNeighbourList(currentNode))
+
+            foreach (GameNode neighbourNode in world.loadedNodes.Values.ToList())
             {
-                if (closedSet.Contains(neighbourNode)) continue;
+                if (closedList.Contains(neighbourNode)) continue;
 
                 if (!neighbourNode.isWalkable)
                 {
-                    closedSet.Add(neighbourNode);
+                    closedList.Add(neighbourNode);
                     continue;
                 }
 
@@ -78,8 +73,8 @@ public class PathFinding
                     neighbourNode.hCost = CalculateDistanceCost(neighbourNode, endNode);
                     neighbourNode.CalculateFCost();
 
-                    if (!openQueue.Contains(neighbourNode))
-                        openQueue.Enqueue(neighbourNode);
+                    if (!openList.Contains(neighbourNode))
+                        openList.Add(neighbourNode);
                 }
             }
         }
@@ -88,8 +83,9 @@ public class PathFinding
     }
 
     //  Summary
-    //      Calculate cost between two nodes by using Manhattan distance. In 3D space,
-    //      it is better that diagonal distance pathfinding, because it is more faster
+    //      In the distance between a and b, first of all need to finding the most shorter distance of x, y, z line
+    //      in order to calculate the distance cost, then found the most shorter distance of line.
+    //      Note that the A* algorithm triggers this function once every time the cell is moved.
     private int CalculateDistanceCost(GameNode a, GameNode b)
     {
         int xDistance = Mathf.Abs(a.worldX - b.worldX);
@@ -114,6 +110,7 @@ public class PathFinding
     private List<GameNode> CalculatePath(GameNode endnode)
     {
         List<GameNode> path = new List<GameNode>();
+        path.Add(endnode);
         GameNode currentNode = endnode;
         //  Summary
         //      Take the node from the previously saved cameFromNode to return and
@@ -127,36 +124,9 @@ public class PathFinding
         return path;
     }
 
-    //  Summary
-    //      Get the neighbour nodes of the current node, one angle mean 1 times caluclation
-    private List<GameNode> GetNeighbourList(GameNode currentNode)
+    private GameNode GetNode(int x, int y, int z)
     {
-        if (neighbourCache.TryGetValue(currentNode, out var cachedNeighbours))
-            return cachedNeighbours;
-
-        List<GameNode> neighbourList = new List<GameNode>();
-
-        if (currentNode.x - 1 >= world.worldMinX)
-            // Left
-            neighbourList.Add(world.GetNodeAtWorldPosition(currentNode.x - 1, currentNode.y, currentNode.z));
-        if (currentNode.x + 1 <= world.worldMaxX)
-            // Right
-            neighbourList.Add(world.GetNodeAtWorldPosition(currentNode.x + 1, currentNode.y, currentNode.z));
-        if (currentNode.y - 1 >= world.worldMinY)
-            // Down
-            neighbourList.Add(world.GetNodeAtWorldPosition(currentNode.x, currentNode.y - 1, currentNode.z));
-        if (currentNode.y + 1 <= world.worldMaxY)
-            // Up
-            neighbourList.Add(world.GetNodeAtWorldPosition(currentNode.x, currentNode.y + 1, currentNode.z));
-        if (currentNode.z - 1 >= world.worldMinZ)
-            // Back
-            neighbourList.Add(world.GetNodeAtWorldPosition(currentNode.x, currentNode.y, currentNode.z - 1));
-        if (currentNode.z + 1 <= world.worldMaxZ)
-            // Forward
-            neighbourList.Add(world.GetNodeAtWorldPosition(currentNode.x, currentNode.y, currentNode.z + 1));
-
-        neighbourCache[currentNode] = neighbourList;
-        return neighbourList;
+        return world.GetNodeAtWorldPosition(x, y, z);
     }
 
     public void SetProcessPath(Vector3 currentPosition, Vector3 movePosition)
