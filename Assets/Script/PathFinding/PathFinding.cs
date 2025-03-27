@@ -55,7 +55,7 @@ public class PathFinding
             closedList.Add(currentNode);
 
 
-            foreach (GameNode neighbourNode in world.loadedNodes.Values.ToList())
+            foreach (GameNode neighbourNode in GetNeighbourList(currentNode))
             {
                 if (closedList.Contains(neighbourNode)) continue;
 
@@ -129,14 +129,40 @@ public class PathFinding
         return world.GetNodeAtWorldPosition(x, y, z);
     }
 
+    private List<GameNode> GetNeighbourList(GameNode currentNode)
+    {
+        List<GameNode> neighbourList = new List<GameNode>();
+
+        if (currentNode.x - 1 >= world.worldMinX)
+            // Left
+            neighbourList.Add(GetNode(currentNode.x - 1, currentNode.y, currentNode.z));
+        if (currentNode.x + 1 < world.worldMaxX)
+            // Right
+            neighbourList.Add(GetNode(currentNode.x + 1, currentNode.y, currentNode.z));
+        if (currentNode.y + 1 < world.worldMaxY)
+            // Up
+            neighbourList.Add(GetNode(currentNode.x, currentNode.y + 1, currentNode.z));
+        if (currentNode.y - 1 >= world.worldMinY)
+            // Down
+            neighbourList.Add(GetNode(currentNode.x, currentNode.y - 1, currentNode.z));
+        if (currentNode.z - 1 >= world.worldMinZ)
+            // Back
+            neighbourList.Add(GetNode(currentNode.x, currentNode.y, currentNode.z - 1));
+        if (currentNode.z + 1 < world.worldMaxZ)
+            // Forward
+            neighbourList.Add(GetNode(currentNode.x, currentNode.y, currentNode.z + 1));
+
+        return neighbourList;
+    }
+
     public void SetProcessPath(Vector3 currentPosition, Vector3 movePosition)
     {
         float startTime = Time.realtimeSinceStartup;
 
         world.GetWorldPosition(movePosition, out int endX, out int endY, out int endZ);
-        int startX = Mathf.RoundToInt(currentPosition.x);
-        int startY = Mathf.RoundToInt(currentPosition.y);
-        int startZ = Mathf.RoundToInt(currentPosition.z);
+        int startX = Mathf.FloorToInt(currentPosition.x);
+        int startY = Mathf.FloorToInt(currentPosition.y);
+        int startZ = Mathf.FloorToInt(currentPosition.z);
 
         processedPath = FindPath(startX, startY, startZ, endX, endY, endZ);
 

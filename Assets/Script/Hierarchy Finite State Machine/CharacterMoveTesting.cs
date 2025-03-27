@@ -41,8 +41,8 @@ public class CharacterMoveTesting : MonoBehaviour
 
     public void Update()
     {
-        Vector3 currentPosition = Utils.GetDDAWorldPosition(64, world.loadedNodes);
-        Debug.Log(currentPosition);
+        Vector3 currentPosition = DDADectector.GetDDAWorldPosition(64, world.loadedNodes);
+        //Debug.Log(currentPosition);
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 targetPosition = currentPosition;
