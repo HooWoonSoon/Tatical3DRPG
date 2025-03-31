@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public static class Utils
 {
@@ -31,6 +32,7 @@ public static class Utils
         if (cachedQuaternionEulerArr == null) CacheQuaternionEuler();
         return cachedQuaternionEulerArr[rot];
     }
+
     public static void AddToMeshArrays(Vector3[] vertices, Vector2[] uvs, int[] triangles, int index, Vector3 pos, float rot, Vector3 baseSize, Vector2 uv00, Vector2 uv11)
     {
         //Relocate vertices
@@ -66,7 +68,7 @@ public static class Utils
         triangles[tIndex + 4] = vIndex3;
         triangles[tIndex + 5] = vIndex2;
     }
-
+    
     public static TextMeshPro CreateWorldText(string text, Transform parent, Vector3 localPosition, Quaternion quaternion, int fontSize, Color color, TextAlignmentOptions textAlignment, int sortingOrder = 0)
     {
         GameObject gameObject = new GameObject("World_Text", typeof(TextMeshPro));
@@ -84,6 +86,31 @@ public static class Utils
         textMeshPro.GetComponent<MeshRenderer>().sortingOrder = sortingOrder;
 
         return textMeshPro;
+    }
+
+    public static GameObject GetMouseOverUIElement(Canvas canvas)
+    {
+        PointerEventData pointerEventData = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
+        List<RaycastResult> results = new List<RaycastResult>();
+        GraphicRaycaster raycaster = canvas.GetComponent<GraphicRaycaster>();
+        raycaster.Raycast(pointerEventData, results);
+
+        if (results.Count > 0)
+        {
+            return results[0].gameObject; 
+        }
+        return null; 
+    }
+
+    public static GameObject GetLayerMouseGameObject(LayerMask objectMask)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, Mathf.Infinity, objectMask))
+        {
+            return hitInfo.collider.gameObject;
+        }
+        return null;
     }
 
     public static Vector3 GetLayerMouseWorldPosition(LayerMask gridMask)
