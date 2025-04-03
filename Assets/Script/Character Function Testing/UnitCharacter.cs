@@ -4,5 +4,6 @@ using UnityEngine;
 public class UnitCharacter : MonoBehaviour
 {
     [SerializeField] string characterName;
-    public Team team { get; set; }
+    public int characterID;
+    [HideInInspector] public bool isLink;
 }

@@ -95,11 +95,15 @@ public static class Utils
         GraphicRaycaster raycaster = canvas.GetComponent<GraphicRaycaster>();
         raycaster.Raycast(pointerEventData, results);
 
-        if (results.Count > 0)
+        foreach (RaycastResult result in results)
         {
-            return results[0].gameObject; 
+            ICanvasRaycastFilter raycastFilter = result.gameObject.GetComponent<ICanvasRaycastFilter>();
+            if (raycastFilter == null || raycastFilter.IsRaycastLocationValid(Input.mousePosition, Camera.main))
+            {
+                return result.gameObject;
+            }
         }
-        return null; 
+        return null;
     }
 
     public static GameObject GetLayerMouseGameObject(LayerMask objectMask)

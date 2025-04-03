@@ -5,13 +5,20 @@ using UnityEngine.UI;
 [Serializable]
 public class TeamUIClass
 {
+    public UnitCharacter character;
+
     public Vector2 rectPosition;
     public Image image;
     public GameObject gameObject;
+    public int ID { get; set; } // temporarily useless
+    public int index {  get; set; }
 
-    public void Initialize()
+    public void Initialize(int index)
     {
         image.rectTransform.anchoredPosition = rectPosition;
+        ID = character.characterID;
+        this.index = index;
+        LinkCharacter();
     }
 
     public void UpdatePosition(Vector2 newPosition)
@@ -25,15 +32,50 @@ public class TeamUIClass
         image.rectTransform.anchoredPosition += newPosition;
     }
 
-    public void SwapPosition(TeamUIClass other)
+    public void Swap(TeamUIClass other)
+    {
+        SwapPosition(other);
+        SwapID(other);
+        SwapIndex(other);
+    }
+
+    private void SwapPosition(TeamUIClass other)
     {
         Vector2 tempPosition = other.rectPosition;
         other.UpdatePosition(rectPosition);
         UpdatePosition(tempPosition);
     }
 
+    private void SwapID(TeamUIClass other)
+    {
+        int tempID = other.ID;
+        other.ID = ID;
+        ID = tempID;
+    }
+
+    private void SwapIndex(TeamUIClass other)
+    {
+        int tempIndex = other.index;
+        other.index = index;
+        index = tempIndex;
+    }
+
     public void ResetPosition()
     {
         image.rectTransform.anchoredPosition = rectPosition;
+    }
+
+    public void UnlinkCharacter()
+    {
+        character.isLink = false;
+    }
+
+    public void LinkCharacter()
+    {
+        character.isLink = true;
+    }
+    public bool CheckForUnitCharacter()
+    {
+        return character.isLink;
     }
 }
