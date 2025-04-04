@@ -1,10 +1,13 @@
-using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 
+[RequireComponent(typeof(RectTransform))]
 public class UILinkTooltip : MonoBehaviour
 {
     public TeamLinkTooltipClass[] options;
     [SerializeField] private float spacing = 3f;
+     
+    private RectTransform rectTransform;
 
     private void OnValidate()
     {
@@ -24,6 +27,8 @@ public class UILinkTooltip : MonoBehaviour
             options[i].Initialize();
             options[i].UnEnable();
         }
+
+        rectTransform = GetComponent<RectTransform>();
     }
 
     private void SetUI()
@@ -52,6 +57,28 @@ public class UILinkTooltip : MonoBehaviour
             options[i].textUI.text = options[i].optionName;
 
             startY -= (buttonHeight + spacing);
+        }
+    }
+
+    public void PopOut(Vector2 popUpPos, UnityEvent onComplete = null)
+    {
+        rectTransform.anchoredPosition = popUpPos;
+
+        for (int i = 0; i < options.Length; i++)
+        {
+            UIPopupEffectScaleAndOffset.ApplyAnimation(this, options[i], options[i].offsetPosLeft, 
+                options[i].initialPos, new Vector2(0, 0), options[i].initialScale, 0.3f, true, onComplete);
+        }
+    }
+
+    public void PopIn(Vector2 popInPos, UnityEvent onComplete = null)
+    {
+        rectTransform.anchoredPosition = popInPos;
+
+        for (int i = 0; i < options.Length; i++)
+        {
+            UIPopupEffectScaleAndOffset.ApplyAnimation(this, options[i], options[i].initialPos,
+                options[i].offsetPosLeft, options[i].initialScale, new Vector2(0, 0), 0.1f, true, onComplete);
         }
     }
 }

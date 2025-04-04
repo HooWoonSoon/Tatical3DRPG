@@ -11,10 +11,10 @@ public class TeamLinkTooltipClass
     public string optionName;
 
     public RectTransform rectTransform { get; private set; }
-    public Vector2 initializeOffset { get; private set; }
-    public Vector2 initializeScale { get; private set; }
-    public Vector2 targetOffset { get; private set; }
-    public Vector2 targetScale { get; private set; }
+    public Vector2 offsetPosLeft { get; private set; }
+    public Vector2 offsetPosRight { get; private set; }
+    public Vector2 initialPos { get; private set; }
+    public Vector2 initialScale { get; private set; }
 
     public void Initialize()
     {
@@ -23,15 +23,16 @@ public class TeamLinkTooltipClass
             rectTransform = button.GetComponent<RectTransform>();
         }
 
-        initializeOffset = rectTransform.anchoredPosition - new Vector2(rectTransform.rect.width / 2, 0);
-        initializeScale = Vector2.zero;
-        targetOffset = rectTransform.anchoredPosition;
-        targetScale = rectTransform.localScale;
+        initialPos = rectTransform.anchoredPosition;
+        initialScale = rectTransform.localScale;
+
+        offsetPosLeft = initialPos - new Vector2(rectTransform.rect.width / 2, 0);
+        offsetPosRight = initialPos + new Vector2(rectTransform.rect.width / 2, 0);
     }
 
     public void UnEnable()
     {
-        rectTransform.anchoredPosition = initializeOffset;
-        rectTransform.localScale = initializeScale;
+        rectTransform.anchoredPosition = rectTransform.anchoredPosition - offsetPosLeft;
+        rectTransform.localScale = new Vector2(0, 0);
     }
 }

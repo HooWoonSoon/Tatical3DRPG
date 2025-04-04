@@ -1,45 +1,44 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 public static class UIPopupEffectScaleAndOffset
 {
-    public static void ApplyAnimation(MonoBehaviour mono, UILinkTooltip UILinkTooltip, float duration, bool useElastic)
+    public static void ApplyAnimation(MonoBehaviour mono, TeamLinkTooltipClass UILinkTooltipClass, 
+        Vector2 startPosition, Vector2 endPosition, Vector2 startScale, Vector2 endScale, float duration, 
+        bool useElastic, UnityEvent onComplete)
     {
-        mono.StartCoroutine(Animate(UILinkTooltip, duration, useElastic));
+        mono.StartCoroutine(Animate(UILinkTooltipClass, startPosition, endPosition, 
+            startScale, endScale, duration, useElastic, onComplete));
     }
 
-    private static IEnumerator Animate(UILinkTooltip UILinkTooltip, float duration, bool useElastic)
+    private static IEnumerator Animate(TeamLinkTooltipClass UILinkTooltipClass, 
+        Vector2 startPosition, Vector2 endPosition, Vector2 startScale, Vector2 endScale, float duration, 
+        bool useElastic, UnityEvent onComplete)
     {
         float elapsedTime = 0f;
+
+        Vector2 extraOffset = Vector2.zero;
+        float extraScale = 1f;
+
+        if (useElastic)
+        {
+            extraOffset = new Vector2(5f, 0f);
+            extraScale = 1.1f;
+        }
 
         while (elapsedTime < duration)
         {
             float t = elapsedTime / duration;
-
             float adjustedT;
+
             if (useElastic)
-            {
                 adjustedT = t * t * (3f - 2f * t); 
-            }
             else
-            {
-                adjustedT = t * t; 
-            }
+                adjustedT = t * t;
 
-            foreach (var option in UILinkTooltip.options)
-            {
-                Vector2 extraOffset = Vector2.zero;
-                float extraScale = 1f;
-
-                if (useElastic)
-                {
-                    extraOffset = new Vector2(5f, 0f);
-                    extraScale = 1.1f; 
-                }
-
-                option.rectTransform.anchoredPosition = Vector2.Lerp(option.initializeOffset, option.targetOffset + extraOffset, adjustedT);
-                option.rectTransform.localScale = Vector2.Lerp(option.initializeScale, option.targetScale * extraScale, adjustedT);
-            }
+            UILinkTooltipClass.rectTransform.anchoredPosition = Vector2.Lerp(startPosition, endPosition + extraOffset, adjustedT);
+            UILinkTooltipClass.rectTransform.localScale = Vector2.Lerp(startScale, endScale * extraScale, adjustedT);
 
             elapsedTime += Time.deltaTime;
             yield return null;
@@ -47,10 +46,9 @@ public static class UIPopupEffectScaleAndOffset
 
         //  Summary
         //      Ensure the final position and scale is exactly the target
-        foreach (var option in UILinkTooltip.options)
-        {
-            option.rectTransform.anchoredPosition = option.targetOffset;
-            option.rectTransform.localScale = option.targetScale;
-        }
+        UILinkTooltipClass.rectTransform.anchoredPosition = endPosition;
+        UILinkTooltipClass.rectTransform.localScale = endScale;
+
+        onComplete?.Invoke();
     }
 }
