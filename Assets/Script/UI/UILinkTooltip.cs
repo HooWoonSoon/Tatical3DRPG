@@ -9,6 +9,7 @@ public class UILinkTooltip : MonoBehaviour
      
     private RectTransform rectTransform;
 
+    #if UNITY_EDITOR
     private void OnValidate()
     {
         if (options == null || options.Length == 0) return;
@@ -18,6 +19,7 @@ public class UILinkTooltip : MonoBehaviour
         }
         SetUI();
     }
+    #endif
 
     private void Start()
     {

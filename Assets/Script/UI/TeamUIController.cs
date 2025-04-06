@@ -1,14 +1,9 @@
 using UnityEngine;
 using UnityEngine.Events;
 
-enum HandleType
-{
-    Drag, Check
-}
-
 public class TeamUIController : MonoBehaviour
 {
-    public Canvas canvas;
+    [SerializeField] private Canvas canvas;
     public TeamLinkUIClass[] teamUIClasses;
     private TeamLinkUIClass currentTeamUIClass;
     private TeamLinkUIClass markedUIClass;
@@ -21,14 +16,19 @@ public class TeamUIController : MonoBehaviour
         new Vector2(-800, 300),
         new Vector2(-720, 220)
     };
-    private int prevPopUpIndex = -1;
+    public TeamLinkButton teamLinkButton;
 
     [SerializeField] private LayerMask layerMask;
 
     private GameObject currentInteractObject;
     private RectTransform objectRectTransform;
     private Vector2 lastMousePosition;
+
     private bool isDragging = false;
+    private bool isTinyUIPopOut = false;
+
+    private int prevPopUpIndex = -1;
+    private GameObject prevInteractObject;
 
     [Header("Team UI Effect")]
     //[SerializeField] private float lerpSpeed = 5f;
@@ -51,13 +51,21 @@ public class TeamUIController : MonoBehaviour
         
         if (Input.GetMouseButtonDown(0))
         {
-            GetTeamLinkUIObject(HandleType.Drag);
+            //  Summary
+            //      Reset all before function
+            ResetTeamLinkObject();
+
+            GetTeamLinkUIObject();
+            RecordActivePositionInUI();
+
+            ResetTeamLinkClass();
         }
        
         if (Input.GetMouseButton(0))
         {
             DragUI();
-            PromptTeamUI(closestUIClass);
+            PopInTeamLinkOptionContentDrag();
+            PromptTeamUIWhenDrag(closestUIClass, isDragging);
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -67,8 +75,15 @@ public class TeamUIController : MonoBehaviour
 
         if (Input.GetMouseButtonUp(1))
         {
-            GetTeamLinkUIObject(HandleType.Check);
+            //  Summary
+            //      Reset all before function
+            ResetTeamLinkObject();
+
+            GetTeamLinkUIObject();
+            RecordCheckInUI();
             PopOutTeamLinkOptionContent();
+
+            ResetTeamLinkClass();
         }
 
         if (Input.GetMouseButtonUp(1) && currentTeamUIClass == null)
@@ -82,13 +97,11 @@ public class TeamUIController : MonoBehaviour
     {
         //  Summary
         //      Reset all previous UI object and control state
-        if (currentInteractObject != null)
-        {
-            currentInteractObject = null;
-            objectRectTransform = null;
-            currentTeamUIClass = null;
-            isDragging = false;
-        }
+        currentInteractObject = null;
+        objectRectTransform = null;
+        currentTeamUIClass = null;
+        lastMousePosition = Input.mousePosition;
+        isDragging = false;
     }
 
     private void ResetTeamLinkClass()
@@ -103,10 +116,8 @@ public class TeamUIController : MonoBehaviour
     #endregion
 
     #region UI Gain Object Methods
-    private void GetTeamLinkUIObject(HandleType handleType)
+    private void GetTeamLinkUIObject()
     {
-        ResetTeamLinkObject();
-
         if (currentInteractObject == null)
         {
             currentInteractObject = Utils.GetMouseOverUIElement(canvas);
@@ -114,7 +125,6 @@ public class TeamUIController : MonoBehaviour
 
             objectRectTransform = currentInteractObject.GetComponent<RectTransform>();
 
-            currentTeamUIClass = null;
             foreach (TeamLinkUIClass teamUI in teamUIClasses)
             {
                 if (teamUI.gameObject == currentInteractObject)
@@ -123,18 +133,6 @@ public class TeamUIController : MonoBehaviour
                     break; 
                 }
             }
-
-            if (handleType == HandleType.Check)
-            {
-                Debug.Log($"currentTeamUIClass {currentTeamUIClass.index}");
-            }
-            if (handleType == HandleType.Drag)
-            {
-                lastMousePosition = Input.mousePosition;
-                isDragging = true;
-            }
-
-            ResetTeamLinkClass();
         }
     }
 
@@ -163,60 +161,94 @@ public class TeamUIController : MonoBehaviour
     }
     #endregion
 
+    #region UI Control State
+    private void RecordCheckInUI()
+    {
+        if (currentTeamUIClass == null) { return; }
+        //Debug.Log($"currentTeamUIClass {currentTeamUIClass.index}");
+    }
+
+    private void RecordActivePositionInUI()
+    {
+        if (currentTeamUIClass == null) { return; }
+
+        lastMousePosition = Input.mousePosition;
+    }
+    #endregion
+
     #region UI Control Methods
     private void DragUI()
     {
-        if (objectRectTransform != null)
-        {
-            Vector2 currentMousePosition = Input.mousePosition;
-            Vector2 delta = currentMousePosition - lastMousePosition;
-            objectRectTransform.anchoredPosition += new Vector2(delta.x, delta.y);
-            lastMousePosition = currentMousePosition;
-        }
+        Vector2 currentMousePosition = Input.mousePosition;
+        if (currentMousePosition != lastMousePosition && isDragging == false && objectRectTransform != null) 
+        { isDragging = true; }
+        if (objectRectTransform == null) { return; }
+        //Debug.Log(" currentMousePosition compare to lastMousePosition so is Dragging: " + isDragging);
+        Vector2 delta = currentMousePosition - lastMousePosition;
+        objectRectTransform.anchoredPosition += new Vector2(delta.x, delta.y);
+        lastMousePosition = currentMousePosition;
     }
 
     private void ExchangeSorts(TeamLinkUIClass closestUIClass)
     {
         if (closestUIClass == null) return;
 
-        Debug.Log($"Closest UIClass Image {closestUIClass.image}");
+        //Debug.Log($"Closest UIClass Image {closestUIClass.image}");
         currentTeamUIClass.Swap(closestUIClass);
 
         ResetTeamLinkObject();
     }
 
+    #region Pop Out /In Methods
     private void PopOutTeamLinkOptionContent()
     {
         if (currentTeamUIClass == null) { return; }
 
-        uILinkTooltip.gameObject.SetActive(true);
+        //  Summary
+        //      Check if the tooltip is already active, if not, activate it
+        if (!uILinkTooltip.gameObject.activeSelf) 
+        {
+            uILinkTooltip.gameObject.SetActive(true);
+        }
 
         int currentIndex = currentTeamUIClass.index;
         uILinkTooltip.PopOut(popUpPositions[currentIndex]);
-        Debug.Log($"{currentTeamUIClass.ID}, {currentTeamUIClass.character.isLink}");
+        Debug.Log($"currentIndex: {currentIndex} characterID {currentTeamUIClass.ID}");
+        teamLinkButton.Initialize(currentIndex);
         
         prevPopUpIndex = currentIndex;
+        isTinyUIPopOut = true;
+    }
+
+    private void PopInTeamLinkOptionContentDrag()
+    {
+        if (isDragging == true)
+        {
+            PopInTeamLinkOptionContent();
+        }
     }
 
     private void PopInTeamLinkOptionContent()
     {
-        if (prevPopUpIndex != -1)
+        if (prevPopUpIndex != -1 && isTinyUIPopOut == true)
         {
-            Debug.Log("Process PopInTeamLinkOptionContent");
             UnityEvent onComplete = new UnityEvent();
             onComplete.AddListener(() => uILinkTooltip.gameObject.SetActive(false));
             uILinkTooltip.PopIn(popUpPositions[prevPopUpIndex], onComplete);
+            prevPopUpIndex = -1;
+            isTinyUIPopOut = false;
         }
-        prevPopUpIndex = -1;
     }
+    #endregion
+
     #endregion
 
     #region Prompt UI
     //  Summary
     //      Prompt the UI to show the closest UIClass
-    private void PromptTeamUI(TeamLinkUIClass closestUIClass)
+    private void PromptTeamUIWhenDrag(TeamLinkUIClass closestUIClass, bool isDragging)
     {
-        MarkUI(closestUIClass);
+        if (isDragging) { MarkUI(closestUIClass); }
     }
 
     private void MarkUI(TeamLinkUIClass closestUIClass)
@@ -229,7 +261,6 @@ public class TeamUIController : MonoBehaviour
 
             markedUIClass = closestUIClass;
             closestUIClass.AdjustOffsetToPosition(UIAdjustedOffset);
-            Debug.Log("IsProcess");
         }
     }
 

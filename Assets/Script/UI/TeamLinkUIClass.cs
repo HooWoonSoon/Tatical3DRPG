@@ -35,7 +35,6 @@ public class TeamLinkUIClass
     public void Swap(TeamLinkUIClass other)
     {
         SwapPosition(other);
-        SwapID(other);
         SwapIndex(other);
     }
 
@@ -44,13 +43,6 @@ public class TeamLinkUIClass
         Vector2 tempPosition = other.rectPosition;
         other.UpdatePosition(rectPosition);
         UpdatePosition(tempPosition);
-    }
-
-    private void SwapID(TeamLinkUIClass other)
-    {
-        int tempID = other.ID;
-        other.ID = ID;
-        ID = tempID;
     }
 
     private void SwapIndex(TeamLinkUIClass other)
@@ -62,7 +54,8 @@ public class TeamLinkUIClass
 
     public void ResetPosition()
     {
-        image.rectTransform.anchoredPosition = rectPosition;
+        if (image != null)
+            image.rectTransform.anchoredPosition = rectPosition;
     }
 
     public void UnlinkCharacter()
