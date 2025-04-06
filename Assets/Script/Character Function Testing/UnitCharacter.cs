@@ -1,9 +1,12 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UnitCharacter : MonoBehaviour
 {
-    [SerializeField] string characterName;
-    public int characterID;
-    [HideInInspector] public bool isLink;
+    public string Name;
+    public GameObject imageObject;
+    public int ID;
+    public int index { get; set; }
+    public bool isLink { get; set; }
 }

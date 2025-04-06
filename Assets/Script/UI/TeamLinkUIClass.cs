@@ -5,19 +5,38 @@ using UnityEngine.UI;
 [Serializable]
 public class TeamLinkUIClass
 {
-    public UnitCharacter character;
-
-    public Vector2 rectPosition;
-    public Image image;
-    public GameObject gameObject;
-    public int ID { get; set; } // temporarily useless
-    public int index {  get; set; }
-
-    public void Initialize(int index)
+    private UnitCharacter character;
+    public int ID { get; private set; }
+    public int index { get; private set; }
+    public int Index
     {
+        get => character != null ? character.index : index;
+        set
+        {
+            if (character != null)
+            {
+                character.index = value;
+            }
+            index = value;
+        }
+    }
+
+    #region Image
+    public Vector2 rectPosition;
+    public GameObject imageObject { get; private set; }
+    private Image image;
+    #endregion
+
+    public void Initialize(UnitCharacter character, int index)
+    {
+        this.character = character;
+        imageObject = character.imageObject;
+        image = imageObject.GetComponent<Image>();
         image.rectTransform.anchoredPosition = rectPosition;
-        ID = character.characterID;
-        this.index = index;
+
+        ID = character.ID;
+        Index = index;
+
         LinkCharacter();
     }
 
@@ -47,9 +66,9 @@ public class TeamLinkUIClass
 
     private void SwapIndex(TeamLinkUIClass other)
     {
-        int tempIndex = other.index;
-        other.index = index;
-        index = tempIndex;
+        int tempIndex = other.Index;
+        other.Index = Index;
+        Index = tempIndex;
     }
 
     public void ResetPosition()

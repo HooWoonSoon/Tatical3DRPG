@@ -30,6 +30,14 @@ public class CharacterTestingEMove : MonoBehaviour
     {
         if (x != 0 || z != 0)
         {
+            if (x > 0)
+            {
+                transform.localScale = new Vector3(1, 1, 1);
+            }
+            else if (x < 0)
+            {
+                transform.localScale = new Vector3(-1, 1, 1);
+            }
             Vector3 targetPosition = transform.position + new Vector3(x, 0, z) * moveSpeed * Time.deltaTime;
             if (world.worldMinX < targetPosition.x && world.worldMinY < targetPosition.y && world.worldMinZ < targetPosition.z
                 && world.worldMaxX > targetPosition.x && world.worldMaxY > targetPosition.y && world.worldMaxZ > targetPosition.z)

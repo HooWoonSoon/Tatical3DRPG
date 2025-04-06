@@ -46,8 +46,8 @@ public class CharacterTestingBMove : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             Vector3 targetPosition = currentPosition;
-            Debug.Log(world.loadedNodes[((int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z)].isWalkable);
             if (targetPosition == new Vector3Int(-1, -1, -1)) return;
+            Debug.Log(world.loadedNodes[((int)targetPosition.x, (int)targetPosition.y, (int)targetPosition.z)].isWalkable);
 
             SetMovePosition(targetPosition, null);
         }
@@ -56,6 +56,9 @@ public class CharacterTestingBMove : MonoBehaviour
         {
             Vector3 nextPathPosition = pathVectorList[pathIndex];
             Vector3 moveDirection = (nextPathPosition - transform.position).normalized;
+            Debug.Log("moveDirection:" + moveDirection);
+            if (moveDirection == new Vector3(1, 0, 0)) { transform.localScale = new Vector3(1, 1, 1); }
+            else if (moveDirection == new Vector3(-1, 0, 0)) { transform.localScale = new Vector3(-1, 1, 1); }
 
             transform.position = Vector3.MoveTowards(transform.position, nextPathPosition, moveSpeed * Time.deltaTime);
             if (Vector3.Distance(transform.position, nextPathPosition) <= reachPathPositionDistance)

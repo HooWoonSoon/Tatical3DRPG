@@ -3,6 +3,8 @@ using UnityEngine.Events;
 
 public class TeamUIController : MonoBehaviour
 {
+    public TeamDeployment teamDeployment;
+
     [SerializeField] private Canvas canvas;
     public TeamLinkUIClass[] teamUIClasses;
     private TeamLinkUIClass currentTeamUIClass;
@@ -38,7 +40,7 @@ public class TeamUIController : MonoBehaviour
     {
         for (int i = 0; i < teamUIClasses.Length; i++)
         {
-            teamUIClasses[i].Initialize(i);
+            teamUIClasses[i].Initialize(teamDeployment.teamCharacter[i], i);
         }
         uILinkTooltip.gameObject.SetActive(false);
     }
@@ -127,7 +129,7 @@ public class TeamUIController : MonoBehaviour
 
             foreach (TeamLinkUIClass teamUI in teamUIClasses)
             {
-                if (teamUI.gameObject == currentInteractObject)
+                if (teamUI.imageObject == currentInteractObject)
                 {
                     currentTeamUIClass = teamUI;
                     break; 
