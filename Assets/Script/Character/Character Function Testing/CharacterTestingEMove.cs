@@ -27,11 +27,13 @@ public class CharacterTestingEMove : MonoBehaviour
 
     private void Update()
     {
-        float inputX = Input.GetAxis("Horizontal");
-        float inputZ = Input.GetAxis("Vertical");
-        Move(inputX, inputZ);
+        if (unitCharacter.isLeader == true)
+        {
+            InputController.GetMovementInput(out float inputX, out float inputZ);
+            Move(inputX, inputZ);
 
-        UpDownHill(inputX, inputZ);
+            UpDownHill(inputX, inputZ);
+        }
     }
 
     private void Move(float x, float z)
@@ -61,7 +63,7 @@ public class CharacterTestingEMove : MonoBehaviour
 
         if (isMoving)
         {
-            OnMovementStatusChanged?.Invoke(true); 
+            OnMovementStatusChanged?.Invoke(true);
         }
     }
 
@@ -132,7 +134,7 @@ public class CharacterTestingEMove : MonoBehaviour
     private void Drop()
     {
         //Debug.Log(Utils.CheckCubeAtPosition(transform.position, world.loadedNodes));
-        
+
         velocity += gravity * Time.deltaTime;
         transform.position -= new Vector3(0, 1 * velocity * Time.deltaTime, 0);
 

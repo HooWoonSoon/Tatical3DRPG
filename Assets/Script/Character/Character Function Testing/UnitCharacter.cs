@@ -11,7 +11,7 @@ public class UnitCharacter : MonoBehaviour
     public bool isLeader;
 
     public readonly List<Vector3> positionHistory = new List<Vector3>();
-    public int historyLimit = 15;
+    public int historyLimit = 30;
 
     private float recordInterval = 0.1f;
     private float recordTimer = 0f;
@@ -28,6 +28,11 @@ public class UnitCharacter : MonoBehaviour
 
             positionHistory.Add(this.transform.position);
         }
+    }
+
+    public void CleanAllHistory()
+    {
+        positionHistory.Clear();
     }
 
     public void FacingDirection(Vector3 direction)

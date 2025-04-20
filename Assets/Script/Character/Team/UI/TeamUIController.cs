@@ -36,12 +36,16 @@ public class TeamUIController : MonoBehaviour
     //[SerializeField] private float lerpSpeed = 5f;
     [SerializeField] private Vector2 UIAdjustedOffset = new Vector2(5, 0);
 
-    private void Start()
+    private void Awake()
     {
         for (int i = 0; i < teamUIClasses.Length; i++)
         {
             teamUIClasses[i].Initialize(teamDeployment.teamCharacter[i], i);
         }
+    }
+
+    private void Start()
+    {
         uILinkTooltip.gameObject.SetActive(false);
     }
 
@@ -92,7 +96,32 @@ public class TeamUIController : MonoBehaviour
         {
             PopInTeamLinkOptionContent();
         }
+
+        //  Summary
+        //      Always update the UI tooltip content
+        UpdateUILinkTooltip();
     }
+
+    #region UI Update Content
+    private void UpdateUILinkTooltip()
+    {
+        UpdateUILinkTooltipLinkText();
+    }
+
+    private void UpdateUILinkTooltipLinkText()
+    {
+        if (prevPopUpIndex == -1) { return; }
+
+        for (int i = 0; i < teamDeployment.teamCharacter.Length; i++)
+        {
+            if (teamDeployment.teamCharacter[i].index == prevPopUpIndex)
+            {
+                bool isLink = teamDeployment.teamCharacter[i].isLink;
+                uILinkTooltip.ChangeOptionUILinkText(isLink);
+            }
+        }
+    }
+    #endregion
 
     #region Reset Methods
     private void ResetTeamLinkObject()
@@ -196,9 +225,9 @@ public class TeamUIController : MonoBehaviour
         if (closestUIClass == null) return;
 
         //Debug.Log($"Closest UIClass Image {closestUIClass.image}");
-        currentTeamUIClass.Swap(closestUIClass);
+        bool didSwap = currentTeamUIClass.Swap(closestUIClass);
 
-        ResetTeamLinkObject();
+        if (didSwap) { ResetTeamLinkObject(); }
     }
 
     #region Pop Out /In Methods
@@ -238,6 +267,7 @@ public class TeamUIController : MonoBehaviour
             onComplete.AddListener(() => uILinkTooltip.gameObject.SetActive(false));
             uILinkTooltip.PopIn(popUpPositions[prevPopUpIndex], onComplete);
             prevPopUpIndex = -1;
+
             isTinyUIPopOut = false;
         }
     }

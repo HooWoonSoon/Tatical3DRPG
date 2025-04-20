@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class TeamLinkButton : MonoBehaviour
 {
+    public TeamFollowSystem teamFollowerSystem;
     public UILinkTooltip uILinkTooltip;
     private TeamLinkUIClass currentTeamUIClass;
 
@@ -26,12 +27,13 @@ public class TeamLinkButton : MonoBehaviour
         if (currentTeamUIClass.character.isLink == true)
         {
             currentTeamUIClass.UnlinkCharacter();
-            uILinkTooltip.ChangeOptionUI(0, 1);
+            teamFollowerSystem.RemoveUnlinkCharacterFromTeam(currentTeamUIClass.character);
+            teamFollowerSystem.AddCharacterToUnlinkList(currentTeamUIClass.character);
         }
         else
         {
             currentTeamUIClass.LinkCharacter();
-            uILinkTooltip.ChangeOptionUI(0, 0);
+            teamFollowerSystem.InsertCharcterToTeam(currentTeamUIClass.character);
         }
     }
 

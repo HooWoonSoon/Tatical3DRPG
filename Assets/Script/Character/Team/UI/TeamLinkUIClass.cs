@@ -27,10 +27,15 @@ public class TeamLinkUIClass
     private Image image;
     #endregion
 
-    #region BoundCasting
-    private void BoundCastingLeaderChanged(TeamLinkUIClass other)
+    #region BroadCasting
+    private void BroadCastingLeaderChanged()
     {
         TeamEvent.OnLeaderChanged?.Invoke();
+    }
+
+    private void BroadCastingTeamSortExchange()
+    {
+        TeamEvent.OnTeamSortExchange?.Invoke();
     }
     #endregion
 
@@ -59,11 +64,31 @@ public class TeamLinkUIClass
         image.rectTransform.anchoredPosition += newPosition;
     }
 
-    public void Swap(TeamLinkUIClass other)
+    public bool Swap(TeamLinkUIClass other)
     {
-        SwapPosition(other);
-        SwapIndex(other);
-        BoundCastingLeaderChanged(other);
+        if (other == null) return false;
+
+        bool changed = false;
+
+        if (rectPosition != other.rectPosition)
+        {
+            SwapPosition(other);
+            changed = true;
+        }
+
+        if (Index != other.Index)
+        {
+            SwapIndex(other);
+            changed = true;
+        }
+
+        if (changed) 
+        { 
+            BroadCastingLeaderChanged();
+            BroadCastingTeamSortExchange();
+        }
+
+        return changed;
     }
 
     private void SwapPosition(TeamLinkUIClass other)

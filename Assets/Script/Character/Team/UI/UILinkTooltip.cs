@@ -62,9 +62,16 @@ public class UILinkTooltip : MonoBehaviour
         }
     }
 
-    public void ChangeOptionUI(int optionIndex, int textIndex)
+    public void ChangeOptionUILinkText(bool isLink)
     {
-        options[optionIndex].textUI.text = options[optionIndex].optionName[textIndex];
+        if (isLink)
+        {
+            options[0].textUI.text = options[0].optionName[0];
+        }
+        else
+        {
+            options[0].textUI.text = options[0].optionName[1];
+        }
     }
 
     public void PopOut(Vector2 popUpPos, UnityEvent onComplete = null)
