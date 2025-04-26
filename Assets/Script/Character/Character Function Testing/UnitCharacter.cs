@@ -3,18 +3,30 @@ using UnityEngine;
 
 public class UnitCharacter : MonoBehaviour
 {
+    [Header("Character Information")]
     public string characterName;
     public GameObject imageObject;
     public int ID;
     public int index { get; set; }
-    public bool isLink { get; set; }
-    public bool isLeader;
 
+
+    #region self path
     public readonly List<Vector3> positionHistory = new List<Vector3>();
-    public int historyLimit = 30;
+    public int historyLimit { get; set; }
 
-    private float recordInterval = 0.1f;
+    private float recordInterval = 0.05f;
     private float recordTimer = 0f;
+    #endregion
+
+    #region state
+    public bool isLeader;
+    public bool isSelected;
+    public bool isLink;
+    public bool isBusy;
+
+    public bool isMoving;
+    public Vector3? targetPosition = null;
+    #endregion
 
     public void UpdateHistory()
     {

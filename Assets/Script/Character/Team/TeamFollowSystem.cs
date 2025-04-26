@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class TeamFollowSystem : MonoBehaviour
 {
@@ -8,61 +7,57 @@ public class TeamFollowSystem : MonoBehaviour
     public List<TeamFollower> teamFollowers;
     private List<UnitCharacter> unlinkCharacters = new List<UnitCharacter>();
 
-    [SerializeField] private float distanceThreshold = 2f;
+    [SerializeField] private float spacingDistance = 2f;
     [SerializeField] private int historyLimit = 15;
-    public float speed = 5f;
 
-    public List<Vector3> leaderPositionHistory = new List<Vector3>();
     public static TeamFollowSystem instance;
-
-    private bool isLeaderMoving = false;
 
     private void OnEnable()
     {
-        TeamEvent.OnLeaderChanged += SetLeader;
+        TeamEvent.OnLeaderChanged += SetTeamFollowerLeader;
         TeamEvent.OnTeamSortExchange += SortTeamFollower;
         TeamEvent.OnTeamSortExchange += ClearAllHistory;
-        TeamMovementControllerE.OnMovementStatusChanged += OnMovementStatusChanged;
-        CharacterTestingEMove.OnMovementStatusChanged += OnMovementStatusChanged;
     }
 
     private void OnDisable()
     {
-        TeamEvent.OnLeaderChanged -= SetLeader;
+        TeamEvent.OnLeaderChanged -= SetTeamFollowerLeader;
         TeamEvent.OnTeamSortExchange -= SortTeamFollower;
         TeamEvent.OnTeamSortExchange -= ClearAllHistory;
-        TeamMovementControllerE.OnMovementStatusChanged -= OnMovementStatusChanged;
-        CharacterTestingEMove.OnMovementStatusChanged -= OnMovementStatusChanged;
     }
 
     private void Awake()
+    {
+        Initialize();
+    }
+
+    private void Start()
+    {
+        SetTeamFollowerLeader();
+    }
+
+    private void Update()
+    {
+        if (!TeamMovementControllerE.instance.IsLeaderMove(teamFollowers[0].unitCharacter)) { return; }
+
+        for (int i = 0; i < teamFollowers.Count; i++)
+        {
+            teamFollowers[i].unitCharacter.UpdateHistory();
+            //FollowWithNearIndexMember(teamFollowers[i].unitCharacter, teamFollowers[i].targetToFollow);
+            FollowWithNearIndexMember(teamFollowers[i].unitCharacter, teamFollowers[i].targetToFollow);
+        }
+    }
+
+    #region Initialize
+    private void Initialize()
     {
         instance = this;
         InitializeTeamFollower();
     }
 
-    private void Start()
-    {
-        SetLeader();
-    }
-
-    private void Update()
-    {
-        if (isLeaderMoving)
-        {
-            for (int i = 0; i < teamFollowers.Count; i++)
-            {
-                teamFollowers[i].unitCharacter.UpdateHistory();
-
-                if (i > 0)
-                {
-                    FollowWithLeader(teamFollowers[i].unitCharacter, teamFollowers[i].targetToFollow);
-                }
-            }
-        }
-    }
-
-    public void InitializeTeamFollower()
+    //  Summary
+    //      Initialize the team follower list by setting the target to follow for each unit character.
+    private void InitializeTeamFollower()
     {
         for (int i = 0; i < teamDeployment.teamCharacter.Length; i++)
         {
@@ -70,17 +65,15 @@ public class TeamFollowSystem : MonoBehaviour
                 teamFollowers[i].Initialize(teamDeployment.teamCharacter[i], null);
             else
                 teamFollowers[i].Initialize(teamDeployment.teamCharacter[i], teamDeployment.teamCharacter[i - 1]);
+
+            teamFollowers[i].unitCharacter.historyLimit = historyLimit;
         }
     }
+    #endregion
 
-    private void ClearAllHistory()
-    {
-        for (int i = 0; i < teamFollowers.Count; i++)
-        {
-            teamFollowers[i].unitCharacter.CleanAllHistory();
-        }
-    }
-
+    #region Manage team follower
+    //  Summary
+    //      Sort the team follower list by the index of the unit character.
     private void SortTeamFollower()
     {
         List<TeamFollower> sortedList = new List<TeamFollower>();
@@ -105,8 +98,11 @@ public class TeamFollowSystem : MonoBehaviour
 
         teamFollowers = sortedList;
         RefreshTeamFollower();
-        SetLeader();
+        SetTeamFollowerLeader();
     }
+
+    //  Summary
+    //      Refresh the team follower list by setting the target to follow for each unit character.
     private void RefreshTeamFollower()
     {
         for (int i = 0; i < teamFollowers.Count; i++)
@@ -118,7 +114,22 @@ public class TeamFollowSystem : MonoBehaviour
         }
     }
 
-    public void SetLeader()
+    //  Summary
+    //      Add a new character to the team follower list and remove it from the unlink character.
+    public void InsertTeamFollower(UnitCharacter unitCharacter)
+    {
+        TeamFollower teamFollower = new TeamFollower();
+        teamFollower.unitCharacter = unitCharacter;
+        unlinkCharacters.Remove(unitCharacter);
+
+        teamFollowers.Add(teamFollower);
+        SortTeamFollower();
+    }
+
+    //  Summary
+    //      Set the leader of the team by checking the index of each unit character.
+    //      The first character in the list is set as the leader.
+    public void SetTeamFollowerLeader()
     {
         for (int i = 0; i < teamFollowers.Count; i++)
         {
@@ -128,47 +139,12 @@ public class TeamFollowSystem : MonoBehaviour
             else { unitCharacter.isLeader = false; }
         }
     }
+    #endregion
 
-    private void OnMovementStatusChanged(bool isMoving)
-    {
-        isLeaderMoving = isMoving;
-    }
-
-    private void FollowWithLeader(UnitCharacter unitCharacter, UnitCharacter targetToFollow)
-    {
-        if (unitCharacter.isLink == false) return;
-
-        Vector3 direciton = GetFollowTargetDirection(unitCharacter, targetToFollow);
-        if (direciton != Vector3.zero)
-        {
-            unitCharacter.FacingDirection(direciton);
-            unitCharacter.transform.position = Vector3.MoveTowards(unitCharacter.transform.position, unitCharacter.transform.position + direciton, speed * Time.deltaTime);
-        }
-    }
-
-    private Vector3 GetFollowTargetDirection(UnitCharacter unitCharacter, UnitCharacter targetToFollow)
-    {
-        if (unitCharacter == null) return Vector3.zero;
-        if (targetToFollow.positionHistory.Count < 2) return Vector3.zero;
-
-        List<Vector3> history = targetToFollow.positionHistory;
-        float accumulateDistance = 0;
-
-        for (int i = history.Count - 1; i > 0; i--)
-        {
-            accumulateDistance += Vector3.Distance(history[i], history[i - 1]);
-            if (accumulateDistance >= distanceThreshold)
-            {
-                Vector3 targetPosition = history[i - 1];
-                Vector3 direction = (targetPosition - unitCharacter.transform.position).normalized;
-                
-                return direction;
-            }
-        }
-
-        return Vector3.zero;
-    }
-
+    #region External call manage team follower
+    // Summary
+    //      External call to remove the character from the team follower list
+    //      and add it to the unlink character list.
     public void RemoveUnlinkCharacterFromTeam(UnitCharacter unitCharacter)
     {
         for (int i = 0; i < teamFollowers.Count; i++)
@@ -182,21 +158,56 @@ public class TeamFollowSystem : MonoBehaviour
         }
     }
 
+    //  Summary
+    //      External call to add a character to the unlink character list.
     public void AddCharacterToUnlinkList(UnitCharacter unitCharacter)
     {
-        if (!unlinkCharacters.Contains(unitCharacter))
+        if (!unlinkCharacters.Contains(unitCharacter)) { unlinkCharacters.Add(unitCharacter); }
+    }
+    #endregion
+
+    private void ClearAllHistory()
+    {
+        for (int i = 0; i < teamFollowers.Count; i++)
         {
-            unlinkCharacters.Add(unitCharacter);
+            teamFollowers[i].unitCharacter.CleanAllHistory();
         }
     }
 
-    public void InsertCharcterToTeam(UnitCharacter unitCharacter)
+    #region Logic handle team follower
+    //  Summary
+    //      Follow the target character with the nearest index member.
+    private void FollowWithNearIndexMember(UnitCharacter unitCharacter, UnitCharacter targetToFollow)
     {
-        TeamFollower teamFollower = new TeamFollower();
-        teamFollower.unitCharacter = unitCharacter;
-        unlinkCharacters.Remove(unitCharacter);
-
-        teamFollowers.Add(teamFollower);
-        SortTeamFollower();
+        if (unitCharacter.isLink == false || unitCharacter.isLeader) return;
+        GetFollowTargetDirection(unitCharacter, targetToFollow, out Vector3 direciton);
+        if (direciton != Vector3.zero)
+        {
+            TeamMovementControllerE.instance.Move(direciton.x, direciton.z, unitCharacter);
+            TeamMovementControllerE.instance.UpDownHill(direciton.x, direciton.z, unitCharacter);
+        }
     }
+
+    //  Summary
+    //      Get the direction to follow the target character.
+    private void GetFollowTargetDirection(UnitCharacter unitCharacter, UnitCharacter targetToFollow, out Vector3 direction)
+    {
+        direction = Vector3.zero;
+
+        if (unitCharacter == null || targetToFollow.positionHistory.Count < 2) return;
+
+        List<Vector3> history = targetToFollow.positionHistory;
+
+        for (int i = history.Count - 1; i > 0; i--)
+        {
+            float distance = Vector3.Distance(unitCharacter.transform.position, targetToFollow.transform.position);
+            if (distance >= spacingDistance)
+            {
+                Vector3 targetPosition = history[i];
+                direction = (targetPosition - unitCharacter.transform.position).normalized;
+                return;
+            }
+        }
+    }
+    #endregion
 }

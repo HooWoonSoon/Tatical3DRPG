@@ -90,10 +90,15 @@ public static class Utils
 
     public static GameObject GetMouseOverUIElement(Canvas canvas)
     {
+        if (EventSystem.current == null) return null;
+
         PointerEventData pointerEventData = new PointerEventData(EventSystem.current) { position = Input.mousePosition };
         List<RaycastResult> results = new List<RaycastResult>();
+
         GraphicRaycaster raycaster = canvas.GetComponent<GraphicRaycaster>();
         raycaster.Raycast(pointerEventData, results);
+
+        if (results.Count == 0) return null;
 
         foreach (RaycastResult result in results)
         {
@@ -152,5 +157,11 @@ public static class Utils
         else if (xInput > 0 && zInput < 0) { return new(1, 0, -1); }
         else if (xInput < 0 && zInput < 0) { return new(-1, 0, -1); }
         else { return new(0, 0, 0); }
+    }
+
+    public static void GetMovementInput(out float x, out float z)
+    {
+        x = Input.GetAxis("Horizontal");
+        z = Input.GetAxis("Vertical");
     }
 }

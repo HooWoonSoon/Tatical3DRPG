@@ -71,7 +71,7 @@ public class TeamUIController : MonoBehaviour
         {
             DragUI();
             PopInTeamLinkOptionContentDrag();
-            PromptTeamUIWhenDrag(closestUIClass, isDragging);
+            PromptTeamUIWhenDrag(closestUIClass);
         }
 
         if (Input.GetMouseButtonUp(0))
@@ -222,7 +222,7 @@ public class TeamUIController : MonoBehaviour
 
     private void ExchangeSorts(TeamLinkUIClass closestUIClass)
     {
-        if (closestUIClass == null) return;
+        if (closestUIClass == null || isDragging == false) return;
 
         //Debug.Log($"Closest UIClass Image {closestUIClass.image}");
         bool didSwap = currentTeamUIClass.Swap(closestUIClass);
@@ -278,7 +278,7 @@ public class TeamUIController : MonoBehaviour
     #region Prompt UI
     //  Summary
     //      Prompt the UI to show the closest UIClass
-    private void PromptTeamUIWhenDrag(TeamLinkUIClass closestUIClass, bool isDragging)
+    private void PromptTeamUIWhenDrag(TeamLinkUIClass closestUIClass)
     {
         if (isDragging) { MarkUI(closestUIClass); }
     }

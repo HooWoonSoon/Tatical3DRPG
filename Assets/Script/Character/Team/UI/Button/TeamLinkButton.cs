@@ -33,7 +33,7 @@ public class TeamLinkButton : MonoBehaviour
         else
         {
             currentTeamUIClass.LinkCharacter();
-            teamFollowerSystem.InsertCharcterToTeam(currentTeamUIClass.character);
+            teamFollowerSystem.InsertTeamFollower(currentTeamUIClass.character);
         }
     }
 

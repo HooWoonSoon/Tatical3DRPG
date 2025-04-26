@@ -105,13 +105,6 @@ public class World
     }
     #endregion
 
-    //public bool isValidNode(int x, int y, int z)
-    //{
-    //    if (x - 1 >= worldMinX || x + 1 <= worldMaxX || y - 1 >= worldMinY || 
-    //        y + 1 <= worldMaxY || z - 1 >= worldMinZ || z + 1 <= worldMaxZ) { return true; }
-    //    else { return false; }
-    //}
-
     public void ReleaseRegion(Region region)
     {
         foreach(var kvp in regions)
@@ -123,4 +116,21 @@ public class World
             }
         }
     }
+
+    #region external
+
+    //  Summary
+    //      To check if the input position is valid in the world.
+    public bool IsValidNode(Vector3 position)
+    {
+        return worldMinX < position.x && worldMinY < position.y && worldMinZ < position.z
+        && worldMaxX > position.x && worldMaxY > position.y && worldMaxZ > position.z;
+    }
+
+    public bool IsValidNode(float x, float y, float z)
+    {
+        return worldMinX < x && worldMinY < y && worldMinZ < z
+            && worldMaxX > x && worldMaxY > y && worldMaxZ > z;
+    }
+    #endregion
 }
