@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.LightTransport;
 
@@ -123,14 +122,14 @@ public class World
     //      To check if the input position is valid in the world.
     public bool IsValidNode(Vector3 position)
     {
-        return worldMinX < position.x && worldMinY < position.y && worldMinZ < position.z
-        && worldMaxX > position.x && worldMaxY > position.y && worldMaxZ > position.z;
+        return worldMinX <= position.x && worldMinY <= position.y && worldMinZ <= position.z
+        && worldMaxX >= position.x && worldMaxY >= position.y && worldMaxZ >= position.z;
     }
 
     public bool IsValidNode(float x, float y, float z)
     {
-        return worldMinX < x && worldMinY < y && worldMinZ < z
-            && worldMaxX > x && worldMaxY > y && worldMaxZ > z;
+        return worldMinX <= x && worldMinY <= y && worldMinZ <= z
+            && worldMaxX >= x && worldMaxY >= y && worldMaxZ >= z;
     }
     #endregion
 }

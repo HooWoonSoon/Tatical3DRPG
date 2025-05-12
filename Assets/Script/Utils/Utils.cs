@@ -164,4 +164,19 @@ public static class Utils
         x = Input.GetAxis("Horizontal");
         z = Input.GetAxis("Vertical");
     }
+
+    public static Vector3Int RoundXZFloorYInt(Vector3 position)
+    {
+        return new Vector3Int(
+        Mathf.RoundToInt(position.x),
+        Mathf.FloorToInt(position.y),
+        Mathf.RoundToInt(position.z));
+    }
+
+    public static void RoundXZFloorYInt(Vector3 position, out int x, out int y, out int z)
+    {
+        x = Mathf.RoundToInt(position.x);
+        y = Mathf.FloorToInt(position.y);
+        z = Mathf.RoundToInt(position.z);
+    }
 }

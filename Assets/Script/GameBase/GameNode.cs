@@ -9,7 +9,7 @@ public class GameNode
     public int tileID;
 
     public bool isWalkable;
-    public bool hasCube;
+    public bool hasNode;
 
     #region A * Pathfinding Data
     public int gCost;
@@ -28,7 +28,7 @@ public class GameNode
         this.z = z;
         this.tileID = tileID;
         this.isWalkable = isWalkable;
-        this.hasCube = hasCube;
+        this.hasNode = hasCube;
 
         worldX = x + chunk.startPoint.x;
         worldY = y + chunk.startPoint.y;

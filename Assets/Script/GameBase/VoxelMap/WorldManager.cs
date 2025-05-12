@@ -34,6 +34,7 @@ public class WorldManager : MonoBehaviour
         chunk.GetCellXZY(worldPosition, out x, out y, out z);
     }
 
+    //  Debug
     public void GenerateBlock()
     {
         if (world == null) return;
@@ -61,7 +62,7 @@ public class WorldManager : MonoBehaviour
                                     node.z + chunk.startPoint.z * Chunk.CHUNK_SIZE
                                 );
 
-                                if (pos == new Vector3(1,3,4) || pos == new Vector3(1,3,2)) { continue; }
+                                if (pos == new Vector3(1,3,4) || pos == new Vector3(1,3,2) || pos == new Vector3(2,3,4)) { continue; }
                                 if (!chunk.blocks.ContainsKey(pos))
                                 {
                                     chunk.AddBlock(pos, prefab);
@@ -71,6 +72,23 @@ public class WorldManager : MonoBehaviour
                         }
                     }
                 }
+
+                for (int x = 0; x < Chunk.CHUNK_SIZE; x++)
+                {
+                    for (int y = 0; y < Chunk.CHUNK_SIZE - 12; y++)
+                    {
+                        for (int z = 0; z < Chunk.CHUNK_SIZE; z++)
+                        {
+                            GameNode node = chunk.GetNode(x, y, z);
+                            GameNode aboveNode = chunk.GetNode(x, y + 1, z);
+                            if (aboveNode.hasNode != false)
+                            {
+                                node.isWalkable = false;
+                            }
+                        }
+                    }
+                }
+
                 if (chunk.combinedMesh == null)
                 {
                     GameObject combinedMeshObject = chunk.CombineBlockChunk();

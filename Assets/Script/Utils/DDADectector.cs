@@ -7,7 +7,7 @@ public static class DDADectector
     {
         Vector3 adjustedPosition = position + new Vector3(0.5f, 0.5f, 0.5f);
         Vector3Int blockPosition = Vector3Int.FloorToInt(adjustedPosition);
-        return loadedNodes.TryGetValue((blockPosition.x, blockPosition.y, blockPosition.z), out GameNode node) && node.hasCube;
+        return loadedNodes.TryGetValue((blockPosition.x, blockPosition.y, blockPosition.z), out GameNode node) && node.hasNode;
     }
 
     #region DDA Algorithms by calculate the rasterization of the ray
@@ -45,7 +45,7 @@ public static class DDADectector
 
         if (loadedNodes.TryGetValue((currentDDAblock.x, currentDDAblock.y, currentDDAblock.z), out GameNode startNode))
         {
-            if (startNode.hasCube)
+            if (startNode.hasNode)
             {
                 cubePosition = currentDDAblock;
                 return true;
@@ -85,7 +85,7 @@ public static class DDADectector
 
             if (loadedNodes.TryGetValue((currentDDAblock.x, currentDDAblock.y, currentDDAblock.z), out GameNode node))
             {
-                if (node.hasCube)
+                if (node.hasNode)
                 {
                     cubePosition = currentDDAblock;
                     return true;
@@ -110,7 +110,7 @@ public static class DDADectector
 
         if (loadedNodes.TryGetValue((blockPosition.x, blockPosition.y, blockPosition.z), out GameNode startNode))
         {
-            if (startNode.hasCube)
+            if (startNode.hasNode)
             {
                 return blockPosition;
             }
@@ -147,7 +147,7 @@ public static class DDADectector
 
             if (loadedNodes.TryGetValue((blockPosition.x, blockPosition.y, blockPosition.z), out GameNode node))
             {
-                if (node.hasCube)
+                if (node.hasNode)
                 {
                     return blockPosition;
                 }

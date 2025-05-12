@@ -40,9 +40,9 @@ public class Chunk
     }
     #endregion
 
-    public void SetupNode(int x, int y, int z, bool isWalkable, bool hasCube)
+    public void SetupNode(int x, int y, int z, bool isWalkable, bool hasNode)
     {
-        nodes[x, y, z].hasCube = hasCube;
+        nodes[x, y, z].hasNode = hasNode;
         nodes[x, y, z].isWalkable = isWalkable;
     }
 
