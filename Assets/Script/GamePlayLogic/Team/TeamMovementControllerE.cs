@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class TeamMovementControllerE : MonoBehaviour
@@ -35,25 +36,24 @@ public class TeamMovementControllerE : MonoBehaviour
 
     public void Move(float x, float z, UnitCharacter unitCharacter)
     {
-        Vector3 direction = new Vector3(x, 0, z).normalized;
-
-        if (direction.magnitude > 0f)
+        if (x == 0 && z == 0)
         {
+            unitCharacter.isMoving = false; // No movement input
+            return;
+        }
+        else
+        {
+            Vector3 direction = new Vector3(x, 0, z).normalized;
+
             unitCharacter.isMoving = true;
             unitCharacter.FacingDirection(direction);
+            unitCharacter.UpdateOrientation(direction);
 
             Vector3 targetPosition = unitCharacter.transform.position + direction * moveSpeed * Time.deltaTime;
 
             if (world.IsValidNode(targetPosition))
             {
                 unitCharacter.transform.position = targetPosition;
-            }
-        }
-        else
-        {
-            if (unitCharacter.isMoving)
-            {
-                unitCharacter.isMoving = false;
             }
         }
     }
@@ -142,5 +142,15 @@ public class TeamMovementControllerE : MonoBehaviour
         }
     }
 
-    public bool IsLeaderMove(UnitCharacter unitCharacter) => unitCharacter.isMoving;
+    public bool IsLeaderMove(List<TeamFollower> teamFollowers)
+    {
+        for (int i = 0; i < teamFollowers.Count; i++)
+        {
+            if (teamFollowers[i].unitCharacter.isLeader == true)
+            {
+                return teamFollowers[i].unitCharacter.isMoving;
+            }
+        }
+        return false;
+    }
 }

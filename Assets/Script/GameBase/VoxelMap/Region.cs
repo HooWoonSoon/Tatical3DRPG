@@ -12,12 +12,18 @@ public class Region
         this.regionZ = regionZ;
     }
 
-    public Chunk GetChunk(int chunkX, int chunkY ,int chunkZ)
+    public Chunk GeneraateAndGetChunk(int chunkX, int chunkY ,int chunkZ)
     {
         if (!loadedChunks.ContainsKey((chunkX, chunkY, chunkZ))) 
         {
             loadedChunks[(chunkX, chunkY, chunkZ)] = new Chunk(chunkX, chunkY, chunkZ);
         }
         return loadedChunks[(chunkX, chunkY, chunkZ)];
+    }
+
+    public Chunk TryGetChunk(int chunkX, int chunkY, int chunkZ)
+    {
+        loadedChunks.TryGetValue((chunkX, chunkY, chunkZ), out Chunk chunk);
+        return chunk;
     }
 }

@@ -3,6 +3,11 @@ using UnityEngine;
 
 public class UnitCharacter : MonoBehaviour
 {
+    public enum Orientation
+    {
+        right, left, forward, back
+    }
+
     [Header("Character Information")]
     public string characterName;
     public GameObject imageObject;
@@ -23,9 +28,10 @@ public class UnitCharacter : MonoBehaviour
     public bool isSelected;
     public bool isLink;
     public bool isBusy;
-
+    
     public bool isMoving;
     public Vector3? targetPosition = null;
+    public Orientation orientation = Orientation.right;
     #endregion
 
     public void UpdateHistory()
@@ -53,5 +59,44 @@ public class UnitCharacter : MonoBehaviour
             transform.localScale = new Vector3(1, 1, 1);
         else if (direction.x < 0)
             transform.localScale = new Vector3(-1, 1, 1);
+    }
+
+    public void UpdateOrientation(Vector3 direction)
+    {
+        direction = Vector3Int.RoundToInt(direction);
+
+        if (direction == new Vector3(-1, 0, 0))
+        {
+            orientation = Orientation.left;
+        }
+        else if (direction == new Vector3(1, 0, 0))
+        {
+            orientation = Orientation.right;
+        }
+        else if (direction == new Vector3(0, 0, -1))
+        {
+            orientation = Orientation.back;
+        }
+        else if (direction == new Vector3(0, 0, 1))
+        {
+            orientation = Orientation.forward;
+        }
+    }
+
+    public Vector3Int GetOrientationVector()
+    {
+        switch (orientation)
+        {
+            case Orientation.left:
+                return new Vector3Int(-1, 0, 0);
+            case Orientation.right:
+                return new Vector3Int(1, 0, 0);
+            case Orientation.back:
+                return new Vector3Int(0, 0, -1);
+            case Orientation.forward:
+                return new Vector3Int(0, 0, 1);
+            default:
+                return Vector3Int.zero;
+        }
     }
 }

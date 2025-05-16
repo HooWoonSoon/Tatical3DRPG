@@ -155,14 +155,18 @@ public class PathFinding
         return neighbourList;
     }
 
-    public void SetProcessPath(Vector3 currentPosition, Vector3 movePosition)
+    public void SetProcessPath(Vector3 currentPosition, Vector3 targetPosition)
     {
         float startTime = Time.realtimeSinceStartup;
 
-        world.GetWorldPosition(movePosition, out int endX, out int endY, out int endZ);
-        int startX = Mathf.FloorToInt(currentPosition.x);
-        int startY = Mathf.FloorToInt(currentPosition.y);
-        int startZ = Mathf.FloorToInt(currentPosition.z);
+        world.GetWorldPosition(targetPosition, out int endX, out int endY, out int endZ);
+        world.GetWorldPosition(currentPosition, out int startX, out int startY, out int startZ);
+
+        if (!world.IsValidNode(startX, startY, startZ) || !world.IsValidNode(endX, endY, endZ))
+        {
+            Debug.Log("Invalid node position");
+            return;
+        }
 
         processedPath = FindPath(startX, startY, startZ, endX, endY, endZ);
 

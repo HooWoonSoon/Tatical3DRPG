@@ -19,20 +19,27 @@ public class WorldManager : MonoBehaviour
         world = new World();
     }
 
-    private void Update()
+    private void Start()
     {
-        GetXZY(transform.position, out int x, out int y, out int z);
+        world.GetChunkPosition(transform.position, out int chunkX, out int chunkY, out int chunkZ);
+        Chunk chunk = world.GenearateAndGetChunk(chunkX, chunkY, chunkZ);
         GenerateBlock();
     }
 
-    public void GetXZY(Vector3 worldPosition, out int x, out int y, out int z)
-    {
-        world.GetChunkPosition(worldPosition, out int chunkX, out int chunkY, out int chunkZ);
+    //private void Update()
+    //{
+        //GetXZY(transform.position, out int x, out int y, out int z);
+        //GenerateBlock();
+    //}
 
-        Chunk chunk = world.GetChunk(chunkX, chunkY, chunkZ);
+    //public void GetXZY(Vector3 worldPosition, out int x, out int y, out int z)
+    //{
+    //    world.GetChunkPosition(worldPosition, out int chunkX, out int chunkY, out int chunkZ);
 
-        chunk.GetCellXZY(worldPosition, out x, out y, out z);
-    }
+    //    Chunk chunk = world.GenearateAndGetChunk(chunkX, chunkY, chunkZ);
+
+    //    chunk.GetCellXZY(worldPosition, out x, out y, out z);
+    //}
 
     //  Debug
     public void GenerateBlock()

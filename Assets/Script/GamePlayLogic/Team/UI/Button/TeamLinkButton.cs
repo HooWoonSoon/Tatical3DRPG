@@ -29,11 +29,13 @@ public class TeamLinkButton : MonoBehaviour
             currentTeamUIClass.UnlinkCharacter();
             teamFollowerSystem.RemoveUnlinkCharacterFromTeam(currentTeamUIClass.character);
             teamFollowerSystem.AddCharacterToUnlinkList(currentTeamUIClass.character);
+            TeamFollowPathFinding.instance.ResetTeamPathRoute();
         }
         else
         {
             currentTeamUIClass.LinkCharacter();
             teamFollowerSystem.InsertTeamFollower(currentTeamUIClass.character);
+            TeamFollowPathFinding.instance.ResetTeamPathRoute();
         }
     }
 

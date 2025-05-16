@@ -37,6 +37,7 @@ public class CharacterTestingBMove : MonoBehaviour
         }
         else
         {
+            Debug.Log("Not path found");
             pathIndex = -1;
         }
     }

@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections;
 using UnityEngine;
 
 public class TeamFollowSystem : MonoBehaviour
@@ -8,7 +7,7 @@ public class TeamFollowSystem : MonoBehaviour
     public List<TeamFollower> teamFollowers;
     private List<UnitCharacter> unlinkCharacters = new List<UnitCharacter>();
 
-    [SerializeField] private float spacingDistance = 2f;
+    [SerializeField] private int spacingDistance = 2;
     [SerializeField] private int historyLimit = 15;
 
     public static TeamFollowSystem instance;
@@ -39,20 +38,14 @@ public class TeamFollowSystem : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.B))
-        {
-            FindCharacterNewSpacingPosition(teamFollowers);
-        }
         if (Input.GetKeyDown(KeyCode.C))
         {
             //  Debug
-            TeamFollowPathFinding.instance.TeamFollowPathFindingRange(Utils.RoundXZFloorYInt(teamFollowers[1].unitCharacter.transform.position), 4);
-            TeamFollowPathFinding.instance.CheckWithinRange(teamFollowers[0].unitCharacter);
-            TeamFollowPathFinding.instance.FindClosetRange(teamFollowers[0].unitCharacter);
+            TeamFollowPathFinding.instance.TeamSortPathFinding(teamFollowers, spacingDistance);
         }
         
-        if (!TeamMovementControllerE.instance.IsLeaderMove(teamFollowers[0].unitCharacter)) { return; }
-
+        if (!TeamMovementControllerE.instance.IsLeaderMove(teamFollowers)) { return; }
+        
         for (int i = 0; i < teamFollowers.Count; i++)
         {
             teamFollowers[i].unitCharacter.UpdateHistory();
@@ -222,46 +215,4 @@ public class TeamFollowSystem : MonoBehaviour
         }
     }
     #endregion
-
-
-    private void FindCharacterNewSpacingPosition(List<TeamFollower> teamFollowers)
-    {
-        List<Vector3> newPositions = new List<Vector3>();
-        Vector3 forwardDirection = Vector3.back;
-
-        if (teamFollowers.Count > 1)
-        {
-            forwardDirection = (teamFollowers[0].unitCharacter.transform.position -
-                                teamFollowers[1].unitCharacter.transform.position).normalized;
-        }
-        newPositions.Add(Utils.RoundXZFloorYInt(teamFollowers[0].unitCharacter.transform.position));
-
-        for (int i = 1; i < teamFollowers.Count; i++)
-        {
-            Vector3 prevPosition = newPositions[i - 1];
-            newPositions.Add(prevPosition - forwardDirection * spacingDistance);
-        }
-
-        TeamFollowPathFinding.instance.TeamMemberRefinding(teamFollowers, newPositions, out List<Vector3> pathTargetPos);
-        
-        //  Debug
-        StartCoroutine(DelayedSetNewSpacingPosition(teamFollowers, pathTargetPos));
-    }
-
-    private IEnumerator DelayedSetNewSpacingPosition(List<TeamFollower> teamFollowers, List<Vector3> newPositions)
-    {
-        yield return new WaitForSeconds(5f);
-        SetNewSpacingPosition(teamFollowers, newPositions);
-    }
-
-    private void SetNewSpacingPosition(List<TeamFollower> teamFollowers, List<Vector3> newPositions)
-    {
-        for (int i = 0; i < teamFollowers.Count; i++)
-        {
-            teamFollowers[i].unitCharacter.transform.position = newPositions[i];
-            if (i == 0) continue;
-            float spacing = Vector3.Distance(teamFollowers[i].unitCharacter.transform.position, teamFollowers[i].targetToFollow.transform.position);
-            Debug.Log($"{teamFollowers[i].unitCharacter.index} to {teamFollowers[i].targetToFollow.index} spacing position = {spacing}");
-        }
-    }
 }

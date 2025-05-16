@@ -38,7 +38,7 @@ public class World
     }
 
     #region Generate Chunk And Node
-    public Chunk GetChunk(int chunkX, int chunkY, int chunkZ)
+    public Chunk GenearateAndGetChunk(int chunkX, int chunkY, int chunkZ)
     {
         int regionX = Mathf.FloorToInt(chunkX / REGION_SIZE);
         int regionY = 0;
@@ -49,13 +49,26 @@ public class World
             regions[(regionX, regionY, regionZ)] = new Region(regionX, regionY, regionZ);
         }
 
-        Chunk chunk = regions[(regionX, regionY, regionZ)].GetChunk(chunkX, chunkY, chunkZ);
+        Chunk chunk = regions[(regionX, regionY, regionZ)].GeneraateAndGetChunk(chunkX, chunkY, chunkZ);
         foreach (var node in chunk.nodes)
         {
             loadedNodes[(node.worldX, node.worldY, node.worldZ)] = node;
         }
         UpdateWorldSize();
         return chunk;
+    }
+
+    public Chunk TryGetChunk(int chunkX, int chunkY, int chunkZ)
+    {
+        int regionX = Mathf.FloorToInt(chunkX / REGION_SIZE);
+        int regionY = 0;
+        int regionZ = Mathf.FloorToInt(chunkZ / REGION_SIZE);
+
+        if (regions.ContainsKey((regionX, regionY, regionZ)))
+        {
+            return regions[(regionX, regionY, regionZ)].TryGetChunk(chunkX, chunkY, chunkZ);
+        }
+        return null;
     }
     #endregion
 
@@ -90,10 +103,15 @@ public class World
     //      To get the node at the world position, it used for A * pathfinding algorithm,
     //      because world have been seperate into the chunk, when the target position is overstep the boundaries
     //      need to searching chunk again. This is a part of encapsulation.
+    public GameNode GetNodeAtWorldPosition(Vector3Int position)
+    {
+        return GetNodeAtWorldPosition(position.x, position.y, position.z);
+    }
+
     public GameNode GetNodeAtWorldPosition(int x, int y, int z)
     {
         GetChunkPosition(x, y, z, out int chunkX, out int chunkY, out int chunkZ);
-        Chunk chunk = GetChunk(chunkX, chunkY, chunkZ);
+        Chunk chunk = TryGetChunk(chunkX, chunkY, chunkZ);
         if (chunk == null) { Debug.Log("Could not get the chunk node"); return null; }
 
         int localX = (x % Chunk.CHUNK_SIZE + Chunk.CHUNK_SIZE) % Chunk.CHUNK_SIZE;
