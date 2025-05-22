@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
@@ -19,10 +20,9 @@ public class TeamFollowPathFinding : MonoBehaviour
     private TeamFollowSystem teamFollowSystem;
     private PathFinding pathFinding;
 
-    private List<Vector3Int> pathVectorRange;
-    private List<Vector3Int> followerVectorRange;
-
     private List<TeamPathRoute> teamPathRoutes = new List<TeamPathRoute>();
+
+    public bool isActivePathFinding { get; private set; }
 
     public static TeamFollowPathFinding instance { get; private set; }
 
@@ -40,6 +40,8 @@ public class TeamFollowPathFinding : MonoBehaviour
 
     private void Update()
     {
+        AllUnitsToTarget();
+
         if (teamPathRoutes.Count == 0) return;
 
         for (int i = 1; i < TeamFollowSystem.instance.teamFollowers.Count; i++)
@@ -80,6 +82,18 @@ public class TeamFollowPathFinding : MonoBehaviour
         teamPathRoutes.Clear();
     }
     #endregion
+
+    private void AllUnitsToTarget()
+    {
+        if (isActivePathFinding)
+        {
+            for (int i = 0; i < teamPathRoutes.Count; i++)
+            {
+                if (teamPathRoutes[i].pathIndex != -1) { return; }
+            }
+            isActivePathFinding = false;
+        }
+    }
 
     #region Sort
     //  Summary
@@ -177,6 +191,7 @@ public class TeamFollowPathFinding : MonoBehaviour
             {
                 teamPathRoutes[i].pathIndex = 0;
             }
+            isActivePathFinding = true;
         }
     }
 

@@ -3,6 +3,11 @@ using UnityEngine;
 
 public class UnitCharacter : MonoBehaviour
 {
+    public enum Type
+    {
+        Enemy, Allay, Neutral
+    }
+
     public enum Orientation
     {
         right, left, forward, back
@@ -12,8 +17,17 @@ public class UnitCharacter : MonoBehaviour
     public string characterName;
     public GameObject imageObject;
     public int ID;
+    public Type type;
     public int index { get; set; }
 
+    //  Debug character properties
+    [Header("Properties")]
+    public int currenthealth;
+    public int healthPoint;
+    public int mentalPoint;
+    public int magicAttackPoint;
+    public int physicAttackPoint;
+    public int speed;
 
     #region self path
     public readonly List<Vector3> positionHistory = new List<Vector3>();

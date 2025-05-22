@@ -28,33 +28,62 @@ public class TeamMovementControllerE : MonoBehaviour
     private void Update()
     {
         Utils.GetMovementInput(out float inputX, out float inputZ);
-        
+        CheckHandlePathFinding(ref inputX, ref inputZ);
+
         UnitCharacter unitCharacter = teamFollowSystem.teamFollowers[0].unitCharacter;  //leader
         Move(inputX, inputZ, unitCharacter);
         UpDownHill(inputX, inputZ, unitCharacter);
     }
 
+    private void CheckHandlePathFinding(ref float inputX, ref float inputZ)
+    {
+        if (TeamFollowPathFinding.instance.isActivePathFinding)
+        {
+            inputX = 0;
+            inputZ = 0;
+            Debug.Log("Active PathFinding");
+        }
+    }
+
+    //  Summary
+    //      Move the unit character with the frequence input
     public void Move(float x, float z, UnitCharacter unitCharacter)
     {
         if (x == 0 && z == 0)
         {
-            unitCharacter.isMoving = false; // No movement input
+            //  No movement input
+            unitCharacter.isMoving = false;
             return;
         }
-        else
+
+        Vector3 direction = new Vector3(x, 0, z).normalized;
+        Vector3 characterPosition = unitCharacter.transform.position;
+        unitCharacter.isMoving = true;
+        unitCharacter.FacingDirection(direction);
+        unitCharacter.UpdateOrientation(direction);
+
+        //  Check diagonol movement and return
+        Vector3 targetPosition = characterPosition + direction * moveSpeed * Time.deltaTime;
+        if (world.IsValidNode(targetPosition))
         {
-            Vector3 direction = new Vector3(x, 0, z).normalized;
-
-            unitCharacter.isMoving = true;
-            unitCharacter.FacingDirection(direction);
-            unitCharacter.UpdateOrientation(direction);
-
-            Vector3 targetPosition = unitCharacter.transform.position + direction * moveSpeed * Time.deltaTime;
-
-            if (world.IsValidNode(targetPosition))
-            {
-                unitCharacter.transform.position = targetPosition;
-            }
+            unitCharacter.transform.position = targetPosition;
+            return;
+        }
+        
+        //  Check X axis movement and return
+        Vector3 targetPositionX = characterPosition + new Vector3(direction.x, 0, 0) * moveSpeed * Time.deltaTime;
+        if (world.IsValidNode(targetPositionX))
+        {
+            unitCharacter.transform.position = targetPositionX;
+            return;
+        }
+        
+        //  Check Z axis movement and return
+        Vector3 targetPositionZ = characterPosition + new Vector3(0, 0, direction.z) * moveSpeed * Time.deltaTime;
+        if (world.IsValidNode(targetPositionZ))
+        {
+            unitCharacter.transform.position = targetPositionZ;
+            return;
         }
     }
 
