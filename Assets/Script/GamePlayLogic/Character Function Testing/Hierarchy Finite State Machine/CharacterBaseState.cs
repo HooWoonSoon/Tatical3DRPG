@@ -2,13 +2,14 @@
 
 public abstract class CharacterBaseState
 {
-    protected Character player;
+    protected Character character;
     protected StateMachine stateMachine;
-    protected CharacterBaseState currentSubState;
-    public CharacterBaseState(StateMachine stateMachine, Character player)
+
+
+    public CharacterBaseState(StateMachine stateMachine, Character character)
     {
         this.stateMachine = stateMachine;
-        this.player = player;
+        this.character = character;
     }
     public virtual string StateName()
     {
@@ -20,15 +21,10 @@ public abstract class CharacterBaseState
     }
     public virtual void Update() 
     {
-        currentSubState?.Update();
+
     }
     public virtual void Exit() 
     {
         Debug.Log($"Exit {StateName()}");
-    }
-    public virtual void SetSubState(CharacterBaseState newSubState) 
-    {
-        currentSubState = newSubState;
-        currentSubState.Enter();
     }
 }

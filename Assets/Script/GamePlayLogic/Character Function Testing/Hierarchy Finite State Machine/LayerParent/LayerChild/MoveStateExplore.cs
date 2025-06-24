@@ -1,7 +1,7 @@
 ﻿
 public class MoveStateExplore : CharacterBaseState
 {
-    public MoveStateExplore(StateMachine stateMachine, Character player) : base(stateMachine, player)
+    public MoveStateExplore(StateMachine stateMachine, Character character) : base(stateMachine, character)
     {
     }
 
@@ -17,10 +17,14 @@ public class MoveStateExplore : CharacterBaseState
 
     public override void Update()
     {
-        base.Update();
-        if (player.xInput == 0 && player.zInput == 0)
+        if (TeamFollowPathFinding.instance.isActivePathFinding) { return; }
+
+        character.Move(character.xInput, character.zInput);
+        character.UpDownHill(character.xInput, character.zInput);
+
+        if (character.xInput == 0 && character.zInput == 0)
         {
-            SetSubState(player.explorationState.idleStateExplore);
+            stateMachine.ChangeSubState(character.idleStateExplore);
         }
     }
 }

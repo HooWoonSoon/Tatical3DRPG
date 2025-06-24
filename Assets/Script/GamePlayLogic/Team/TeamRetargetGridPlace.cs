@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 public class TeamRetargetGridPlace : BaseGroupPathFinding
 {
-    private List<TeamPathRoute> teamPathRoutes = new List<TeamPathRoute>();
     private Action onReachTargetForBattle;
-    public bool isActivatePathFinding { get; private set; }
 
     public static TeamRetargetGridPlace instance { get; private set; }
 
@@ -21,44 +19,8 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
 
     private void Update()
     {
-        if (!isActivatePathFinding) { return; }
-
-        for (int i = 0; i < teamPathRoutes.Count; i++)
-        {
-            if (teamPathRoutes[i].pathIndex != -1)
-            {
-                Vector3 nextPathPosition = teamPathRoutes[i].pathRouteList[teamPathRoutes[i].pathIndex];
-                Vector3 currentPos = teamPathRoutes[i].unitCharacter.transform.position;
-                Vector3 direction = (nextPathPosition - currentPos).normalized;
-
-                teamPathRoutes[i].unitCharacter.FacingDirection(direction);
-                teamPathRoutes[i].unitCharacter.transform.position = Vector3.MoveTowards(currentPos, nextPathPosition, 5 * Time.deltaTime);
-
-                if (Vector3.Distance(teamPathRoutes[i].unitCharacter.transform.position, nextPathPosition) <= 0.1f)
-                {
-                    teamPathRoutes[i].unitCharacter.transform.position = nextPathPosition;
-                    teamPathRoutes[i].pathIndex++;
-                    if (teamPathRoutes[i].pathIndex >= teamPathRoutes[i].pathRouteList.Count)
-                    {
-                        teamPathRoutes[i].pathIndex = -1;
-                    }
-                }
-            }
-        }
-        isActivatePathFinding = false;
-    }
-
-    private bool IsTargetPositionExist(Vector3 targetPosition)
-    {
-        for (int i = 0; i < teamPathRoutes.Count; i++)
-        {
-            if (teamPathRoutes[i].targetPosition.HasValue &&
-                targetPosition == teamPathRoutes[i].targetPosition.Value)
-            {
-                return true;
-            }
-        }
-        return false;
+        AllUnitsToTarget();
+        PathfindingMoveToTarget();
     }
 
     private List<Vector3Int> SortTargetRangeByDistance(Vector3Int from, List<Vector3Int> targets)
@@ -72,18 +34,21 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
     {
         for (int i = 0; i < unitCharacters.Count; i++)
         {
+            if (unitCharacters[i].isBattle) { continue; }
             EnterBattlePathFinding(unitCharacters[i]);
+            unitCharacters[i].isBattle = true;
         }
-        isActivatePathFinding = true;
+        isActivePathFinding = true;
     }
 
-    private void EnterBattlePathFinding(Character unitCharacter)
+    private void EnterBattlePathFinding(Character character)
     {
-        Vector3Int unitPosition = Utils.RoundXZFloorYInt(unitCharacter.transform.position);
+        Vector3Int unitPosition = character.GetCharacterPosition();
         List<Vector3> pathVectorList = new List<Vector3>();
 
         int minSize = 1;
         int maxSize = 8;
+
         while (pathVectorList.Count == 0 && minSize <= maxSize)
         {
             List<Vector3Int> range = world.GetManhattas3DRange(unitPosition, minSize);
@@ -99,12 +64,12 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
                 {
                     teamPathRoutes.Add(new TeamPathRoute
                     {
-                        unitCharacter = unitCharacter,
+                        unitCharacter = character,
                         targetPosition = range[i],
                         pathRouteList = pathVectorList,
                         pathIndex = 0
                     });
-                    return;
+                    return ;
                 }
             }
             minSize++;
@@ -115,7 +80,7 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
             pathVectorList.Add(unitPosition);
             teamPathRoutes.Add(new TeamPathRoute
             {
-                unitCharacter = unitCharacter,
+                unitCharacter = character,
                 targetPosition = unitPosition,
                 pathRouteList = pathVectorList,
                 pathIndex = 0

@@ -17,13 +17,24 @@ public class CharacterScouting : MonoBehaviour
     {
         selfDetectable = GetComponent<UnitDetectable>();
         unitCharacter = GetComponent<Character>();
+
+        BattleManager.instance.RegisterScout(this);
     }
 
     private void Update()
     {
-        if (unitCharacter.isBattle) { return; }
-        UnitDetectable[] unitDetectable = selfDetectable.OverlapMahhatassRange(5);
+        List<Character> detectedCharacters = GetDetectedCharacter();
 
+        if (detectedCharacters.Count > 0)
+        {
+            GetInfluenceUnits(detectedCharacters, out List<Character> joinedBattleUnit);
+            OnBattleTriggered?.Invoke(joinedBattleUnit);
+        }
+    }
+
+    private List<Character> GetDetectedCharacter()
+    {
+        UnitDetectable[] unitDetectable = selfDetectable.OverlapMahhatassRange(5);
         List<Character> detectedCharacters = new List<Character>();
 
         foreach (UnitDetectable hit in unitDetectable)
@@ -35,18 +46,7 @@ public class CharacterScouting : MonoBehaviour
                 detectedCharacters.Add(hitUnitCharacter);
             }
         }
-
-        if (detectedCharacters.Count > 0)
-        {
-            GetInfluenceUnits(detectedCharacters, out List<Character> joinedBattleUnit);
-            OnBattleTriggered?.Invoke(joinedBattleUnit);
-            //TeamRetargetGridPlace.instance.EnterBattlePathFinding(joinedBattleUnit);
-            //CTTimeline.instance.ReceiveBattleJoinedUnit(joinedBattleUnit);
-            //for (int i = 0; i < joinedBattleUnit.Count; i++)
-            //{
-            //    joinedBattleUnit[i].isBattle = true;
-            //}
-        }
+        return detectedCharacters;
     }
 
     private void GetInfluenceUnits(List<Character> detectedCharacters, out List<Character> joinedBattleUnit)

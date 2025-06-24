@@ -60,6 +60,9 @@ public class Character : BaseGroupPathFinding
     public BattleState battleState { get; private set; }
     public ExplorationState explorationState { get; private set; }
 
+    public IdleStateExplore idleStateExplore { get; private set; }
+    public MoveStateExplore moveStateExplore { get; private set; }
+
     [Header("Physic")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float gravity = 9.8f;
@@ -75,22 +78,24 @@ public class Character : BaseGroupPathFinding
 
         explorationState = new ExplorationState(stateMachine, this);
         battleState = new BattleState(stateMachine, this);
+
+        idleStateExplore = new IdleStateExplore(stateMachine, this);
+        moveStateExplore = new MoveStateExplore(stateMachine, this);
     }
 
     protected override void Start()
     {
         base.Start();
         anim = GetComponent<Animator>();
-        stateMachine.Initialize(new ExplorationState(stateMachine, this));
+        stateMachine.Initialize(explorationState, idleStateExplore);
         eventDriver.Subscribe("BattleMode", () => stateMachine.ChangeState(battleState));
         eventDriver.Subscribe("ExplorationMode", () => stateMachine.ChangeState(explorationState));
     }
 
     private void Update()
     {
-        stateMachine.currentState.Update();
-        Move(xInput, zInput);
-        UpDownHill(xInput, zInput);
+        stateMachine.roofState.Update();
+        stateMachine.subState.Update();
     }
 
     public void UpdateHistory()
@@ -162,7 +167,7 @@ public class Character : BaseGroupPathFinding
 
     //  Summary
     //      Move the unit character with the frequence input
-    private void Move(float x, float z)
+    public void Move(float x, float z)
     {
         if (isBattle) { return; }
 
@@ -205,7 +210,7 @@ public class Character : BaseGroupPathFinding
     }
 
     #region UpDownHill
-    private void UpDownHill(float xInput, float zInput)
+    public void UpDownHill(float xInput, float zInput)
     {
         DownHill();
         UpHill(xInput, zInput);
@@ -286,4 +291,8 @@ public class Character : BaseGroupPathFinding
         }
     }
 
+    public Vector3Int GetCharacterPosition()
+    {
+        return Utils.RoundXZFloorYInt(transform.position);
+    }
 }

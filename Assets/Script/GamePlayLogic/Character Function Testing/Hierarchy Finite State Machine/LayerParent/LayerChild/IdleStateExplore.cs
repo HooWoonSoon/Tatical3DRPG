@@ -2,7 +2,7 @@
 
 public class IdleStateExplore : CharacterBaseState
 {
-    public IdleStateExplore(StateMachine stateMachine, Character player) : base(stateMachine, player)
+    public IdleStateExplore(StateMachine stateMachine, Character character) : base(stateMachine, character)
     {
     }
 
@@ -18,6 +18,9 @@ public class IdleStateExplore : CharacterBaseState
 
     public override void Update()
     {
-        base.Update();
+        if (character.xInput != 0 || character.zInput != 0)
+        {
+            stateMachine.ChangeSubState(character.moveStateExplore);
+        }
     }
 }

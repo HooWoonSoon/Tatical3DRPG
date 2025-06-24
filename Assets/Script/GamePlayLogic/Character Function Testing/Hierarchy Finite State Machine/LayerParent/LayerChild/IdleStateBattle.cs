@@ -2,20 +2,18 @@
 
 public class IdleStateBattle : CharacterBaseState
 {
-    public IdleStateBattle(StateMachine stateMachine, Character player) : base(stateMachine, player)
+    public IdleStateBattle(StateMachine stateMachine, Character character) : base(stateMachine, character)
     {
     }
 
     public override void Enter()
     {
         base.Enter();
-        Debug.Log("Enter Idle State Battle");
     }
 
     public override void Exit()
     {
         base.Exit();
-        Debug.Log("Exit Idle State Battle");
     }
 
     public override void Update()

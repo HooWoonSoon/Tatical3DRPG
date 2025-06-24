@@ -3,8 +3,6 @@ using UnityEngine;
 
 public class TeamFollowPathFinding : BaseGroupPathFinding
 {
-    private List<TeamPathRoute> teamPathRoutes = new List<TeamPathRoute>();
-    public bool isActivePathFinding { get; private set; }
     public static TeamFollowPathFinding instance { get; private set; }
 
     private void Awake()
@@ -20,57 +18,7 @@ public class TeamFollowPathFinding : BaseGroupPathFinding
     private void Update()
     {
         AllUnitsToTarget();
-
-        if (teamPathRoutes.Count == 0) return;
-
-        for (int i = 0; i < teamPathRoutes.Count; i++)
-        {
-            var route = teamPathRoutes[i];
-
-            if (route.pathIndex != -1 && route.pathRouteList != null && route.pathRouteList.Count > 0)
-            {
-                Vector3 nextPathPosition = route.pathRouteList[route.pathIndex];
-                Vector3 currentPos = teamPathRoutes[i].unitCharacter.transform.position;
-                Vector3 direction = (nextPathPosition - currentPos).normalized;
-
-                Debug.Log("moveDirection:" + direction);
-
-                teamPathRoutes[i].unitCharacter.FacingDirection(direction);
-
-                teamPathRoutes[i].unitCharacter.transform.position = Vector3.MoveTowards(currentPos, nextPathPosition, 5 * Time.deltaTime);
-
-                if (Vector3.Distance(teamPathRoutes[i].unitCharacter.transform.position, nextPathPosition) <= 0.1f)
-                {
-                    teamPathRoutes[i].unitCharacter.transform.position = nextPathPosition;
-                    route.pathIndex++;
-
-                    if (route.pathIndex >= route.pathRouteList.Count)
-                    {
-                        Debug.Log($"Reached target {route.targetPosition}");
-                        route.pathIndex = -1;
-                    }
-                }
-            }
-        }
-    }
-
-    #region Reset
-    public void ResetTeamPathRoute()
-    {
-        teamPathRoutes.Clear();
-    }
-    #endregion
-
-    private void AllUnitsToTarget()
-    {
-        if (isActivePathFinding)
-        {
-            for (int i = 0; i < teamPathRoutes.Count; i++)
-            {
-                if (teamPathRoutes[i].pathIndex != -1) { return; }
-            }
-            isActivePathFinding = false;
-        }
+        PathfindingMoveToTarget();
     }
 
     #region Sort
@@ -98,8 +46,8 @@ public class TeamFollowPathFinding : BaseGroupPathFinding
             if (IsWithinFollowRange(fromPosition, lastTargetPosition))
             {
                 List<Vector3Int> unitRange = world.GetManhattas3DRange(lastTargetPosition, 2);
-                teamPathRoutes.Add(new TeamPathRoute 
-                { 
+                teamPathRoutes.Add(new TeamPathRoute
+                {
                     targetRangeList = unitRange,
                     unitCharacter = teamFollowers[i].unitCharacter,
                 });
@@ -178,19 +126,6 @@ public class TeamFollowPathFinding : BaseGroupPathFinding
             }
         }
         return true;
-    }
-
-    private bool IsTargetPositionExist(Vector3 targetPosition)
-    {
-        for (int i = 0; i < teamPathRoutes.Count; i++)
-        {
-            if (teamPathRoutes[i].targetPosition.HasValue &&
-                targetPosition == teamPathRoutes[i].targetPosition.Value)
-            {
-                return true;
-            }
-        }
-        return false;
     }
     #endregion
 
