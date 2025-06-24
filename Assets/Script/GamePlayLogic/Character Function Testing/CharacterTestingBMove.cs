@@ -9,18 +9,18 @@ public class CharacterTestingBMove : MonoBehaviour
     private World world;
     private PathFinding pathFinding;
 
-    public UnitCharacter unitCharacter;
+    public Character unitCharacter;
 
     private List<Vector3> pathVectorList;
     private int pathIndex = -1;
 
     public float moveSpeed = 5f;
-    private float reachPathPositionDistance = 0.5f;
+    private float reachPathPositionDistance = 0.1f;
     private Action onReachedTargetPosition;
 
     public void Start()
     {
-        world = WorldManager.instance.world;
+        world = WorldGeneration.instance.world;
         pathFinding = new PathFinding(world);
     }
 

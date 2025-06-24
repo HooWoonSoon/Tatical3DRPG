@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [Serializable]
 public class TeamLinkUIClass
 {
-    public UnitCharacter character { get; private set; }
+    public Character character { get; private set; }
     public int ID { get; private set; }
     public int index { get; private set; }
     public int Index
@@ -23,7 +23,7 @@ public class TeamLinkUIClass
 
     #region Image
     public Vector2 rectPosition;
-    public GameObject imageObject { get; private set; }
+    public GameObject imageObject;
     private Image image;
     #endregion
 
@@ -40,7 +40,7 @@ public class TeamLinkUIClass
     #endregion
 
     #region TeamLink UI Management
-    public void Initialize(UnitCharacter character, int index)
+    public void Initialize(Character character, int index)
     {
         this.character = character;
         imageObject = character.imageObject;

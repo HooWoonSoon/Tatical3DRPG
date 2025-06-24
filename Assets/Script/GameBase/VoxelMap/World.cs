@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.LightTransport;
 
 public class World
 {
@@ -148,6 +147,51 @@ public class World
     {
         return worldMinX <= x && worldMinY <= y && worldMinZ <= z
             && worldMaxX >= x && worldMaxY >= y && worldMaxZ >= z;
+    }
+    #endregion
+
+    #region Manhattan Distance Logic
+    //  Summary
+    //      This function calculates the Manhattan distance range in 3D space
+    public List<Vector3Int> GetManhattas3DRange(
+        Vector3Int unitPosition,
+        int size,
+        bool checkWalkable = true,
+        bool limitY = false,
+        int yLength = 0)
+    {
+        List<Vector3Int> coverage = new List<Vector3Int>();
+
+        if (limitY && size > yLength) { size = yLength; }
+
+        int minX = unitPosition.x - size;
+        int maxX = unitPosition.x + size;
+        int minY = unitPosition.y - size;
+        int maxY = unitPosition.y + size;
+        int minZ = unitPosition.z - size;
+        int maxZ = unitPosition.z + size;
+
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int y = minY; y <= maxY; y++)
+            {
+                for (int z = minZ; z <= maxZ; z++)
+                {
+                    // Check if the current position is within the Manhattan distance range
+                    int manhattasDistance = Mathf.Abs(unitPosition.x - x)
+                             + Mathf.Abs(unitPosition.y - y)
+                             + Mathf.Abs(unitPosition.z - z);
+                    if (manhattasDistance > size) continue;
+                    if (!IsValidNode(x, y, z)) continue;
+
+                    if (checkWalkable && !GetNodeAtWorldPosition(x, y, z).isWalkable)
+                        continue;
+
+                    coverage.Add(new Vector3Int(x, y, z));
+                }
+            }
+        }
+        return coverage;
     }
     #endregion
 }

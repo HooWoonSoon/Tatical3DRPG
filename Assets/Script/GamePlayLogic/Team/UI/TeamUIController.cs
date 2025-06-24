@@ -112,7 +112,7 @@ public class TeamUIController : MonoBehaviour
     {
         if (prevPopUpIndex == -1) { return; }
 
-        for (int i = 0; i < teamDeployment.teamCharacter.Length; i++)
+        for (int i = 0; i < teamDeployment.teamCharacter.Count; i++)
         {
             if (teamDeployment.teamCharacter[i].index == prevPopUpIndex)
             {
@@ -154,6 +154,7 @@ public class TeamUIController : MonoBehaviour
             currentInteractObject = Utils.GetMouseOverUIElement(canvas);
             if (currentInteractObject == null) { return; }
 
+            Debug.Log(currentInteractObject);
             objectRectTransform = currentInteractObject.GetComponent<RectTransform>();
 
             foreach (TeamLinkUIClass teamUI in teamUIClasses)

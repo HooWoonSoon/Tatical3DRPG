@@ -18,7 +18,7 @@ public class PathFinding
     //      Example I passing the world position to the pathfinding function,
     //      even if I save every chunk as the local position, I may not need to convert the world position to the local position
     //      because the pathfinding receive the world position and just check for the grid world position without interaction with the chunk
-    public List<GameNode> FindPath(int startWorldX, int startWorldY, int startWorldZ, int endWorldX, int endWorldY, int endWorldZ)
+    private List<GameNode> FindPath(int startWorldX, int startWorldY, int startWorldZ, int endWorldX, int endWorldY, int endWorldZ)
     {
         float startTime = Time.realtimeSinceStartup;
         List<GameNode> ret = new List<GameNode>();
