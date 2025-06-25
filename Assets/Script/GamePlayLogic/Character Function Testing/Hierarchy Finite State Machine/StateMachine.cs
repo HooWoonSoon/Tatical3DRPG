@@ -3,11 +3,12 @@
     public CharacterBaseState roofState { get; private set; }
     public CharacterBaseState subState { get; private set; }
    
-    public void Initialize(CharacterBaseState roofState, CharacterBaseState currentState)
+    public void Initialize(CharacterBaseState roofState, CharacterBaseState subState)
     {
-        this.subState = roofState;
-        this.roofState = currentState;
-        currentState.Enter();
+        this.roofState = roofState;
+        this.subState = subState;
+        roofState.Enter();
+        subState.Enter();
     }
 
     public void ChangeState(CharacterBaseState newState)

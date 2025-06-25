@@ -1,4 +1,6 @@
 ﻿
+using UnityEngine;
+
 public class MoveStateExplore : CharacterBaseState
 {
     public MoveStateExplore(StateMachine stateMachine, Character character) : base(stateMachine, character)
@@ -17,6 +19,8 @@ public class MoveStateExplore : CharacterBaseState
 
     public override void Update()
     {
+        base.Update();
+
         if (TeamFollowPathFinding.instance.isActivePathFinding) { return; }
 
         character.Move(character.xInput, character.zInput);

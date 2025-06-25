@@ -43,6 +43,11 @@ public class TeamSystem : MonoBehaviour
         {
             //  Debug
             TeamFollowPathFinding.instance.TeamSortPathFinding(teamFollowers, spacingDistance);
+
+            for (int i = 0; i < teamFollowers.Count; i++)
+            {
+                teamFollowers[i].unitCharacter.EnablePathFinding();
+            }
         }
         
         for (int i = 0; i < teamFollowers.Count; i++)

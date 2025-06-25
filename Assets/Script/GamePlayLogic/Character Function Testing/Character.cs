@@ -62,6 +62,7 @@ public class Character : BaseGroupPathFinding
 
     public IdleStateExplore idleStateExplore { get; private set; }
     public MoveStateExplore moveStateExplore { get; private set; }
+    public MovePathStateExplore movePathStateExplore { get; private set; }
 
     [Header("Physic")]
     [SerializeField] private float moveSpeed = 5f;
@@ -81,6 +82,7 @@ public class Character : BaseGroupPathFinding
 
         idleStateExplore = new IdleStateExplore(stateMachine, this);
         moveStateExplore = new MoveStateExplore(stateMachine, this);
+        movePathStateExplore = new MovePathStateExplore(stateMachine, this);
     }
 
     protected override void Start()
@@ -289,6 +291,11 @@ public class Character : BaseGroupPathFinding
 
             velocity = 0;
         }
+    }
+
+    public void EnablePathFinding()
+    {
+        stateMachine.ChangeSubState(movePathStateExplore);
     }
 
     public Vector3Int GetCharacterPosition()

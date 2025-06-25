@@ -46,7 +46,7 @@ public class TeamFollowPathFinding : BaseGroupPathFinding
             if (IsWithinFollowRange(fromPosition, lastTargetPosition))
             {
                 List<Vector3Int> unitRange = world.GetManhattas3DRange(lastTargetPosition, 2);
-                teamPathRoutes.Add(new TeamPathRoute
+                teamPathRoutes.Add(new PathRoute
                 {
                     targetRangeList = unitRange,
                     unitCharacter = teamFollowers[i].unitCharacter,
@@ -84,7 +84,7 @@ public class TeamFollowPathFinding : BaseGroupPathFinding
         return Vector3.Distance(fromPosition, targetPosition) <= maxDistance;
     }
 
-    private bool IsClosestTargetExist(Vector3Int fromPosition, TeamPathRoute teamPathRoute)
+    private bool IsClosestTargetExist(Vector3Int fromPosition, PathRoute teamPathRoute)
     {
         if (teamPathRoute.targetRangeList == null || teamPathRoute.targetRangeList.Count == 0)
             return false;
@@ -93,7 +93,7 @@ public class TeamFollowPathFinding : BaseGroupPathFinding
 
         for (int i = 0; i < sortedTarget.Count; i++)
         {
-            List<Vector3> pathVectorList = pathFinding.GetPathRoute(fromPosition, sortedTarget[i]).pathVectorList;
+            List<Vector3> pathVectorList = pathFinding.GetPathRoute(fromPosition, sortedTarget[i]).pathRouteList;
 
             bool existSameTarget = IsTargetPositionExist(sortedTarget[i]);
             if (existSameTarget == true)

@@ -5,7 +5,6 @@ public abstract class CharacterBaseState
     protected Character character;
     protected StateMachine stateMachine;
 
-
     public CharacterBaseState(StateMachine stateMachine, Character character)
     {
         this.stateMachine = stateMachine;
@@ -21,7 +20,7 @@ public abstract class CharacterBaseState
     }
     public virtual void Update() 
     {
-
+        Debug.Log($"Update {StateName()}");
     }
     public virtual void Exit() 
     {

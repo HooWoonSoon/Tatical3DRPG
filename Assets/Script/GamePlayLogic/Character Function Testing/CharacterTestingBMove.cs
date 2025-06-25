@@ -27,7 +27,7 @@ public class CharacterTestingBMove : MonoBehaviour
     public void SetMovePosition(Vector3 movePosition, Action onReachedTargetPosition)
     {
         this.onReachedTargetPosition = onReachedTargetPosition;
-        pathVectorList = pathFinding.GetPathRoute(transform.position, movePosition).pathVectorList;
+        pathVectorList = pathFinding.GetPathRoute(transform.position, movePosition).pathRouteList;
         string result = string.Join(",\n", pathVectorList.Select(v => $"({v.x}, {v.y}, {v.z})"));
         Debug.Log(result);
 

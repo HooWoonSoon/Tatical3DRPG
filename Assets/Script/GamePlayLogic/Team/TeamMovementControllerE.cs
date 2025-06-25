@@ -14,19 +14,8 @@ public class TeamMovementControllerE : MonoBehaviour
     private void Update()
     {
         Utils.GetMovementInput(out float inputX, out float inputZ);
-        CheckHandlePathFinding(ref inputX, ref inputZ);
 
         Character leader = teamSystem.currentLeader;
         leader.SetVelocity(inputX, inputZ);
-    }
-
-    private void CheckHandlePathFinding(ref float inputX, ref float inputZ)
-    {
-        if (TeamFollowPathFinding.instance.isActivePathFinding)
-        {
-            inputX = 0;
-            inputZ = 0;
-            Debug.Log("Active PathFinding");
-        }
     }
 }

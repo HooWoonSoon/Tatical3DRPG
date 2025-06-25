@@ -5,7 +5,7 @@ public class BaseGroupPathFinding : MonoBehaviour
 {
     protected World world;
     protected PathFinding pathFinding;
-    protected List<TeamPathRoute> teamPathRoutes = new List<TeamPathRoute>();
+    protected List<PathRoute> teamPathRoutes = new List<PathRoute>();
     public bool isActivePathFinding;
 
     protected virtual void Start()
@@ -51,6 +51,7 @@ public class BaseGroupPathFinding : MonoBehaviour
             {
                 if (teamPathRoutes[i].pathIndex != -1) { return; }
             }
+            teamPathRoutes.Clear();
             isActivePathFinding = false;
         }
     }

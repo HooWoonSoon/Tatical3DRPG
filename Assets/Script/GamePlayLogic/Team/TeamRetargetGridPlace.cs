@@ -58,11 +58,11 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
             {
                 if (IsTargetPositionExist(range[i])) { continue; }
 
-                pathVectorList = (pathFinding.GetPathRoute(unitPosition, range[i]).pathVectorList);
+                pathVectorList = (pathFinding.GetPathRoute(unitPosition, range[i]).pathRouteList);
 
                 if (pathVectorList.Count != 0)
                 {
-                    teamPathRoutes.Add(new TeamPathRoute
+                    teamPathRoutes.Add(new PathRoute
                     {
                         unitCharacter = character,
                         targetPosition = range[i],
@@ -78,7 +78,7 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
         if (pathVectorList.Count == 0)
         {
             pathVectorList.Add(unitPosition);
-            teamPathRoutes.Add(new TeamPathRoute
+            teamPathRoutes.Add(new PathRoute
             {
                 unitCharacter = character,
                 targetPosition = unitPosition,
