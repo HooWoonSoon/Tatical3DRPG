@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Block", menuName = "Blocks/Block")]
+[CreateAssetMenu(fileName = "BlockData", menuName = "Blocks/Block")]
 public class PrefabDatabaseSO : ScriptableObject
 {
     public List<PrefabEntry> prefabs = new List<PrefabEntry>();

@@ -7,10 +7,10 @@ public class CTTimeline : MonoBehaviour
     [Serializable]
     public class CTTurnHistory
     {
-        public List<Character> cTTimelineQueue = new List<Character>();
+        public List<CharacterBase> cTTimelineQueue = new List<CharacterBase>();
         public int turnCount = 0;
 
-        public CTTurnHistory(List<Character> cTTimelineQueue, int turnCount)
+        public CTTurnHistory(List<CharacterBase> cTTimelineQueue, int turnCount)
         {
             this.cTTimelineQueue = cTTimelineQueue;
             this.turnCount = turnCount;
@@ -19,7 +19,7 @@ public class CTTimeline : MonoBehaviour
 
     public class UnitCTTimelineClass
     {
-        public Character unitCharacter;
+        public CharacterBase unitCharacter;
         public int increaseValue;
         public int CTValue = 0;
         public int accumulatedTime = 0;
@@ -27,10 +27,10 @@ public class CTTimeline : MonoBehaviour
 
         private const int BASE_INCREASE = 2;
 
-        public UnitCTTimelineClass(Character unitCharacter)
+        public UnitCTTimelineClass(CharacterBase character)
         {
-            this.unitCharacter = unitCharacter;
-            increaseValue = unitCharacter.speed + BASE_INCREASE;
+            this.unitCharacter = character;
+            increaseValue = character.data.speed + BASE_INCREASE;
             queue = false;
         }
 
@@ -50,7 +50,7 @@ public class CTTimeline : MonoBehaviour
         public void Reset()
         {
             CTValue = 0;
-            increaseValue = unitCharacter.speed + BASE_INCREASE;
+            increaseValue = unitCharacter.data.speed + BASE_INCREASE;
             accumulatedTime = 0;
             queue = false;
         }
@@ -101,9 +101,9 @@ public class CTTimeline : MonoBehaviour
         }
     }
 
-    private List<Character> GetCalculateCTQueue()
+    private List<CharacterBase> GetCalculateCTQueue()
     {
-        List<Character> cTTimelineQueue = new List<Character>();
+        List<CharacterBase> cTTimelineQueue = new List<CharacterBase>();
 
         while (!CheckAllCharacterQueue())
         {
@@ -119,7 +119,7 @@ public class CTTimeline : MonoBehaviour
         }
         return cTTimelineQueue;
     }
-    public void ReceiveBattleJoinedUnit(List<Character> unitCharacters)
+    public void ReceiveBattleJoinedUnit(List<CharacterBase> unitCharacters)
     {
         for (int i = 0; i < unitCharacters.Count; i++)
         {

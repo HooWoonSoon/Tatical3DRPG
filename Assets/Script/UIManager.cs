@@ -5,6 +5,7 @@ public class UIManager : MonoBehaviour
 {
     public GameObject exploreStatePanel;
     public GameObject battleStatePanel;
+    public GameObject deploymentPanel;
 
     public event Action onReadyExplorePanel;
     public event Action onReadyBattlePanel;
@@ -16,7 +17,19 @@ public class UIManager : MonoBehaviour
         instance = this;
     }
 
-    private void Start() => CTTimeline.instance.confirmCTTimeline += ReadyBattlePanel;
+    private void Start()
+    {
+        CTTimeline.instance.confirmCTTimeline += ReadyBattlePanel;
+        deploymentPanel.SetActive(false);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            deploymentPanel.SetActive(!deploymentPanel.activeSelf);
+        }
+    }
 
     private void ReadyBattlePanel()
     {

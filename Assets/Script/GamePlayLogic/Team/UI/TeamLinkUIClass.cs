@@ -5,7 +5,7 @@ using UnityEngine.UI;
 [Serializable]
 public class TeamLinkUIClass
 {
-    public Character character { get; private set; }
+    public CharacterBase character { get; private set; }
     public int ID { get; private set; }
     public int index { get; private set; }
     public int Index
@@ -40,14 +40,14 @@ public class TeamLinkUIClass
     #endregion
 
     #region TeamLink UI Management
-    public void Initialize(Character character, int index)
+    public void Initialize(CharacterBase character, int index)
     {
         this.character = character;
         imageObject = character.imageObject;
         image = imageObject.GetComponent<Image>();
         image.rectTransform.anchoredPosition = rectPosition;
 
-        ID = character.ID;
+        ID = character.data.ID;
         Index = index;
 
         LinkCharacter();

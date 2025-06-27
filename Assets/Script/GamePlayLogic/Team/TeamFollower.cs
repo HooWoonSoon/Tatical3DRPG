@@ -5,12 +5,12 @@ using UnityEngine;
 [Serializable]
 public class TeamFollower
 {
-    public Character unitCharacter;
-    public Character targetToFollow;
+    public CharacterBase character;
+    public CharacterBase targetToFollow;
 
-    public void Initialize(Character unitCharacter, Character targetToFollow)
+    public void Initialize(CharacterBase unitCharacter, CharacterBase targetToFollow)
     {
-        this.unitCharacter = unitCharacter;
+        this.character = unitCharacter;
         this.targetToFollow = targetToFollow;
     }
 }

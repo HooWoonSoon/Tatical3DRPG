@@ -18,7 +18,7 @@ public class BattleManager : MonoBehaviour
         scout.OnBattleTriggered += HandleBattleTriggered;
     }
 
-    private void HandleBattleTriggered(List<Character> joinedBattleUnit)
+    private void HandleBattleTriggered(List<CharacterBase> joinedBattleUnit)
     {
         TeamRetargetGridPlace.instance.EnterBattlePathFinding(joinedBattleUnit);
         //CTTimeline.instance.ReceiveBattleJoinedUnit(joinedBattleUnit);

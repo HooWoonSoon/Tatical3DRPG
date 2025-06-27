@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 public class TeamRetargetGridPlace : BaseGroupPathFinding
 {
-    private Action onReachTargetForBattle;
-
     public static TeamRetargetGridPlace instance { get; private set; }
 
     private void Awake()
@@ -17,12 +16,6 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
         base.Start();
     }
 
-    private void Update()
-    {
-        AllUnitsToTarget();
-        PathfindingMoveToTarget();
-    }
-
     private List<Vector3Int> SortTargetRangeByDistance(Vector3Int from, List<Vector3Int> targets)
     {
         var sorted = new List<Vector3Int>(targets);
@@ -30,18 +23,20 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
         return sorted;
     }
 
-    public void EnterBattlePathFinding(List<Character> unitCharacters)
+    public void EnterBattlePathFinding(List<CharacterBase> unitCharacters)
     {
+        teamPathRoutes.Clear();
         for (int i = 0; i < unitCharacters.Count; i++)
         {
             if (unitCharacters[i].isBattle) { continue; }
             EnterBattlePathFinding(unitCharacters[i]);
             unitCharacters[i].isBattle = true;
+            unitCharacters[i].pathRoute = teamPathRoutes[i];
+            //unitCharacters[i].stateMachine.ChangeSubState(unitCharacters[i].movePathStateExplore);
         }
-        isActivePathFinding = true;
     }
 
-    private void EnterBattlePathFinding(Character character)
+    private void EnterBattlePathFinding(CharacterBase character)
     {
         Vector3Int unitPosition = character.GetCharacterPosition();
         List<Vector3> pathVectorList = new List<Vector3>();
@@ -64,7 +59,7 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
                 {
                     teamPathRoutes.Add(new PathRoute
                     {
-                        unitCharacter = character,
+                        character = character,
                         targetPosition = range[i],
                         pathRouteList = pathVectorList,
                         pathIndex = 0
@@ -80,7 +75,7 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
             pathVectorList.Add(unitPosition);
             teamPathRoutes.Add(new PathRoute
             {
-                unitCharacter = character,
+                character = character,
                 targetPosition = unitPosition,
                 pathRouteList = pathVectorList,
                 pathIndex = 0

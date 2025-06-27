@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PathRoute
 {
-    public Character unitCharacter;
+    public CharacterBase character;
     public List<Vector3Int> targetRangeList;
     public List<Vector3> pathRouteList;
     public Vector3Int? targetPosition;
