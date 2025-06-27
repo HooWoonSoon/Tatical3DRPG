@@ -4,7 +4,7 @@ using UnityEngine;
 public class UserInputManager : MonoBehaviour
 {
     public TeamDeployment playerTeam;
-    private CharacterBase selectedCharacter;
+    private PlayerCharacter selectedCharacter;
     public static UserInputManager instance { get; private set; }
     private void Awake()
     {
@@ -13,22 +13,22 @@ public class UserInputManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            selectedCharacter = playerTeam.GetCharacterData(0);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            selectedCharacter = playerTeam.GetCharacterData(1);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            selectedCharacter = playerTeam.GetCharacterData(2);
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            selectedCharacter = playerTeam.GetCharacterData(3);
-        }
+        //if (Input.GetKeyDown(KeyCode.Alpha1))
+        //{
+        //    selectedCharacter = playerTeam.GetCharacterData(0);
+        //}
+        //else if (Input.GetKeyDown(KeyCode.Alpha2))
+        //{
+        //    selectedCharacter = playerTeam.GetCharacterData(1);
+        //}
+        //else if (Input.GetKeyDown(KeyCode.Alpha3))
+        //{
+        //    selectedCharacter = playerTeam.GetCharacterData(2);
+        //}
+        //else if (Input.GetKeyDown(KeyCode.Alpha4))
+        //{
+        //    selectedCharacter = playerTeam.GetCharacterData(3);
+        //}
 
         if (selectedCharacter != null)
         {

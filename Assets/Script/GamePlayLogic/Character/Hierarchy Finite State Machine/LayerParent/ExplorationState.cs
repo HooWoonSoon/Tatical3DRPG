@@ -2,7 +2,7 @@
 
 public class ExplorationState : CharacterBaseState
 {
-    public ExplorationState(StateMachine stateMachine, CharacterBase character) : base(stateMachine, character)
+    public ExplorationState(StateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
     {
 
     }

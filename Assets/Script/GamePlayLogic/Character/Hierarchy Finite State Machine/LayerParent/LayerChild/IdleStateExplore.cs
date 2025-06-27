@@ -2,7 +2,7 @@
 
 public class IdleStateExplore : CharacterBaseState
 {
-    public IdleStateExplore(StateMachine stateMachine, CharacterBase character) : base(stateMachine, character)
+    public IdleStateExplore(StateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
     {
     }
 

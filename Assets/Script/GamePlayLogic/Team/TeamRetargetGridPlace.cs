@@ -23,7 +23,7 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
         return sorted;
     }
 
-    public void EnterBattlePathFinding(List<CharacterBase> unitCharacters)
+    public void EnterBattlePathFinding(List<PlayerCharacter> unitCharacters)
     {
         teamPathRoutes.Clear();
         for (int i = 0; i < unitCharacters.Count; i++)
@@ -36,7 +36,7 @@ public class TeamRetargetGridPlace : BaseGroupPathFinding
         }
     }
 
-    private void EnterBattlePathFinding(CharacterBase character)
+    private void EnterBattlePathFinding(PlayerCharacter character)
     {
         Vector3Int unitPosition = character.GetCharacterPosition();
         List<Vector3> pathVectorList = new List<Vector3>();

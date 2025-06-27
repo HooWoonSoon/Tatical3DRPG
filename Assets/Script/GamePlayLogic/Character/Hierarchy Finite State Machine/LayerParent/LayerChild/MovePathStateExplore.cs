@@ -1,6 +1,6 @@
 ﻿public class MovePathStateExplore : CharacterBaseState
 {
-    public MovePathStateExplore(StateMachine stateMachine, CharacterBase character) : base(stateMachine, character)
+    public MovePathStateExplore(StateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
     {
     }
 

@@ -2,10 +2,10 @@
 
 public abstract class CharacterBaseState
 {
-    protected CharacterBase character;
+    protected PlayerCharacter character;
     protected StateMachine stateMachine;
 
-    public CharacterBaseState(StateMachine stateMachine, CharacterBase character)
+    public CharacterBaseState(StateMachine stateMachine, PlayerCharacter character)
     {
         this.stateMachine = stateMachine;
         this.character = character;

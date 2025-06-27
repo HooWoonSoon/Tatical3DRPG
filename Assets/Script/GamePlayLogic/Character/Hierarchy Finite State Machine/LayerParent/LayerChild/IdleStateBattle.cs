@@ -2,7 +2,7 @@
 
 public class IdleStateBattle : CharacterBaseState
 {
-    public IdleStateBattle(StateMachine stateMachine, CharacterBase character) : base(stateMachine, character)
+    public IdleStateBattle(StateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
     {
     }
 

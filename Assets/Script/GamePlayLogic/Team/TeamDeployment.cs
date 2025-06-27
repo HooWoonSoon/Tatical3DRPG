@@ -13,21 +13,33 @@ public class TeamDeployment : MonoBehaviour
             if (teamCharacter[i] != null)
             {
                 teamCharacter[i].currentTeam = this;
-                teamCharacter[i].index = i;
             }
         }
     }
-    
-    public CharacterBase GetCharacterData(int index)
+
+    public List<Type> GetAllOfType<Type>() where Type : CharacterBase
+    {
+        List<Type> result = new List<Type>();
+        foreach (var type in teamCharacter)
+        {
+            if (type is Type tCharacter)
+            {
+                result.Add(tCharacter);
+            }
+        }
+        return result;
+    }
+
+    public Type GetCharacterData<Type>() where Type : CharacterBase
     {
         for (int i = 0; i < teamCharacter.Count; i++)
         {
-            if (teamCharacter[i].index == index)
+            if (teamCharacter[i] is Type tCharacter)
             {
-                return teamCharacter[i];
+                return tCharacter;
             }
         }
-        Debug.Log("Character with index " + index + " not found in team.");
+        Debug.Log("Character with index "  + " not found in team.");
         return null;
     }
 }

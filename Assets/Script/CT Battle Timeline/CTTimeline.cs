@@ -7,10 +7,10 @@ public class CTTimeline : MonoBehaviour
     [Serializable]
     public class CTTurnHistory
     {
-        public List<CharacterBase> cTTimelineQueue = new List<CharacterBase>();
+        public List<PlayerCharacter> cTTimelineQueue = new List<PlayerCharacter>();
         public int turnCount = 0;
 
-        public CTTurnHistory(List<CharacterBase> cTTimelineQueue, int turnCount)
+        public CTTurnHistory(List<PlayerCharacter> cTTimelineQueue, int turnCount)
         {
             this.cTTimelineQueue = cTTimelineQueue;
             this.turnCount = turnCount;
@@ -19,7 +19,7 @@ public class CTTimeline : MonoBehaviour
 
     public class UnitCTTimelineClass
     {
-        public CharacterBase unitCharacter;
+        public PlayerCharacter unitCharacter;
         public int increaseValue;
         public int CTValue = 0;
         public int accumulatedTime = 0;
@@ -27,7 +27,7 @@ public class CTTimeline : MonoBehaviour
 
         private const int BASE_INCREASE = 2;
 
-        public UnitCTTimelineClass(CharacterBase character)
+        public UnitCTTimelineClass(PlayerCharacter character)
         {
             this.unitCharacter = character;
             increaseValue = character.data.speed + BASE_INCREASE;
@@ -101,9 +101,9 @@ public class CTTimeline : MonoBehaviour
         }
     }
 
-    private List<CharacterBase> GetCalculateCTQueue()
+    private List<PlayerCharacter> GetCalculateCTQueue()
     {
-        List<CharacterBase> cTTimelineQueue = new List<CharacterBase>();
+        List<PlayerCharacter> cTTimelineQueue = new List<PlayerCharacter>();
 
         while (!CheckAllCharacterQueue())
         {
@@ -119,7 +119,7 @@ public class CTTimeline : MonoBehaviour
         }
         return cTTimelineQueue;
     }
-    public void ReceiveBattleJoinedUnit(List<CharacterBase> unitCharacters)
+    public void ReceiveBattleJoinedUnit(List<PlayerCharacter> unitCharacters)
     {
         for (int i = 0; i < unitCharacters.Count; i++)
         {

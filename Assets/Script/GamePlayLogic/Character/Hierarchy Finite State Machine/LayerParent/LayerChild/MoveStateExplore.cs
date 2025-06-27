@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class MoveStateExplore : CharacterBaseState
 {
-    public MoveStateExplore(StateMachine stateMachine, CharacterBase character) : base(stateMachine, character)
+    public MoveStateExplore(StateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
     {
     }
 

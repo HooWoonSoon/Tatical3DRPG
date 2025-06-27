@@ -9,7 +9,7 @@
         base.Enter();
         for (int i = 0; i < team.linkMembers.Count; i++)
         {
-            CharacterBase character = team.linkMembers[i].character;
+            PlayerCharacter character = team.linkMembers[i].character;
             character.stateMachine.ChangeSubState(character.idleStateExplore);
         }
     }

@@ -2,7 +2,7 @@
 
 public class BattleState : CharacterBaseState
 {
-    public BattleState(StateMachine stateMachine, CharacterBase character) : base(stateMachine, character)
+    public BattleState(StateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
     {
 
     }

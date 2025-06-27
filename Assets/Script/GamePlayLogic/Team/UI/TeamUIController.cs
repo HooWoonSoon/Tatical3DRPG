@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Events;
+using System.Collections.Generic;
 
 public class TeamUIController : MonoBehaviour
 {
@@ -40,7 +41,8 @@ public class TeamUIController : MonoBehaviour
     {
         for (int i = 0; i < teamUIClasses.Length; i++)
         {
-            teamUIClasses[i].Initialize(teamDeployment.teamCharacter[i], i);
+            List<PlayerCharacter> character = teamDeployment.GetAllOfType<PlayerCharacter>();
+            teamUIClasses[i].Initialize(character[i], i);
         }
     }
 
@@ -112,11 +114,13 @@ public class TeamUIController : MonoBehaviour
     {
         if (prevPopUpIndex == -1) { return; }
 
-        for (int i = 0; i < teamDeployment.teamCharacter.Count; i++)
+        List<PlayerCharacter> character = teamDeployment.GetAllOfType<PlayerCharacter>();
+
+        for (int i = 0; i < character.Count; i++)
         {
-            if (teamDeployment.teamCharacter[i].index == prevPopUpIndex)
+            if (character[i].index == prevPopUpIndex)
             {
-                bool isLink = teamDeployment.teamCharacter[i].isLink;
+                bool isLink = character[i].isLink;
                 uILinkTooltip.ChangeOptionUILinkText(isLink);
             }
         }

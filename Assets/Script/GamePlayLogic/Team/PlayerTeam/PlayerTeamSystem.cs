@@ -5,8 +5,8 @@ public class PlayerTeamSystem : Entity
 {
     public TeamDeployment teamDeployment;
     public List<TeamFollower> linkMembers;
-    private List<CharacterBase> unlinkMember = new List<CharacterBase>();
-    public CharacterBase currentLeader { get; private set; }
+    private List<PlayerCharacter> unlinkMember = new List<PlayerCharacter>();
+    public PlayerCharacter currentLeader { get; private set; }
     private List<PathRoute> teamPathRoutes = new List<PathRoute>();
 
     public int spacingDistance = 2;
@@ -91,10 +91,15 @@ public class PlayerTeamSystem : Entity
     {
         for (int i = 0; i < teamDeployment.teamCharacter.Count; i++)
         {
+            PlayerCharacter character = teamDeployment.teamCharacter[i] as PlayerCharacter;
+
             if (i == 0)
-                linkMembers[i].Initialize(teamDeployment.teamCharacter[i], null);
+                linkMembers[i].Initialize(character, null);
             else
-                linkMembers[i].Initialize(teamDeployment.teamCharacter[i], teamDeployment.teamCharacter[i - 1]);
+            {
+                PlayerCharacter prevCharacter = teamDeployment.teamCharacter[i - 1] as PlayerCharacter;
+                linkMembers[i].Initialize(character, prevCharacter);
+            }
 
             linkMembers[i].character.historyLimit = historyLimit;
         }
@@ -146,7 +151,7 @@ public class PlayerTeamSystem : Entity
 
     //  Summary
     //      Add a new character to the team follower list and remove it from the unlink character.
-    public void InsertTeamFollower(CharacterBase unitCharacter)
+    public void InsertTeamFollower(PlayerCharacter unitCharacter)
     {
         TeamFollower teamFollower = new TeamFollower();
         teamFollower.character = unitCharacter;
@@ -165,7 +170,7 @@ public class PlayerTeamSystem : Entity
 
         for (int i = 0; i < linkMembers.Count; i++)
         {
-            CharacterBase unitCharacter = linkMembers[i].character;
+            PlayerCharacter unitCharacter = linkMembers[i].character;
 
             if (linkMembers[i].character.index == 0) 
             { 
@@ -181,7 +186,7 @@ public class PlayerTeamSystem : Entity
     // Summary
     //      External call to remove the character from the team follower list
     //      and add it to the unlink character list.
-    public void RemoveUnlinkCharacterFromTeam(CharacterBase unitCharacter)
+    public void RemoveUnlinkCharacterFromTeam(PlayerCharacter unitCharacter)
     {
         for (int i = 0; i < linkMembers.Count; i++)
         {
@@ -196,7 +201,7 @@ public class PlayerTeamSystem : Entity
 
     //  Summary
     //      External call to add a character to the unlink character list.
-    public void AddCharacterToUnlinkList(CharacterBase unitCharacter)
+    public void AddCharacterToUnlinkList(PlayerCharacter unitCharacter)
     {
         if (!unlinkMember.Contains(unitCharacter)) { unlinkMember.Add(unitCharacter); }
     }
@@ -213,7 +218,7 @@ public class PlayerTeamSystem : Entity
     #region Logic handle team follower
     //  Summary
     //      Follow the target character with the nearest index member.
-    private void FollowWithNearIndexMember(CharacterBase member, CharacterBase follower)
+    private void FollowWithNearIndexMember(PlayerCharacter member, PlayerCharacter follower)
     {
         if (member.isLink == false || follower == null) return;
         GetFollowTargetDirection(member, follower, out Vector3 direciton);
@@ -223,7 +228,7 @@ public class PlayerTeamSystem : Entity
 
     //  Summary
     //      Get the direction to follow the target character.
-    private void GetFollowTargetDirection(CharacterBase member, CharacterBase follower, out Vector3 direction)
+    private void GetFollowTargetDirection(PlayerCharacter member, PlayerCharacter follower, out Vector3 direction)
     {
         direction = Vector3.zero;
 
@@ -260,7 +265,7 @@ public class PlayerTeamSystem : Entity
             }
             for (int i = 0; i < linkMembers.Count; i++)
             {
-                CharacterBase character = linkMembers[i].character;
+                PlayerCharacter character = linkMembers[i].character;
                 character.stateMachine.ChangeSubState(character.movePathStateExplore);
             }
         }
@@ -268,6 +273,7 @@ public class PlayerTeamSystem : Entity
     public List<PathRoute> GetTeamSortPath(List<TeamFollower> linkMembers, int spacing)
     {
         List<PathRoute> teamPathRoute = new List<PathRoute>();
+        HashSet<Vector3Int> usedTargetPositions = new HashSet<Vector3Int>();
 
         Vector3Int lastTargetPosition = Utils.RoundXZFloorYInt(linkMembers[0].character.transform.position);
 
@@ -278,6 +284,8 @@ public class PlayerTeamSystem : Entity
             if (IsWithinFollowRange(fromPosition, lastTargetPosition))
             {
                 List<Vector3Int> unitRange = world.GetManhattas3DRange(lastTargetPosition, 2);
+
+                unitRange.RemoveAll(pos => usedTargetPositions.Contains(pos));
                 teamPathRoute.Add(new PathRoute
                 {
                     targetRangeList = unitRange,
@@ -296,6 +304,7 @@ public class PlayerTeamSystem : Entity
                 Debug.Log($"No path found from {fromPosition} to {lastTargetPosition} break!");
                 return null;
             }
+            usedTargetPositions.Add(teamPathRoute[i - 1].targetPosition.Value);
             lastTargetPosition = teamPathRoute[i - 1].targetPosition.Value;
         }
         return teamPathRoute;

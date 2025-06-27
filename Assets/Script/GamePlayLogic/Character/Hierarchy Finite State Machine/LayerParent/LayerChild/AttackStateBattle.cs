@@ -1,6 +1,6 @@
 ﻿public class AttackStateBattle : CharacterBaseState
 { 
-    public AttackStateBattle(StateMachine stateMachine, CharacterBase character) : base(stateMachine, character)
+    public AttackStateBattle(StateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
     {
     }
 

@@ -70,7 +70,8 @@ public class EnemyTeamSystem : Entity
 
         foreach (var detected in detectedCharacters)
         {
-            foreach (var member in detected.currentTeam.teamCharacter)
+            List<CharacterBase> team = detected.currentTeam.teamCharacter;
+            foreach (var member in team)
             {
                 if (!joinedBattleUnit.Contains(member))
                     joinedBattleUnit.Add(member);
