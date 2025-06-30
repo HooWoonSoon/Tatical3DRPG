@@ -7,56 +7,57 @@ public class CTTimeline : MonoBehaviour
     [Serializable]
     public class CTTurnHistory
     {
-        public List<PlayerCharacter> cTTimelineQueue = new List<PlayerCharacter>();
+        public List<CharacterBase> cTTimelineQueue = new List<CharacterBase>();
         public int turnCount = 0;
 
-        public CTTurnHistory(List<PlayerCharacter> cTTimelineQueue, int turnCount)
+        public CTTurnHistory(List<CharacterBase> cTTimelineQueue, int turnCount)
         {
             this.cTTimelineQueue = cTTimelineQueue;
             this.turnCount = turnCount;
         }
     }
 
-    public class UnitCTTimelineClass
+    [Serializable]
+    public class CharacterTacticsTime
     {
-        public PlayerCharacter unitCharacter;
+        public CharacterBase character;
         public int increaseValue;
         public int CTValue = 0;
         public int accumulatedTime = 0;
-        public bool queue;
+        public bool isQueue;
 
         private const int BASE_INCREASE = 2;
 
-        public UnitCTTimelineClass(PlayerCharacter character)
+        public CharacterTacticsTime(CharacterBase character)
         {
-            this.unitCharacter = character;
+            this.character = character;
             increaseValue = character.data.speed + BASE_INCREASE;
-            queue = false;
+            CTValue = 0;
+            accumulatedTime = 0;
+            isQueue = false;
         }
-
         public void IncreaseCT()
         {
             CTValue += increaseValue;
         }
-     
         public void CompleteCT()
         {
             accumulatedTime++;
             increaseValue /= (accumulatedTime + 1);
             CTValue -= 100;
-            queue = true;
+            isQueue = true;
         }
-
         public void Reset()
         {
+            increaseValue = character.data.speed + BASE_INCREASE;
             CTValue = 0;
-            increaseValue = unitCharacter.data.speed + BASE_INCREASE;
             accumulatedTime = 0;
-            queue = false;
+            isQueue = false;
         }
     }
 
-    private List<UnitCTTimelineClass> unitBattleDeployment = new List<UnitCTTimelineClass>();
+    public Dictionary<CharacterBase, CharacterTacticsTime> battleCharacter = new Dictionary<CharacterBase, CharacterTacticsTime>();
+    private HashSet<CharacterBase> lastBattleCharacter = new HashSet<CharacterBase>();
     public List<CTTurnHistory> cTTurnhistory = new List<CTTurnHistory>();
     private const int MAX_TURNS = 3;
 
@@ -67,66 +68,64 @@ public class CTTimeline : MonoBehaviour
     {
         instance = this;
     }
-
-    private bool CheckAllCharacterQueue()
+    public void InsertCharacter(CharacterBase character)
     {
-        for (int i = 0; i < unitBattleDeployment.Count; i++)
+        if (!battleCharacter.ContainsKey(character))
         {
-            if (!unitBattleDeployment[i].queue)
-            {
-                return false;
-            }
+            CharacterTacticsTime tactics = new CharacterTacticsTime(character);
+            battleCharacter.Add(character, tactics);
         }
-        return true;
     }
-
-    private void SetupTimeline()
+    public void SetupTimeline()
     {
-        if (unitBattleDeployment.Count == 0) { return; }
+        if (battleCharacter.Count == 0) { return; }
+
+        HashSet<CharacterBase> characters = new HashSet<CharacterBase>(battleCharacter.Keys);
+        if (lastBattleCharacter.SetEquals(characters)) { return; }
+
+        lastBattleCharacter = characters;
+        cTTurnhistory.Clear();
 
         for (int i = 0; i < MAX_TURNS; i++)
         {
-            CTTurnHistory turnHistory = new CTTurnHistory(GetCalculateCTQueue(), i);
+            List<CharacterBase> completeQueue = GetCalculateCTQueue();
+            CTTurnHistory turnHistory = new CTTurnHistory(completeQueue, i);
             cTTurnhistory.Add(turnHistory);
-            RestCTQueue();
+
+            //  Reset all battle character last turn accumulated value
+            foreach (var tactics in battleCharacter.Values)
+            {
+                tactics.Reset();
+            }
         }
         confirmCTTimeline?.Invoke();
     }
-
-    private void RestCTQueue()
+    private bool IsAllCharacterQueue(List<CharacterTacticsTime> tacticsList)
     {
-        for (int i = 0; i < unitBattleDeployment.Count; i++)
+        foreach (CharacterTacticsTime tactics in tacticsList)
         {
-            unitBattleDeployment[i].Reset();
+            if (!tactics.isQueue) { return false; }
         }
+        return true;
     }
-
-    private List<PlayerCharacter> GetCalculateCTQueue()
+    private List<CharacterBase> GetCalculateCTQueue()
     {
-        List<PlayerCharacter> cTTimelineQueue = new List<PlayerCharacter>();
+        List<CharacterBase> cTTimelineQueue = new List<CharacterBase>();
+        List<CharacterTacticsTime> tacticsList = new List<CharacterTacticsTime>(battleCharacter.Values);
 
-        while (!CheckAllCharacterQueue())
+        while (!IsAllCharacterQueue(tacticsList))
         {
-            for (int i = 0; i < unitBattleDeployment.Count; i++)
+            foreach (CharacterTacticsTime tactics in tacticsList)
             {
-                unitBattleDeployment[i].IncreaseCT();
-                if (unitBattleDeployment[i].CTValue >= 100)
+                tactics.IncreaseCT();
+                if (tactics.CTValue >= 100)
                 {
-                    cTTimelineQueue.Add(unitBattleDeployment[i].unitCharacter);
-                    unitBattleDeployment[i].CompleteCT();
+                    cTTimelineQueue.Add(tactics.character);
+                    tactics.CompleteCT();
                 }
             }
         }
         return cTTimelineQueue;
-    }
-    public void ReceiveBattleJoinedUnit(List<PlayerCharacter> unitCharacters)
-    {
-        for (int i = 0; i < unitCharacters.Count; i++)
-        {
-            unitCharacters[i].isBattle = true;
-            unitBattleDeployment.Add(new UnitCTTimelineClass(unitCharacters[i]));
-        }
-        SetupTimeline();
     }
 
     public List<CTTurnHistory> GetAllTurnHistory() => cTTurnhistory;

@@ -1,11 +1,14 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
-public class CharacterBase : Entity
+public abstract class CharacterBase : Entity
 {
     public enum Orientation
     {
         right, left, forward, back
     }
+
+    public float moveSpeed = 5f;
 
     public TeamDeployment currentTeam;
     public UnitDetectable detectable;
@@ -14,6 +17,7 @@ public class CharacterBase : Entity
     public CharacterData data;
     public int currenthealth;
 
+    public PathRoute pathRoute;
     public Orientation orientation = Orientation.right;
 
     protected override void Start()
@@ -61,4 +65,43 @@ public class CharacterBase : Entity
                 return Vector3Int.zero;
         }
     }
+    public Vector3Int GetCharacterPosition()
+    {
+        return Utils.RoundXZFloorYInt(transform.position);
+    }
+    public void FacingDirection(Vector3 direction)
+    {
+        if (direction.x > 0)
+            transform.localScale = new Vector3(1, 1, 1);
+        else if (direction.x < 0)
+            transform.localScale = new Vector3(-1, 1, 1);
+    }
+    public void PathfindingMoveToTarget()
+    {
+        if (pathRoute == null) return;
+
+        if (pathRoute.pathIndex != -1)
+        {
+            Vector3 nextPathPosition = pathRoute.pathRouteList[pathRoute.pathIndex];
+            Vector3 currentPos = pathRoute.character.transform.position;
+            Vector3 direction = (nextPathPosition - currentPos).normalized;
+
+            FacingDirection(direction);
+            pathRoute.character.transform.position = Vector3.MoveTowards(currentPos, nextPathPosition, moveSpeed * Time.deltaTime);
+
+            if (Vector3.Distance(pathRoute.character.transform.position, nextPathPosition) <= 0.1f)
+            {
+                pathRoute.character.transform.position = nextPathPosition;
+                pathRoute.pathIndex++;
+                if (pathRoute.pathIndex >= pathRoute.pathRouteList.Count)
+                {
+                    Debug.Log($"Reached target {pathRoute.targetPosition}");
+                    pathRoute.pathIndex = -1;
+                    pathRoute = null;
+                }
+            }
+        }
+    }
+
+    public abstract void EnterBattle();
 }

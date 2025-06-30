@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
-public class EnemyTeamSystem : Entity
+public class EnemyTeamSystem : TeamSystem
 {
     public TeamDeployment teamDeployment;
     public TeamStateMachine stateMechine;
     public TeamScoutingState teamScoutingState { get; private set; }
 
-    public List<CharacterBase> allDetectedCharacter = new List<CharacterBase>();
+    public List<TeamDeployment> allDetectedTeam = new List<TeamDeployment>();
 
     private Vector3 lastPosition;
     private float eslapseTime = 0;
-
-    public event Action<List<CharacterBase>> OnBattleTriggered;
 
     private void Awake()
     {
@@ -39,10 +39,17 @@ public class EnemyTeamSystem : Entity
             MemberDetectedCharacter(character);
         }
 
-        if (allDetectedCharacter.Count > 0)
+        if (allDetectedTeam.Count == 0) { return; }
         {
-            GetInfluenceUnits(allDetectedCharacter, out List<CharacterBase> joinedBattleUnit);
-            OnBattleTriggered?.Invoke(joinedBattleUnit);
+            GetInfluenceUnits(allDetectedTeam, out List<CharacterBase> joinedBattleUnit);
+            List<PathRoute> pathRoutes = GetGridBattlePath(joinedBattleUnit);
+            for (int i = 0; i < joinedBattleUnit.Count; i++)
+            {
+                CTTimeline.instance.InsertCharacter(joinedBattleUnit[i]);
+                joinedBattleUnit[i].pathRoute = pathRoutes[i];
+                joinedBattleUnit[i].EnterBattle();
+            }
+            CTTimeline.instance.SetupTimeline();
         }
     }
 
@@ -52,29 +59,29 @@ public class EnemyTeamSystem : Entity
 
         foreach (UnitDetectable hit in unitDetectable)
         {
-            CharacterBase hitCharacter = hit.GetComponent<CharacterBase>();
-            if (hitCharacter != null && !IsSameTeamMember(hitCharacter))
+            CharacterBase detectedCharacter = hit.GetComponent<CharacterBase>();
+            TeamDeployment dectectTeam = detectedCharacter.currentTeam;
+            if (dectectTeam != null && !IsSameTeamMember(dectectTeam))
             {
                 Debug.Log("true, Inside Mahhatass Range");
-                if (!allDetectedCharacter.Contains(hitCharacter))
+                if (!allDetectedTeam.Contains(dectectTeam))
                 {
-                    allDetectedCharacter.Add(hitCharacter);
+                    allDetectedTeam.Add(dectectTeam);
                 }
             }
         }
     }
 
-    private void GetInfluenceUnits(List<CharacterBase> detectedCharacters, out List<CharacterBase> joinedBattleUnit)
+    private void GetInfluenceUnits(List<TeamDeployment> allDetectedTeam, out List<CharacterBase> joinedBattleUnit)
     {
         joinedBattleUnit = new List<CharacterBase>();
 
-        foreach (var detected in detectedCharacters)
+        foreach (TeamDeployment team in allDetectedTeam)
         {
-            List<CharacterBase> team = detected.currentTeam.teamCharacter;
-            foreach (var member in team)
+            foreach (CharacterBase character in team.teamCharacter)
             {
-                if (!joinedBattleUnit.Contains(member))
-                    joinedBattleUnit.Add(member);
+                if (!joinedBattleUnit.Contains(character))
+                    joinedBattleUnit.Add(character);
             }
         }
 
@@ -85,9 +92,10 @@ public class EnemyTeamSystem : Entity
         }
     }
 
-    private bool IsSameTeamMember(CharacterBase character)
+    private bool IsSameTeamMember(TeamDeployment team)
     {
-        return teamDeployment.teamCharacter.Contains(character);
+        if (teamDeployment == team) { return true; }
+        return false;
     }
     #endregion
 }

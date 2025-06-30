@@ -13,14 +13,10 @@ public class BattleManager : MonoBehaviour
         
     }
 
-    //public void RegisterScout(CharacterScouting scout)
-    //{
-    //    scout.OnBattleTriggered += HandleBattleTriggered;
-    //}
 
     private void HandleBattleTriggered(List<PlayerCharacter> joinedBattleUnit)
     {
-        TeamRetargetGridPlace.instance.EnterBattlePathFinding(joinedBattleUnit);
+        //TeamRetargetGridPlace.instance.EnterBattlePathFinding(joinedBattleUnit);
         //CTTimeline.instance.ReceiveBattleJoinedUnit(joinedBattleUnit);
         //for (int i = 0; i < joinedBattleUnit.Count; i++)
         //{

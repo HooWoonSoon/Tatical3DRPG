@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
-public class PlayerTeamSystem : Entity
+public class PlayerTeamSystem : TeamSystem
 {
     public TeamDeployment teamDeployment;
     public List<TeamFollower> linkMembers;
     private List<PlayerCharacter> unlinkMember = new List<PlayerCharacter>();
     public PlayerCharacter currentLeader { get; private set; }
-    private List<PathRoute> teamPathRoutes = new List<PathRoute>();
 
     public int spacingDistance = 2;
     [SerializeField] private int historyLimit = 15;
@@ -253,15 +253,15 @@ public class PlayerTeamSystem : Entity
     #region Team Sort Path Finding
     public void EnableTeamPathFinding()
     {
-        this.teamPathRoutes.Clear();
+        teamPathRoutes.Clear();
 
-        List<PathRoute> teamPathRoutes = GetTeamSortPath(linkMembers, spacingDistance);
-        if (IsTeamSortPathAvaliable(teamPathRoutes))
+        List<PathRoute> teamSortRoute = GetTeamSortPath(linkMembers, spacingDistance);
+        if (IsTeamSortPathAvaliable(teamSortRoute))
         {
-            this.teamPathRoutes = teamPathRoutes;
-            for (int i = 0; i < teamPathRoutes.Count; i++)
+            teamPathRoutes = teamSortRoute;
+            for (int i = 0; i < teamSortRoute.Count; i++)
             {
-                teamPathRoutes[i].character.pathRoute = teamPathRoutes[i];
+                teamSortRoute[i].character.pathRoute = teamSortRoute[i];
             }
             for (int i = 0; i < linkMembers.Count; i++)
             {
@@ -309,16 +309,6 @@ public class PlayerTeamSystem : Entity
         }
         return teamPathRoute;
     }
-
-    //  Summary
-    //      Sort the followerVectorRange based on distance to unit position
-    private List<Vector3Int> SortTargetRangeByDistance(Vector3Int from, List<Vector3Int> targets)
-    {
-        var sorted = new List<Vector3Int>(targets);
-        sorted.Sort((a, b) => Vector3.Distance(from, a).CompareTo(Vector3.Distance(from, b)));
-        return sorted;
-    }
-
     private bool IsWithinFollowRange(Vector3Int fromPosition, Vector3Int targetPosition, float maxDistance = 16f)
     {
         return Vector3.Distance(fromPosition, targetPosition) <= maxDistance;
@@ -352,15 +342,6 @@ public class PlayerTeamSystem : Entity
         }
         return false;
     }
-    private bool IsTargetPositionExist(PathRoute pathRoutes, Vector3 targetPosition)
-    {
-        if (pathRoutes.targetPosition.HasValue &&
-            targetPosition == pathRoutes.targetPosition.Value)
-        {
-            return true;
-        }
-        return false;
-    }
     private bool IsTeamSortPathAvaliable(List<PathRoute> teamPathRoutes)
     {
         if (teamPathRoutes.Count == 0) return false;
@@ -375,16 +356,4 @@ public class PlayerTeamSystem : Entity
         return true;
     }
     #endregion
-
-    private void OnDrawGizmos()
-    {
-        if (teamPathRoutes.Count == 0) return;
-        for (int i = 0; i < teamPathRoutes.Count; i++)
-        {
-            if (teamPathRoutes[i].targetPosition.Value == null) return;
-
-            Gizmos.color = Color.red;
-            Gizmos.DrawCube(teamPathRoutes[i].targetPosition.Value, Vector3.one);
-        }
-    }
 }
