@@ -19,4 +19,4 @@ MonoBehaviour:
   mentalPoint: 0
   magicAttackPoint: 0
   physicAttackPoint: 0
-  speed: 1
+  speed: 2

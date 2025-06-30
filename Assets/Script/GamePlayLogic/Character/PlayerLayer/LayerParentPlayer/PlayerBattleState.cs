@@ -17,4 +17,16 @@ public class PlayerBattleState : PlayerBaseState
     {
         base.Exit();
     }
+
+    public override void Update()
+    {
+        base.Update();
+        if (character.IsYourTurn(character))
+        {
+            if (Input.GetKeyDown(KeyCode.Return))
+            {
+                CTTimeline.instance.NextNumber();
+            }
+        }
+    }
 }

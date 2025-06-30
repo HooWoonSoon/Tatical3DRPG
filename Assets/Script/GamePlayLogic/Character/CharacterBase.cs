@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public abstract class CharacterBase : Entity
 {
@@ -102,6 +103,9 @@ public abstract class CharacterBase : Entity
             }
         }
     }
-
+    public bool IsYourTurn(CharacterBase character)
+    {
+        return CTTimeline.instance.GetCurrentCharacter() == character;
+    }
     public abstract void EnterBattle();
 }

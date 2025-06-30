@@ -46,4 +46,18 @@ public class GameNode
     {
         return new Vector3(worldX, worldY, worldZ);
     }
+
+    private TilemapSprite tilemapSprite;
+    public enum TilemapSprite
+    {
+        None, Blue, Red, Purple
+    }
+    public void SetTilemapSprite(TilemapSprite tilemapSprite)
+    {
+        this.tilemapSprite = tilemapSprite;
+    }
+    public TilemapSprite GetTilemapSprite()
+    {
+        return tilemapSprite;
+    }
 }

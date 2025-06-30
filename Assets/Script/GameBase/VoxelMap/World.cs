@@ -37,15 +37,16 @@ public class World
     }
 
     #region Generate Chunk And Node
-    public Chunk GenearateAndGetChunk(int chunkX, int chunkY, int chunkZ)
+    public void GenearateChunk(int chunkX, int chunkY, int chunkZ)
     {
         int regionX = Mathf.FloorToInt(chunkX / REGION_SIZE);
         int regionY = 0;
         int regionZ = Mathf.FloorToInt(chunkZ / REGION_SIZE);
 
-        if (!regions.ContainsKey((regionX, regionY, regionZ)))
+        if (!regions.TryGetValue((regionX, regionY, regionZ), out var region))
         {
-            regions[(regionX, regionY, regionZ)] = new Region(regionX, regionY, regionZ);
+            region = new Region(regionX, regionY, regionZ);
+            regions[(regionX, regionY, regionZ)] = region;
         }
 
         Chunk chunk = regions[(regionX, regionY, regionZ)].GeneraateAndGetChunk(chunkX, chunkY, chunkZ);
@@ -54,7 +55,6 @@ public class World
             loadedNodes[(node.worldX, node.worldY, node.worldZ)] = node;
         }
         UpdateWorldSize();
-        return chunk;
     }
 
     public Chunk TryGetChunk(int chunkX, int chunkY, int chunkZ)

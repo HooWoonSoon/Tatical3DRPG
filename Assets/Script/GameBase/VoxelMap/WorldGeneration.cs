@@ -5,9 +5,9 @@ public class WorldGeneration : MonoBehaviour
 {
     public World world;
     private BlockCombiner blockCombiner;
-    [SerializeField] private int numChunkX = 80;
+    [SerializeField] private int numChunkX = 2;
     [SerializeField] private int numChunkY = 1;
-    [SerializeField] private int numChunkZ = 80;
+    [SerializeField] private int numChunkZ = 2;
 
     [SerializeField] private int preloadedRange = 9;
     public GameObject prefab;
@@ -21,8 +21,11 @@ public class WorldGeneration : MonoBehaviour
 
     private void Start()
     {
-        world.GetChunkPosition(transform.position, out int chunkX, out int chunkY, out int chunkZ);
-        Chunk chunk = world.GenearateAndGetChunk(chunkX, chunkY, chunkZ);
+        for (int cx = 0; cx < numChunkX; cx++)
+            for (int cy = 0; cy < numChunkY; cy++)
+                for (int cz = 0; cz < numChunkZ; cz++)
+                    world.GenearateChunk(cx, cy, cz);
+
         GenerateBlock();
     }
 
@@ -49,7 +52,6 @@ public class WorldGeneration : MonoBehaviour
         foreach (var regionPair in world.regions)
         {
             Region region = regionPair.Value;
-
             foreach (var chunkPair in region.loadedChunks)
             {
                 Chunk chunk = chunkPair.Value;
@@ -95,12 +97,9 @@ public class WorldGeneration : MonoBehaviour
                         }
                     }
                 }
-
-                if (chunk.combinedMesh == null)
-                {
-                    GameObject combinedMeshObject = chunk.CombineBlockChunk();
-                    chunk.combinedMesh = combinedMeshObject;
-                }
+                GameObject combinedMeshObject = chunk.CombineBlockChunk();
+                chunk.combinedMesh = combinedMeshObject;
+                
             }
         }
     }

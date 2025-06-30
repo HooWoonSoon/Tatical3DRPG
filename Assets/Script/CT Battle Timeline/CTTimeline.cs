@@ -61,6 +61,10 @@ public class CTTimeline : MonoBehaviour
     public List<CTTurnHistory> cTTurnhistory = new List<CTTurnHistory>();
     private const int MAX_TURNS = 3;
 
+    private CTTurnHistory currentTurnHistory;
+    private int currentTurnIndex = 0;
+    private int currentNumberIndex = 0;
+
     public event Action confirmCTTimeline;
     public static CTTimeline instance { get; private set; }
 
@@ -98,7 +102,8 @@ public class CTTimeline : MonoBehaviour
                 tactics.Reset();
             }
         }
-        confirmCTTimeline?.Invoke();
+        currentTurnHistory = cTTurnhistory[0];
+        //confirmCTTimeline?.Invoke();
     }
     private bool IsAllCharacterQueue(List<CharacterTacticsTime> tacticsList)
     {
@@ -127,7 +132,29 @@ public class CTTimeline : MonoBehaviour
         }
         return cTTimelineQueue;
     }
-
+    public void NextNumber()
+    {
+        if (currentNumberIndex < currentTurnHistory.cTTimelineQueue.Count - 1)
+        {
+            currentNumberIndex++;
+            Debug.Log($"currentNumber: {currentNumberIndex}");
+        }
+        else
+        {
+            if (currentTurnIndex < cTTurnhistory.Count - 1)
+            {
+                currentTurnIndex++;
+                currentTurnHistory = cTTurnhistory[currentTurnIndex];
+                currentNumberIndex = 0;
+                Debug.Log($"currentTurn: {currentTurnIndex}, currentNumber: {currentNumberIndex}");
+            }
+        }
+    }
     public List<CTTurnHistory> GetAllTurnHistory() => cTTurnhistory;
+    public CTTurnHistory GetCurrentTurn() => currentTurnHistory;
+    public CharacterBase GetCurrentCharacter()
+    {
+        return currentTurnHistory.cTTimelineQueue[currentNumberIndex];
+    }
 }
 
