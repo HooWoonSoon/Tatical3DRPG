@@ -1,8 +1,17 @@
 using System;
 using UnityEngine;
+using static World;
 
 public class GameNode
 {
+    public event EventHandler<OnWorldNodesChange> onWorldNodesChange;
+    public class OnWorldNodesChange : EventArgs
+    {
+        public int x;
+        public int y;
+        public int z;
+    }
+
     public Chunk chunk;
     public int x, y, z; //  Basically to represent the local position of the node in the chunk
     public int worldX, worldY, worldZ;
@@ -16,8 +25,6 @@ public class GameNode
     public int hCost;
     public int fCost;
     public GameNode cameFromNode;
-
-    public int HeapIndex { get; set; }
     #endregion
 
     public GameNode(Chunk chunk, int x, int y, int z, int tileID, bool isWalkable, bool hasCube)
@@ -47,6 +54,8 @@ public class GameNode
         return new Vector3(worldX, worldY, worldZ);
     }
 
+    //  Summary
+    //      Logic to set the tile
     private TilemapSprite tilemapSprite;
     public enum TilemapSprite
     {
@@ -55,9 +64,15 @@ public class GameNode
     public void SetTilemapSprite(TilemapSprite tilemapSprite)
     {
         this.tilemapSprite = tilemapSprite;
+        TriggerWorldNodeChanged(x, y, z);
     }
     public TilemapSprite GetTilemapSprite()
     {
         return tilemapSprite;
+    }
+
+    public void TriggerWorldNodeChanged(int x, int y, int z)
+    {
+        if (onWorldNodesChange != null) onWorldNodesChange(this, new OnWorldNodesChange { x = x, y = y, z = z });
     }
 }

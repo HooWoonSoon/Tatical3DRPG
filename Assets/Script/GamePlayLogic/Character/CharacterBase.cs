@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Assets.Script.BattleVisualTilemap;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -106,6 +107,18 @@ public abstract class CharacterBase : Entity
     public bool IsYourTurn(CharacterBase character)
     {
         return CTTimeline.instance.GetCurrentCharacter() == character;
+    }
+    public void ResetVisualTilemap()
+    {
+        TilemapVisual.instance.InitializeValidPosition(GameNode.TilemapSprite.None);
+    }
+    public void ShowVisualTilemapMahattasRange()
+    {
+        List<Vector3Int> movableRange = world.GetManhattas3DRange(Utils.RoundXZFloorYInt(transform.position), 4);
+        foreach (Vector3Int position in movableRange)
+        {
+            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+        }
     }
     public abstract void EnterBattle();
 }

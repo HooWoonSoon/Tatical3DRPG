@@ -1,6 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 public class TilemapVisual : Entity
@@ -21,8 +19,10 @@ public class TilemapVisual : Entity
 
     [SerializeField] private TilemapSpriteUV[] tileSpriteUVArray;
     private Dictionary<GameNode.TilemapSprite, UVsCoords> uvCoordsDictionary;
-    private bool updateMesh;
+    private GameNode node;
     private Mesh mesh;
+    private bool updateMesh;
+    public static TilemapVisual instance { get; private set; }
 
     private void Awake()
     {
@@ -43,22 +43,62 @@ public class TilemapVisual : Entity
                 uv11 = new Vector2(tilemapSpriteUV.uv11Pixels.x / textureWidth, tilemapSpriteUV.uv11Pixels.y / textureHeight)
             };
         }
+        instance = this;
     }
-
     protected override void Start()
     {
         base.Start();
+        SubscribeAllNodes();
+        InitializeValidPosition(GameNode.TilemapSprite.None);
     }
-
     private void LateUpdate()
     {
-        if (!updateMesh)
+        if (updateMesh)
         {
-            updateMesh = true;
+            updateMesh = false;
             UpdateTilemapVisual();
         }
     }
-
+    public void SetTilemapSprite(Vector3Int worldPosition, GameNode.TilemapSprite tilemapSprite)
+    {
+        GameNode tilemapNode = world.GetNodeAtWorldPosition(worldPosition);
+        if (tilemapNode != null)
+        {
+            tilemapNode.SetTilemapSprite(tilemapSprite);
+        }
+    }
+    private void SubscribeAllNodes()
+    {
+        if (world == null) { Debug.Log("world is null"); }
+        for (int x = 0; x < world.worldMaxX; x++)
+        { 
+            for (int y = 0; y < world.worldMaxY; y++)
+            {
+                for (int z = 0; z < world.worldMaxZ; z++)
+                {
+                    GameNode node = world.GetNodeAtWorldPosition(x, y, z);
+                    node.onWorldNodesChange += OnWorldTileChanged;
+                }
+            }
+        }
+    }
+    private void OnWorldTileChanged(object sender, GameNode.OnWorldNodesChange e)
+    {
+        updateMesh = true;
+    }
+    public void InitializeValidPosition(GameNode.TilemapSprite tilemapSprite)
+    {
+        for (int x = 0; x < world.worldMaxX; x++)
+        {
+            for (int y = 0; y < world.worldMaxY; y++)
+            {
+                for (int z = 0; z < world.worldMaxZ; z++)
+                {
+                    SetTilemapSprite(new Vector3Int(x, y, z), tilemapSprite);
+                }
+            }
+        }
+    }
     public void UpdateTilemapVisual()
     {
         Utils.CreateEmptyMeshArrays(world.worldMaxX * world.worldMaxY * world.worldMaxZ, out Vector3[] vertices, out Vector2[] uvs, out int[] triangles);

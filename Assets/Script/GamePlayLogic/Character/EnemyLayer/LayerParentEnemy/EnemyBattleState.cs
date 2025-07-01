@@ -20,8 +20,10 @@ public class EnemyBattleState : EnemyBaseState
     public override void Update()
     {
         base.Update();
-        if (character.IsYourTurn(character))
+        if (stateMachine.roofState == this && character.IsYourTurn(character))
         {
+            character.ResetVisualTilemap();
+            character.ShowVisualTilemapMahattasRange();
             if (Input.GetKeyDown(KeyCode.Return))
             {
                 CTTimeline.instance.NextNumber();

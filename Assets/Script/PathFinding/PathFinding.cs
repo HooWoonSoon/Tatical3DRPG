@@ -47,7 +47,7 @@ public class PathFinding
             if (currentNode == endNode)
             {
                 float endTime = Time.realtimeSinceStartup;
-                Debug.Log($"Find path completed in {endTime - startTime:F4} seconds");
+                //Debug.Log($"Find path completed in {endTime - startTime:F4} seconds");
                 return CalculatePath(endNode);
             }
 
