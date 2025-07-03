@@ -7,6 +7,13 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.seaeees.simple-folder-icon": {
+      "version": "https://github.com/SeaeeesSan/SimpleFolderIcon.git?path=Packages/com.seaeees.simple-folder-icon",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "61962458dcd75068bd2324cf2ba5fc547d9e1ed8"
+    },
     "com.unity.2d.common": {
       "version": "9.0.7",
       "depth": 1,
