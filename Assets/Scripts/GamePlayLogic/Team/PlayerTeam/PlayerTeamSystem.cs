@@ -4,6 +4,7 @@ using UnityEngine.TextCore.Text;
 
 public class PlayerTeamSystem : TeamSystem
 {
+    public LayerMask layermask;
     public TeamDeployment teamDeployment;
     public List<TeamFollower> linkMembers;
     private List<PlayerCharacter> unlinkMember = new List<PlayerCharacter>();
@@ -67,11 +68,10 @@ public class PlayerTeamSystem : TeamSystem
             stateMachine.ChangeState(teamSortPathFindingState);
         }
 
-        Vector3 currentPosition = DDADectector.GetDDAWorldPosition(64, world.loadedNodes);
-        //Debug.Log(currentPosition);
+        Vector3Int targetPosition = Utils.GetRaycastHitNodePosition(layermask, world.loadedNodes);
         if (Input.GetMouseButtonDown(0))
         {
-            Vector3Int targetPosition = Utils.RoundXZFloorYInt(currentPosition);
+            Debug.Log(targetPosition);
             if (targetPosition == new Vector3Int(-1, -1, -1)) return;
             Debug.Log(world.loadedNodes[(targetPosition.x, targetPosition.y, targetPosition.z)].isWalkable);
 

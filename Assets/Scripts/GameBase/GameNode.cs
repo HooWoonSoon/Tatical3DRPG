@@ -1,6 +1,5 @@
 using System;
 using UnityEngine;
-using static World;
 
 public class GameNode
 {
@@ -71,8 +70,23 @@ public class GameNode
         return tilemapSprite;
     }
 
+    public CharacterBase character;
+
+    public void SetUnitGridCharacter(CharacterBase character)
+    {
+        this.character = character;
+        TriggerWorldNodeChanged(x, y, z);
+    }
+    
+    public CharacterBase GetUnitGridCharacter()
+    {
+        return character;
+    }
+
     public void TriggerWorldNodeChanged(int x, int y, int z)
     {
         if (onWorldNodesChange != null) onWorldNodesChange(this, new OnWorldNodesChange { x = x, y = y, z = z });
     }
+
+    public Vector3 GetGameNodeVector() => new Vector3(x, y, z);
 }

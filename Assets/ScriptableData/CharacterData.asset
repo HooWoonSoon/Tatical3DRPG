@@ -22,3 +22,4 @@ MonoBehaviour:
   magicAttackPoint: 0
   physicAttackPoint: 0
   speed: 5
+  movableRange: 2

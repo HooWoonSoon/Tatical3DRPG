@@ -49,6 +49,7 @@ public class EnemyTeamSystem : TeamSystem
             joinedBattleUnit[i].pathRoute = pathRoutes[i];
             joinedBattleUnit[i].EnterBattle();
         }
+        BattleManager.instance.SetJoinedBattleUnit(joinedBattleUnit);
         CTTimeline.instance.SetupTimeline();
         lastDetectedCharacter = detectedCharacters;
     }

@@ -13,6 +13,8 @@ MonoBehaviour:
   m_Name: CharacterData 1
   m_EditorClassIdentifier: 
   characterName: XZ
+  characterProfile: {fileID: 0}
+  characterTurnUISprite: {fileID: 0}
   ID: 1
   type: 1
   healthPoint: 100
@@ -20,3 +22,4 @@ MonoBehaviour:
   magicAttackPoint: 0
   physicAttackPoint: 0
   speed: 4
+  movableRange: 3

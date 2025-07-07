@@ -28,7 +28,6 @@ public abstract class CharacterBase : Entity
 
         currenthealth = data.mentalPoint;
     }
-
     public void UpdateOrientation(Vector3 direction)
     {
         direction = Vector3Int.RoundToInt(direction);
@@ -112,10 +111,17 @@ public abstract class CharacterBase : Entity
     {
         TilemapVisual.instance.InitializeValidPosition(GameNode.TilemapSprite.None);
     }
-    public void ShowVisualTilemapMahattasRange()
+    public void ShowVisualTilemapMahattasRange(int range)
     {
-        List<Vector3Int> movableRange = world.GetManhattas3DRange(Utils.RoundXZFloorYInt(transform.position), 4);
+        List<Vector3Int> movableRange = world.GetManhattas3DRange(Utils.RoundXZFloorYInt(transform.position), range);
         foreach (Vector3Int position in movableRange)
+        {
+            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+        }
+    }
+    public void ShowVisualTilemap(List<Vector3Int> coverage)
+    {
+        foreach (Vector3Int position in coverage)
         {
             TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
         }

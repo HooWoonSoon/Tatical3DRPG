@@ -5,16 +5,14 @@ public static class DDADectector
 {
     public static bool CheckCubeAtPosition(Vector3 position, Dictionary<(int, int, int), GameNode> loadedNodes)
     {
-        Vector3 adjustedPosition = position + new Vector3(0.5f, 0.5f, 0.5f);
-        Vector3Int blockPosition = Vector3Int.FloorToInt(adjustedPosition);
+        Vector3Int blockPosition = Vector3Int.RoundToInt(position);
         return loadedNodes.TryGetValue((blockPosition.x, blockPosition.y, blockPosition.z), out GameNode node) && node.hasNode;
     }
 
     #region DDA Algorithms by calculate the rasterization of the ray
     private static (Vector3Int blockPosition, Vector3Int step, Vector3 tMax, Vector3 tDelta) InitializeDDA(Vector3 startPosition, Vector3 direction)
     {
-        Vector3 adjustedPosition = startPosition + new Vector3(0.5f, 0.5f, 0.5f);
-        Vector3Int blockPosition = Vector3Int.FloorToInt(adjustedPosition);
+        Vector3Int blockPosition = Vector3Int.RoundToInt(startPosition);
 
         Vector3Int step = new Vector3Int(
             direction.x > 0 ? 1 : -1,
@@ -94,12 +92,12 @@ public static class DDADectector
         }
         return false;
     }
-
     public static Vector3Int GetDDAWorldPosition(int maxDistance, Dictionary<(int, int, int), GameNode> loadedNodes)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Vector3 startPosition = ray.origin;
         Vector3 direction = ray.direction;
+        Debug.DrawRay(startPosition, direction * 64, Color.red);
 
         return DDAAlgorithms(startPosition, direction, maxDistance, loadedNodes);
     }

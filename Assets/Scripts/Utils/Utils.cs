@@ -134,6 +134,24 @@ public static class Utils
             return Vector3.zero;
     }
 
+    public static Vector3Int GetRaycastHitNodePosition(LayerMask layerMask, Dictionary<(int, int, int), GameNode> loadedNodes)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, 64f, layerMask))
+        {
+            Vector3 hitPoint = hitInfo.point;
+            Vector3Int blockPos = Utils.RoundXZFloorYInt(hitPoint);
+
+            if (loadedNodes.TryGetValue((blockPos.x, blockPos.y, blockPos.z), out GameNode node))
+            {
+                return blockPos;
+            }
+        }
+
+        return new Vector3Int(-1, -1, -1);
+    }
+
     public static Vector3 GetMouseWorldPosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

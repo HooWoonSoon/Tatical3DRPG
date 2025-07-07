@@ -49,7 +49,7 @@ public class TilemapVisual : Entity
     {
         base.Start();
         SubscribeAllNodes();
-        InitializeValidPosition(GameNode.TilemapSprite.None);
+
     }
     private void LateUpdate()
     {

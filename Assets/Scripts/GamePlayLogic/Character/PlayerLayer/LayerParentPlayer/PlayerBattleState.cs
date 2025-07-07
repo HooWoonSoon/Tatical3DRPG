@@ -10,7 +10,8 @@ public class PlayerBattleState : PlayerBaseState
     public override void Enter()
     {
         base.Enter();
-
+        character.ResetVisualTilemap();
+        character.ShowVisualTilemapMahattasRange(character.data.movableRange);
     }
 
     public override void Exit()
@@ -21,7 +22,9 @@ public class PlayerBattleState : PlayerBaseState
     public override void Update()
     {
         base.Update();
-        if (!character.IsYourTurn(character)) { return; }
-        stateMachine.ChangeRoofState(character.waitState);
+        if (!character.IsYourTurn(character))
+        {
+            stateMachine.ChangeRoofState(character.waitState);
+        }
     }
 }

@@ -18,10 +18,15 @@ public class UITransitionToolkit : MonoBehaviour
 
     private void OnEnable()
     {
-        TargetUIShowUp();
+        TargetUIShowUpAll();
     }
 
-    private void TargetUIShowUp()
+    private void TargetUIShowUp(int index)
+    {
+        RectTransform rectTransform = uITransitionMove[index].moveObject.GetComponent<RectTransform>();
+        StartCoroutine(TransitionMove(rectTransform, uITransitionMove[index].fromPosition, uITransitionMove[index].targetPosition, uITransitionMove[index].transitionDuration));
+    }
+    private void TargetUIShowUpAll()
     {
         for (int i = 0; i < uITransitionMove.Length; i++)
         {
@@ -46,4 +51,11 @@ public class UITransitionToolkit : MonoBehaviour
 
         rectTransform.anchoredPosition = target;
     }
+
+    #region External Call
+    public void ResetUIFormToTargetPos(int uiIndex)
+    {
+        TargetUIShowUp(uiIndex);
+    }
+    #endregion
 }

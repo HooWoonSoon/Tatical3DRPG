@@ -53,12 +53,18 @@ public class CTTimeline : MonoBehaviour
     private int currentNumberIndex = 0;
     private CharacterBase currentCharacter;
 
+    [SerializeField] private UITransitionToolkit uITransitionToolkit;
     public event Action confirmCTTimeline;
     public static CTTimeline instance { get; private set; }
 
     private void Awake()
     {
         instance = this;
+    }
+
+    private void Start()
+    {
+        BattleManager.instance.onInfoTargetChanged += TargetCharacterUIUpdate;
     }
 
     private void Update()
@@ -153,8 +159,13 @@ public class CTTimeline : MonoBehaviour
             }
         }
     }
+    private void TargetCharacterUIUpdate()
+    {
+        uITransitionToolkit.ResetUIFormToTargetPos(1);
+    }
     public List<CTTurn> GetAllTurnHistory() => cTTurn;
     public CTTurn GetCurrentTurn() => currentTurn;
     public CharacterBase GetCurrentCharacter() => currentCharacter;
+    public Dictionary<CharacterBase, CharacterTacticsTime> GetBattleCharacter() => battleCharacter;
 }
 

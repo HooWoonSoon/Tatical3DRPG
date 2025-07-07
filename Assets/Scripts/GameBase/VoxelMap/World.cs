@@ -114,13 +114,28 @@ public class World
         Chunk chunk = TryGetChunk(chunkX, chunkY, chunkZ);
         if (chunk == null) { Debug.Log("Could not get the chunk node"); return null; }
 
-        int localX = (x % Chunk.CHUNK_SIZE + Chunk.CHUNK_SIZE) % Chunk.CHUNK_SIZE;
-        int localY = (y % Chunk.CHUNK_SIZE + Chunk.CHUNK_SIZE) % Chunk.CHUNK_SIZE;
-        int localZ = (z % Chunk.CHUNK_SIZE + Chunk.CHUNK_SIZE) % Chunk.CHUNK_SIZE;
+        int localX = x % Chunk.CHUNK_SIZE;
+        int localY = y % Chunk.CHUNK_SIZE;
+        int localZ = z % Chunk.CHUNK_SIZE;
 
         return chunk.GetNode(localX, localY, localZ);
     }
     #endregion
+
+    public GameNode GetHeightNodeWithCube(int x, int z)
+    {
+        if (x > worldMaxX || x < worldMinX || z > worldMaxZ || z < worldMinZ) { return null; }
+
+        for (int y = worldMaxY; y >= 0; y--)
+        {
+            GameNode gameNode = GetNodeAtWorldPosition(x, y, z);
+            if (gameNode.hasNode)
+            {
+                return gameNode;
+            }
+        }
+        return null;
+    }
 
     public void ReleaseRegion(Region region)
     {

@@ -12,5 +12,7 @@ public class CTTurn
         this.cTTimelineQueue = cTTimelineQueue;
         this.turnCount = turnCount;
     }
+
+    public List<CharacterBase> GetCharacterQueue() { return cTTimelineQueue; }
 }
 

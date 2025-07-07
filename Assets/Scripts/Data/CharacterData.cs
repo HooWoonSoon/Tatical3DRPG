@@ -21,4 +21,5 @@ public class CharacterData : ScriptableObject
     public int magicAttackPoint;
     public int physicAttackPoint;
     public int speed;
+    public int movableRange;
 }

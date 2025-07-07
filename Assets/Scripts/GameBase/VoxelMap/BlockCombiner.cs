@@ -50,6 +50,8 @@ public class BlockCombiner
             meshObject.AddComponent<MeshFilter>().mesh = mesh;
             MeshRenderer meshRenderer = meshObject.AddComponent<MeshRenderer>();
             meshRenderer.sharedMaterial = material;
+
+            meshObject.AddComponent<MeshCollider>();
         }
 
         float endTime = Time.realtimeSinceStartup;

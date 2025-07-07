@@ -29,21 +29,6 @@ public class WorldGeneration : MonoBehaviour
         GenerateBlock();
     }
 
-    //private void Update()
-    //{
-    //GetXZY(transform.position, out int x, out int y, out int z);
-    //GenerateBlock();
-    //}
-
-    //public void GetXZY(Vector3 worldPosition, out int x, out int y, out int z)
-    //{
-    //    world.GetChunkPosition(worldPosition, out int chunkX, out int chunkY, out int chunkZ);
-
-    //    Chunk chunk = world.GenearateAndGetChunk(chunkX, chunkY, chunkZ);
-
-    //    chunk.GetCellXZY(worldPosition, out x, out y, out z);
-    //}
-
     //  Debug
     public void GenerateBlock()
     {
@@ -71,7 +56,7 @@ public class WorldGeneration : MonoBehaviour
                                     node.z + chunk.startPoint.z * Chunk.CHUNK_SIZE
                                 );
 
-                                if (pos == new Vector3(1,3,4) || pos == new Vector3(1,3,2) || pos == new Vector3(2,3,4)) { continue; }
+                                if (pos == new Vector3(1,3,4) || pos == new Vector3(1,3,2) || pos == new Vector3(1,3,3) || pos == new Vector3(2,3,4)) { continue; }
                                 if (!chunk.blocks.ContainsKey(pos))
                                 {
                                     chunk.AddBlock(pos, prefab);

@@ -7,8 +7,6 @@
     public override void Enter()
     {
         base.Enter();
-        character.ResetVisualTilemap();
-        character.ShowVisualTilemapMahattasRange();
     }
 
     public override void Exit()
@@ -19,7 +17,7 @@
     public override void Update()
     {
         base.Update();
-        if (!character.IsYourTurn(character))
+        if (character.IsYourTurn(character))
         {
             stateMachine.ChangeRoofState(character.battleState);
         }
