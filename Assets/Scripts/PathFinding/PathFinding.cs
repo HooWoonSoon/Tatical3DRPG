@@ -23,8 +23,8 @@ public class PathFinding
         float startTime = Time.realtimeSinceStartup;
         List<GameNode> ret = new List<GameNode>();
 
-        GameNode startNode = world.GetNodeAtWorldPosition(startWorldX, startWorldY, startWorldZ);
-        GameNode endNode = world.GetNodeAtWorldPosition(endWorldX, endWorldY, endWorldZ);
+        GameNode startNode = world.GetNode(startWorldX, startWorldY, startWorldZ);
+        GameNode endNode = world.GetNode(endWorldX, endWorldY, endWorldZ);
 
         openList = new List<GameNode> { startNode };
         closedList = new HashSet<GameNode>();
@@ -88,9 +88,9 @@ public class PathFinding
     //      Note that the A* algorithm triggers this function once every time the cell is moved.
     private int CalculateDistanceCost(GameNode a, GameNode b)
     {
-        int xDistance = Mathf.Abs(a.worldX - b.worldX);
-        int yDistance = Mathf.Abs(a.worldY - b.worldY);
-        int zDistance = Mathf.Abs(a.worldZ - b.worldZ);
+        int xDistance = Mathf.Abs(a.x - b.x);
+        int yDistance = Mathf.Abs(a.y - b.y);
+        int zDistance = Mathf.Abs(a.z - b.z);
         return (xDistance + yDistance + zDistance);
     }
 
@@ -126,32 +126,31 @@ public class PathFinding
 
     private GameNode GetNode(int x, int y, int z)
     {
-        return world.GetNodeAtWorldPosition(x, y, z);
+        return world.GetNode(x, y, z);
     }
 
     private List<GameNode> GetNeighbourList(GameNode currentNode)
     {
         List<GameNode> neighbourList = new List<GameNode>();
 
-        if (currentNode.x - 1 >= world.worldMinX)
-            // Left
-            neighbourList.Add(GetNode(currentNode.x - 1, currentNode.y, currentNode.z));
-        if (currentNode.x + 1 < world.worldMaxX)
-            // Right
-            neighbourList.Add(GetNode(currentNode.x + 1, currentNode.y, currentNode.z));
-        if (currentNode.y + 1 < world.worldMaxY)
-            // Up
-            neighbourList.Add(GetNode(currentNode.x, currentNode.y + 1, currentNode.z));
-        if (currentNode.y - 1 >= world.worldMinY)
-            // Down
-            neighbourList.Add(GetNode(currentNode.x, currentNode.y - 1, currentNode.z));
-        if (currentNode.z - 1 >= world.worldMinZ)
-            // Back
-            neighbourList.Add(GetNode(currentNode.x, currentNode.y, currentNode.z - 1));
-        if (currentNode.z + 1 < world.worldMaxZ)
-            // Forward
-            neighbourList.Add(GetNode(currentNode.x, currentNode.y, currentNode.z + 1));
+        Vector3Int[] directions = new Vector3Int[]
+        {
+            new Vector3Int(-1, 0, 0), // Left
+            new Vector3Int(1, 0, 0),  // Right
+            new Vector3Int(0, 0, -1), // Back
+            new Vector3Int(0, 0, 1),  // Forward
+            new Vector3Int(0, 1, 0),  // Up
+            new Vector3Int(0, -1, 0)  // Down
+        };
 
+        foreach (var direction in directions)
+        {
+            Vector3Int neighbourPos = new Vector3Int(currentNode.x, currentNode.y, currentNode.z) + direction;
+            if (world.loadedNodes.TryGetValue(neighbourPos, out GameNode neighbourNode))
+            {
+                neighbourList.Add(neighbourNode);
+            }
+        }
         return neighbourList;
     }
 

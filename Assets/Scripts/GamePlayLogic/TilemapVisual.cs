@@ -61,7 +61,7 @@ public class TilemapVisual : Entity
     }
     public void SetTilemapSprite(Vector3Int worldPosition, GameNode.TilemapSprite tilemapSprite)
     {
-        GameNode tilemapNode = world.GetNodeAtWorldPosition(worldPosition);
+        GameNode tilemapNode = world.GetNode(worldPosition);
         if (tilemapNode != null)
         {
             tilemapNode.SetTilemapSprite(tilemapSprite);
@@ -69,17 +69,11 @@ public class TilemapVisual : Entity
     }
     private void SubscribeAllNodes()
     {
-        if (world == null) { Debug.Log("world is null"); }
-        for (int x = 0; x < world.worldMaxX; x++)
-        { 
-            for (int y = 0; y < world.worldMaxY; y++)
-            {
-                for (int z = 0; z < world.worldMaxZ; z++)
-                {
-                    GameNode node = world.GetNodeAtWorldPosition(x, y, z);
-                    node.onWorldNodesChange += OnWorldTileChanged;
-                }
-            }
+        foreach (var kvp in world.loadedNodes)
+        {
+            GameNode node = kvp.Value;
+            if (node != null)
+                node.onWorldNodesChange += OnWorldTileChanged;
         }
     }
     private void OnWorldTileChanged(object sender, GameNode.OnWorldNodesChange e)
@@ -90,7 +84,7 @@ public class TilemapVisual : Entity
     {
         for (int x = 0; x < world.worldMaxX; x++)
         {
-            for (int y = 0; y < world.worldMaxY; y++)
+            for (int y = 0; y < world.worldHeight; y++)
             {
                 for (int z = 0; z < world.worldMaxZ; z++)
                 {
@@ -101,34 +95,32 @@ public class TilemapVisual : Entity
     }
     public void UpdateTilemapVisual()
     {
-        Utils.CreateEmptyMeshArrays(world.worldMaxX * world.worldMaxY * world.worldMaxZ, out Vector3[] vertices, out Vector2[] uvs, out int[] triangles);
-        for (int x = 0; x < world.worldMaxX; x++)
-        {
-            for (int y = 0; y < world.worldMaxY; y++)
-            {
-                for (int z = 0; z < world.worldMaxZ; z++)
-                {
-                    int index = x * (world.worldMaxY * world.worldMaxZ) + y * world.worldMaxZ + z;
-                    Vector3 cubeSize = Vector3.one;
+        Utils.CreateEmptyMeshArrays(world.loadedNodes.Count, out Vector3[] vertices, out Vector2[] uvs, out int[] triangles);
 
-                    GameNode node = world.GetNodeAtWorldPosition(x, y, z);
-                    GameNode.TilemapSprite tilemapSprite = node.GetTilemapSprite();
-                    Vector2 gridValueUV00, gridValueUV11;
-                    if (tilemapSprite == GameNode.TilemapSprite.None)
-                    {
-                        gridValueUV00 = Vector2.zero;
-                        gridValueUV11 = Vector2.zero;
-                        cubeSize = Vector2.zero;
-                    }
-                    else
-                    {
-                        UVsCoords uvCoords = uvCoordsDictionary[tilemapSprite];
-                        gridValueUV00 = uvCoords.uv00;
-                        gridValueUV11 = uvCoords.uv11;
-                    }
-                    Utils.AddToMeshArrays(vertices, uvs, triangles, index, new Vector3Int(x, y, z), 0, cubeSize, gridValueUV00, gridValueUV11);
-                }
+        int index = 0;
+        foreach (var kvp in world.loadedNodes)
+        {
+            Vector3Int pos = kvp.Key;
+            GameNode node = kvp.Value;
+            if (node == null) continue;
+
+            Vector3 cubeSize = Vector3.one;
+            GameNode.TilemapSprite tilemapSprite = node.GetTilemapSprite();
+            Vector2 gridValueUV00, gridValueUV11;
+            if (tilemapSprite == GameNode.TilemapSprite.None)
+            {
+                gridValueUV00 = Vector2.zero;
+                gridValueUV11 = Vector2.zero;
+                cubeSize = Vector2.zero;
             }
+            else
+            {
+                UVsCoords uvCoords = uvCoordsDictionary[tilemapSprite];
+                gridValueUV00 = uvCoords.uv00;
+                gridValueUV11 = uvCoords.uv11;
+            }
+            Utils.AddToMeshArrays(vertices, uvs, triangles, index, pos, 0, cubeSize, gridValueUV00, gridValueUV11);
+            index++;
         }
         mesh.vertices = vertices;
         mesh.uv = uvs;

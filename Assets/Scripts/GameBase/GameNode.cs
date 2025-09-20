@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+[Serializable]
 public class GameNode
 {
     public event EventHandler<OnWorldNodesChange> onWorldNodesChange;
@@ -11,10 +12,7 @@ public class GameNode
         public int z;
     }
 
-    public Chunk chunk;
-    public int x, y, z; //  Basically to represent the local position of the node in the chunk
-    public int worldX, worldY, worldZ;
-    public int tileID;
+    public int x, y, z;
 
     public bool isWalkable;
     public bool hasNode;
@@ -26,19 +24,13 @@ public class GameNode
     public GameNode cameFromNode;
     #endregion
 
-    public GameNode(Chunk chunk, int x, int y, int z, int tileID, bool isWalkable, bool hasCube)
+    public GameNode(int x, int y, int z, bool isWalkable, bool hasCube)
     {
-        this.chunk = chunk;
         this.x = x;
         this.y = y;
         this.z = z;
-        this.tileID = tileID;
         this.isWalkable = isWalkable;
         this.hasNode = hasCube;
-
-        worldX = x + chunk.startPoint.x;
-        worldY = y + chunk.startPoint.y;
-        worldZ = z + chunk.startPoint.z;
     }
 
     //  Summary
@@ -48,9 +40,14 @@ public class GameNode
         fCost = gCost + hCost;
     }
 
-    public Vector3 GetWorldVectorFromPath()
+    public Vector3 GetVector()
     {
-        return new Vector3(worldX, worldY, worldZ);
+        return new Vector3(x, y, z);
+    }
+
+    public Vector3Int GetVectorInt()
+    {
+        return new Vector3Int(x, y, z);
     }
 
     //  Summary

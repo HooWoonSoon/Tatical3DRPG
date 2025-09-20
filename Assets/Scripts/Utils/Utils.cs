@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public static class Utils
 {
@@ -134,22 +135,41 @@ public static class Utils
             return Vector3.zero;
     }
 
-    public static Vector3Int GetRaycastHitNodePosition(LayerMask layerMask, Dictionary<(int, int, int), GameNode> loadedNodes)
+    public static Vector3Int GetRaycastHitNodePositionWithCollider(LayerMask layerMask, Dictionary<Vector3Int, GameNode> loadedNodes)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
         if (Physics.Raycast(ray, out RaycastHit hitInfo, 64f, layerMask))
         {
             Vector3 hitPoint = hitInfo.point;
-            Vector3Int blockPos = Utils.RoundXZFloorYInt(hitPoint);
+            Vector3Int blockPos = RoundXZFloorYInt(hitPoint);
 
-            if (loadedNodes.TryGetValue((blockPos.x, blockPos.y, blockPos.z), out GameNode node))
+            if (loadedNodes.TryGetValue((blockPos), out GameNode node))
             {
                 return blockPos;
             }
         }
 
         return new Vector3Int(-1, -1, -1);
+    }
+
+    public static GameNode GetRaycastHitNode(Dictionary<Vector3Int, GameNode> loadedNodes)
+    {
+        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        Vector3 position = ray.origin;
+        Vector3 direction = ray.direction.normalized;
+
+        for (int i = 0; i < 2000; i++)
+        {
+            position += direction * 0.1f;
+            Vector3Int blockPos = Vector3Int.FloorToInt(new Vector3(position.x, position.y, position.z));
+
+            if (loadedNodes.TryGetValue(blockPos, out GameNode node))
+            {
+                return node;
+            }
+        }
+        return null;
     }
 
     public static Vector3 GetMouseWorldPosition()

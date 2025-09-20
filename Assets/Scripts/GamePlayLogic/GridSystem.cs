@@ -35,22 +35,22 @@ public class GridSystem : Entity
     }
     public void SetGridObject(Vector3Int characterPos, CharacterBase character)
     {
-        GameNode gameNode = world.GetNodeAtWorldPosition(characterPos);
+        GameNode gameNode = world.GetNode(characterPos);
         if (gameNode != null)
         {
             gameNode.SetUnitGridCharacter(character);
-            gameNode.onWorldNodesChange += OnCharacterChanged;
+            gameNode.onWorldNodesChange += OnCharacterChanged;  
         }
     }
     public void ResetAllGridCharacter()
     {
         for (int x = 0; x < world.worldMaxX; x++)
         {
-            for (int y = 0; y < world.worldMaxY; y++)
+            for (int y = 0; y < world.worldHeight; y++)
             {
                 for (int z = 0; z < world.worldMaxZ; z++)
                 {
-                    GameNode gameNode = world.GetNodeAtWorldPosition(x, y, z);
+                    GameNode gameNode = world.GetNode(x, y, z);
                     if (gameNode != null)
                     {
                         gameNode.character = null;

@@ -13,6 +13,7 @@ public class BattleManager : Entity
 
     [Header("Battle Cursor")]
     [SerializeField] private GameObject cursor;
+    [SerializeField] private float heightOffset = 2.5f;
     private bool activateCursor = false;
     private float keyPressTimer;
     private float intervalPressTimer;
@@ -67,7 +68,7 @@ public class BattleManager : Entity
         GameNode gameNode = world.GetHeightNodeWithCube(nodePos.x + direction.x, nodePos.z + direction.z);
         if (gameNode != null)
         {
-            cursor.transform.position = gameNode.GetGameNodeVector();
+            cursor.transform.position = gameNode.GetGameNodeVector() + new Vector3(0, heightOffset);
             CharacterBase character = gameNode.GetUnitGridCharacter();
             if (character != null)
             {

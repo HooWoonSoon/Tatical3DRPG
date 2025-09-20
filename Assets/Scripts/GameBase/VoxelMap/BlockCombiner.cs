@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-using static Chunk;
 
 public class BlockCombiner
 {
@@ -8,14 +7,14 @@ public class BlockCombiner
     private List<MeshRenderer> sourceMeshRenderer = new List<MeshRenderer>();
     private GameObject combinedMesh;
 
-    public BlockCombiner(Dictionary<Vector3Int, BlockFace> blockfaces)
+    public BlockCombiner(Dictionary<Vector3, BlockFace> blockfaces)
     {
         float startTime = Time.realtimeSinceStartup;
         Dictionary<Material, List<CombineInstance>> materialGroupCombines = new Dictionary<Material, List<CombineInstance>>();
-        
+
         foreach (var kvp in blockfaces)
         {
-            Vector3Int position = kvp.Key;
+            Vector3 position = kvp.Key;
             BlockFace blockface = kvp.Value;
             Material material = blockface.material;
 
@@ -50,8 +49,6 @@ public class BlockCombiner
             meshObject.AddComponent<MeshFilter>().mesh = mesh;
             MeshRenderer meshRenderer = meshObject.AddComponent<MeshRenderer>();
             meshRenderer.sharedMaterial = material;
-
-            meshObject.AddComponent<MeshCollider>();
         }
 
         float endTime = Time.realtimeSinceStartup;

@@ -31,7 +31,7 @@ public static class MeshGenerator
             vertices = new Vector3[]
             { new Vector3(-0.5f, -0.5f, 0.5f), new Vector3(0.5f, -0.5f, 0.5f), new Vector3(0.5f, 0.5f, 0.5f), new Vector3(-0.5f, 0.5f, 0.5f) };
             triangles = new int[] { 0, 1, 2, 0, 2, 3 };
-            uv = new Vector2[] { new Vector2(0f, 1f / 3f), new Vector2(1f / 3f, 1f / 3f), new Vector2(1f / 3f, 2f / 3f), new Vector2(0f, 2f / 3f)};
+            uv = new Vector2[] { new Vector2(0f, 1f / 3f), new Vector2(1f / 3f, 1f / 3f), new Vector2(1f / 3f, 2f / 3f), new Vector2(0f, 2f / 3f) };
         }
         //  z axis left face, left = 0
         else if (normal == Vector3Int.back)
@@ -62,7 +62,7 @@ public static class MeshGenerator
         mesh.triangles = triangles;
         mesh.uv = uv;
         mesh.RecalculateNormals();
-        mesh.RecalculateBounds(); 
+        mesh.RecalculateBounds();
 
         return mesh;
     }

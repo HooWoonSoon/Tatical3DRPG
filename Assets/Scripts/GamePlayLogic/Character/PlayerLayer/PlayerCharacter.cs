@@ -121,7 +121,7 @@ public class PlayerCharacter : CharacterBase
 
         //  Check diagonol movement and return
         Vector3 targetPosition = characterPosition + direction * moveSpeed * Time.deltaTime;
-        if (world.IsValidNode(targetPosition))
+        if (world.IsValidWorldRange(targetPosition))
         {
             transform.position = targetPosition;
             return;
@@ -129,7 +129,7 @@ public class PlayerCharacter : CharacterBase
 
         //  Check X axis movement and return
         Vector3 targetPositionX = characterPosition + new Vector3(direction.x, 0, 0) * moveSpeed * Time.deltaTime;
-        if (world.IsValidNode(targetPositionX))
+        if (world.IsValidWorldRange(targetPositionX))
         {
             transform.position = targetPositionX;
             return;
@@ -137,7 +137,7 @@ public class PlayerCharacter : CharacterBase
 
         //  Check Z axis movement and return
         Vector3 targetPositionZ = characterPosition + new Vector3(0, 0, direction.z) * moveSpeed * Time.deltaTime;
-        if (world.IsValidNode(targetPositionZ))
+        if (world.IsValidWorldRange(targetPositionZ))
         {
             transform.position = targetPositionZ;
             return;

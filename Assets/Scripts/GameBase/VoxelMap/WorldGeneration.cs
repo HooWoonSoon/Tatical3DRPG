@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
+using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.IO;
 
 public class WorldGeneration : MonoBehaviour
 {
     public World world;
-    private BlockCombiner blockCombiner;
-    [SerializeField] private int numChunkX = 2;
-    [SerializeField] private int numChunkY = 1;
-    [SerializeField] private int numChunkZ = 2;
-
-    [SerializeField] private int preloadedRange = 9;
     public GameObject prefab;
+    public string mapDataPath;
     public static WorldGeneration instance { get; private set;}
 
     private void Awake()
@@ -21,71 +18,49 @@ public class WorldGeneration : MonoBehaviour
 
     private void Start()
     {
-        for (int cx = 0; cx < numChunkX; cx++)
-            for (int cy = 0; cy < numChunkY; cy++)
-                for (int cz = 0; cz < numChunkZ; cz++)
-                    world.GenearateChunk(cx, cy, cz);
-
-        GenerateBlock();
+        LoadMap();
+        //GenerateBlock();
     }
 
-    //  Debug
+    public void LoadMap()
+    {
+        string fullPath = Path.Combine(Application.dataPath, mapDataPath);
+        if (!File.Exists(fullPath))
+        {
+            Debug.LogError($"Map data file not found at path: {fullPath}");
+            return;
+        }
+        string json = File.ReadAllText(fullPath);
+        List<GameNodeData> nodeDataList = JsonConvert.DeserializeObject<List<GameNodeData>>(json);
+        world.InitializeMapNode(nodeDataList);
+    }
+
+    //Debug
     public void GenerateBlock()
     {
         if (world == null) return;
 
-        foreach (var regionPair in world.regions)
+        for (int x = 0; x < 33; x++)
         {
-            Region region = regionPair.Value;
-            foreach (var chunkPair in region.loadedChunks)
+            for (int y = 0; y < 4; y++)
             {
-                Chunk chunk = chunkPair.Value;
-
-                for (int cx = 0; cx < Chunk.CHUNK_SIZE; cx++)
+                for (int z = 0; z < 33; z++)
                 {
-                    for (int cy = 0; cy < Chunk.CHUNK_SIZE - 12; cy++)
+                    world.GenerateNode(x, y, z);
+                    GameNode node = world.GetNode(x, y, z);
+                    if (node.hasNode)
                     {
-                        for (int cz = 0; cz < Chunk.CHUNK_SIZE; cz++)
-                        {
-                            GameNode node = chunk.GetNode(cx, cy, cz);
-                            if (node != null)
-                            {
-                                Vector3Int pos = new Vector3Int(
-                                    node.x + chunk.startPoint.x * Chunk.CHUNK_SIZE,
-                                    node.y + chunk.startPoint.y * Chunk.CHUNK_SIZE,
-                                    node.z + chunk.startPoint.z * Chunk.CHUNK_SIZE
-                                );
-
-                                if (pos == new Vector3(1,3,4) || pos == new Vector3(1,3,2) || pos == new Vector3(1,3,3) || pos == new Vector3(2,3,4)) { continue; }
-                                if (!chunk.blocks.ContainsKey(pos))
-                                {
-                                    chunk.AddBlock(pos, prefab);
-                                    chunk.SetupNode(cx, cy, cz, true, true);
-                                }
-                            }
-                        }
+                        Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity);
                     }
                 }
-
-                for (int x = 0; x < Chunk.CHUNK_SIZE; x++)
-                {
-                    for (int y = 0; y < Chunk.CHUNK_SIZE - 12; y++)
-                    {
-                        for (int z = 0; z < Chunk.CHUNK_SIZE; z++)
-                        {
-                            GameNode node = chunk.GetNode(x, y, z);
-                            GameNode aboveNode = chunk.GetNode(x, y + 1, z);
-                            if (aboveNode.hasNode != false)
-                            {
-                                node.isWalkable = false;
-                            }
-                        }
-                    }
-                }
-                GameObject combinedMeshObject = chunk.CombineBlockChunk();
-                chunk.combinedMesh = combinedMeshObject;
-                
             }
+        }
+
+        world.GenerateNode(3, 4, 3);
+        GameNode node1 = world.GetNode(3, 4, 3);
+        if (node1.hasNode)
+        {
+            Instantiate(prefab, new Vector3(3, 4, 3), Quaternion.identity);
         }
     }
 }

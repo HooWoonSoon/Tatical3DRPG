@@ -16,15 +16,15 @@ public abstract class PlayerTeamState
     }
     public virtual void Enter()
     {
-        Debug.Log($"Enter {StateName()}");
+        //Debug.Log($"Enter {StateName()}");
     }
     public virtual void Update()
     {
-        Debug.Log($"Update {StateName()}");
+        //Debug.Log($"Update {StateName()}");
     }
     public virtual void Exit()
     {
-        Debug.Log($"Exit {StateName()}");
+        //Debug.Log($"Exit {StateName()}");
     }
 }
 

@@ -1,168 +1,157 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
+
+public struct GridPosition
+{
+    public int x;
+    public int z;
+    public int height;
+
+    public GridPosition(int x, int z, int height)
+    {
+        this.x = x;
+        this.z = z;
+        this.height = height;
+    }
+}
 
 public class World
 {
     //  Summary
     //      To store the loaded nodes in the world, which nodes could not be the local position of the chunk
-    public Dictionary<(int, int, int), GameNode> loadedNodes = new Dictionary<(int, int, int), GameNode>();
+    public Dictionary<Vector3Int, GameNode> loadedNodes = new Dictionary<Vector3Int, GameNode>();
 
-    public Dictionary<(int, int, int), Region> regions;
-    public const int REGION_SIZE = 32;
+    public int worldMaxX, worldMaxZ;
+    public int worldMinX, worldMinZ;
+    public int worldHeight;
+    private float cellSize = 1f;
 
-    public int worldMaxX, worldMaxY, worldMaxZ;
-    public int worldMinX, worldMinY, worldMinZ;
+    public GameObject combinedMesh;
 
-    public World()
+    public void InitializeMapNode(List<GameNodeData> nodeDataList)
     {
-        regions = new Dictionary<(int, int, int), Region>();
-    }
-
-    public void UpdateWorldSize()
-    {
-        foreach (var region in regions.Values)
+        for (int i = 0; i < nodeDataList.Count; i++)
         {
-            foreach (var chunk in region.loadedChunks.Values)
+            int x = nodeDataList[i].x;
+            int y = nodeDataList[i].y;
+            int z = nodeDataList[i].z;
+            bool isWalkable = nodeDataList[i].isWalkable;
+            bool hasNode = nodeDataList[i].hasNode;
+            if (!loadedNodes.ContainsKey(new Vector3Int(x, y, z)))
             {
-                if (chunk.endPoint.x > worldMaxX) worldMaxX = chunk.endPoint.x;
-                if (chunk.endPoint.y > worldMaxY) worldMaxY = chunk.endPoint.y;
-                if (chunk.endPoint.z > worldMaxZ) worldMaxZ = chunk.endPoint.z;
-
-                if (chunk.startPoint.x < worldMinX) worldMinX = chunk.startPoint.x;
-                if (chunk.startPoint.y < worldMinY) worldMinY = chunk.startPoint.y;
-                if (chunk.startPoint.z < worldMinZ) worldMinZ = chunk.startPoint.z;
+                GameNode gameNode = new GameNode(x, y, z, isWalkable, hasNode);
+                loadedNodes.Add(new Vector3Int(x, y, z), gameNode);
+                UpdateWorldSize(x, y, z);
             }
         }
-        //Debug.Log($"World size: {worldMaxX} {worldMaxY} {worldMaxZ}");
     }
 
-    #region Generate Chunk And Node
-    public void GenearateChunk(int chunkX, int chunkY, int chunkZ)
+    public void GenerateNode(int x, int height, int z)
     {
-        int regionX = Mathf.FloorToInt(chunkX / REGION_SIZE);
-        int regionY = 0;
-        int regionZ = Mathf.FloorToInt(chunkZ / REGION_SIZE);
-
-        if (!regions.TryGetValue((regionX, regionY, regionZ), out var region))
+        if (AddNode(x, height, z))
         {
-            region = new Region(regionX, regionY, regionZ);
-            regions[(regionX, regionY, regionZ)] = region;
+            AdjustCoverNode(x, height, z);
         }
-
-        Chunk chunk = regions[(regionX, regionY, regionZ)].GeneraateAndGetChunk(chunkX, chunkY, chunkZ);
-        foreach (var node in chunk.nodes)
-        {
-            loadedNodes[(node.worldX, node.worldY, node.worldZ)] = node;
-        }
-        UpdateWorldSize();
     }
 
-    public Chunk TryGetChunk(int chunkX, int chunkY, int chunkZ)
+    private bool AddNode(int x, int y, int z)
     {
-        int regionX = Mathf.FloorToInt(chunkX / REGION_SIZE);
-        int regionY = 0;
-        int regionZ = Mathf.FloorToInt(chunkZ / REGION_SIZE);
-
-        if (regions.ContainsKey((regionX, regionY, regionZ)))
+        if (!loadedNodes.ContainsKey(new Vector3Int(x, y, z)))
         {
-            return regions[(regionX, regionY, regionZ)].TryGetChunk(chunkX, chunkY, chunkZ);
+            GameNode gameNode = new GameNode(x, y, z, true, true);
+            loadedNodes.Add(new Vector3Int(x, y, z), gameNode);
+            UpdateWorldSize(x, y, z);
+            return true;
         }
-        return null;
+        return false;
     }
-    #endregion
 
-    #region Get world position
+    private void AdjustCoverNode(int x, int y, int z)
+    {
+        GameNode node = GetNode(x, y, z);
+        GameNode aboveNode = GetNode(x, y + 1, z);
+        if (aboveNode != null && aboveNode != null && aboveNode.hasNode)
+        {
+            node.isWalkable = false;
+        }
+    }
+
+    private void UpdateWorldSize(int x, int height, int z)
+    {
+        worldMaxX = Mathf.Max(worldMaxX, x);
+        worldMaxZ = Mathf.Max(worldMaxZ, z);
+
+        worldMinX = Mathf.Min(worldMinX, x);
+        worldMinZ = Mathf.Min(worldMinZ, z);
+
+        worldHeight = Mathf.Max(worldHeight, height);
+        //Debug.Log($"World size: {worldMaxX} {worldMaxZ}");
+    }
+
     public void GetWorldPosition(Vector3 worldPosition, out int x, out int y, out int z)
     {
         x = Mathf.FloorToInt(worldPosition.x);
         y = Mathf.FloorToInt(worldPosition.y);
         z = Mathf.FloorToInt(worldPosition.z);
     }
-    #endregion
 
-    #region Get Chunk Position
-    public void GetChunkPosition(int x, int y, int z, out int chunkX, out int chunkY, out int chunkZ)
+    public GameNode GetNode(Vector3 position)
     {
-        chunkX = Mathf.FloorToInt(x / Chunk.CHUNK_SIZE);
-        chunkY = Mathf.FloorToInt(y / Chunk.CHUNK_SIZE);
-        chunkZ = Mathf.FloorToInt(z / Chunk.CHUNK_SIZE);
+        GameNode node;
+        if (loadedNodes.TryGetValue(new Vector3Int((int)position.x, (int)position.y, (int)position.z), out node))
+            return node;
+        return null;
     }
-
-    public void GetChunkPosition(Vector3 worldPosition, out int chunkX, out int chunkY, out int chunkZ)
+    
+    public GameNode GetNode(int x, int y, int z)
     {
-        chunkX = Mathf.FloorToInt(worldPosition.x / Chunk.CHUNK_SIZE);
-        chunkY = Mathf.FloorToInt(worldPosition.y / Chunk.CHUNK_SIZE);
-        chunkZ = Mathf.FloorToInt(worldPosition.z / Chunk.CHUNK_SIZE);
+        GameNode node;
+        if (loadedNodes.TryGetValue(new Vector3Int(x, y, z), out node))
+            return node;
+        return null;
     }
-    #endregion
-
-    #region Get Node At World Position
-
-    //  Summary
-    //      To get the node at the world position, it used for A * pathfinding algorithm,
-    //      because world have been seperate into the chunk, when the target position is overstep the boundaries
-    //      need to searching chunk again. This is a part of encapsulation.
-    public GameNode GetNodeAtWorldPosition(Vector3Int position)
-    {
-        return GetNodeAtWorldPosition(position.x, position.y, position.z);
-    }
-
-    public GameNode GetNodeAtWorldPosition(int x, int y, int z)
-    {
-        GetChunkPosition(x, y, z, out int chunkX, out int chunkY, out int chunkZ);
-        Chunk chunk = TryGetChunk(chunkX, chunkY, chunkZ);
-        if (chunk == null) { Debug.Log("Could not get the chunk node"); return null; }
-
-        int localX = x % Chunk.CHUNK_SIZE;
-        int localY = y % Chunk.CHUNK_SIZE;
-        int localZ = z % Chunk.CHUNK_SIZE;
-
-        return chunk.GetNode(localX, localY, localZ);
-    }
-    #endregion
 
     public GameNode GetHeightNodeWithCube(int x, int z)
     {
         if (x > worldMaxX || x < worldMinX || z > worldMaxZ || z < worldMinZ) { return null; }
 
-        for (int y = worldMaxY; y >= 0; y--)
+        for (int y = worldHeight; y >= 0; y--)
         {
-            GameNode gameNode = GetNodeAtWorldPosition(x, y, z);
-            if (gameNode.hasNode)
+            if (loadedNodes.TryGetValue(new Vector3Int(x, y, z), out GameNode node))
             {
-                return gameNode;
-            }
+                if (node.hasNode) return node;
+            }   
         }
         return null;
     }
 
-    public void ReleaseRegion(Region region)
+    public Vector3 GetCellOffsetPosition(Vector3 position)
     {
-        foreach(var kvp in regions)
-        {
-            if (kvp.Value == region)
-            {
-                regions.Remove(kvp.Key);
-                break;
-            }
-        }
+        float halfCell = cellSize / 2f;
+        float y = position.y - halfCell;
+        return new Vector3(position.x, y, position.z);
     }
 
-    #region external
-
+    #region External
     //  Summary
     //      To check if the input position is valid in the world.
-    public bool IsValidNode(Vector3 position)
+    public bool IsValidWorldRange(Vector3 position)
     {
-        return worldMinX <= position.x && worldMinY <= position.y && worldMinZ <= position.z
-        && worldMaxX >= position.x && worldMaxY >= position.y && worldMaxZ >= position.z;
+        Vector3 localPosition = GetCellOffsetPosition(position);
+        if (worldMinX <= localPosition.x && 0 <= localPosition.y && worldMinZ <= localPosition.z
+        && worldMaxX >= localPosition.x && worldHeight >= localPosition.y && worldMaxZ >= localPosition.z)
+        {
+            Debug.Log($"{localPosition} is valid");
+            return true;
+        }
+        Debug.Log($"{localPosition} is invalid");
+        return false;
     }
 
     public bool IsValidNode(float x, float y, float z)
     {
-        return worldMinX <= x && worldMinY <= y && worldMinZ <= z
-            && worldMaxX >= x && worldMaxY >= y && worldMaxZ >= z;
+        return worldMinX <= x && 0 <= y && worldMinZ <= z
+            && worldMaxX >= x && worldHeight >= y && worldMaxZ >= z;
     }
     #endregion
 
@@ -200,7 +189,10 @@ public class World
                     if (manhattasDistance > size) continue;
                     if (!IsValidNode(x, y, z)) continue;
 
-                    if (checkWalkable && !GetNodeAtWorldPosition(x, y, z).isWalkable)
+                    GameNode node = GetNode(x, y, z);
+                    if (node == null) continue;
+
+                    if (checkWalkable && !node.isWalkable)
                         continue;
 
                     coverage.Add(new Vector3Int(x, y, z));

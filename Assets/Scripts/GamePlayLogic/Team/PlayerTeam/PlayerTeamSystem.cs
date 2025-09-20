@@ -68,12 +68,14 @@ public class PlayerTeamSystem : TeamSystem
             stateMachine.ChangeState(teamSortPathFindingState);
         }
 
-        Vector3Int targetPosition = Utils.GetRaycastHitNodePosition(layermask, world.loadedNodes);
+        GameNode hitNode = Utils.GetRaycastHitNode(world.loadedNodes);
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log(targetPosition);
+            if (hitNode == null) { return;}
+            Vector3Int targetPosition = hitNode.GetVectorInt();
+            Debug.Log(hitNode);
             if (targetPosition == new Vector3Int(-1, -1, -1)) return;
-            Debug.Log(world.loadedNodes[(targetPosition.x, targetPosition.y, targetPosition.z)].isWalkable);
+            Debug.Log(world.loadedNodes[(targetPosition)].isWalkable);
 
             currentLeader.SetMovePosition(currentLeader, targetPosition);
         }

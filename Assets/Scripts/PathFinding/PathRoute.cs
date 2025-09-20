@@ -16,6 +16,6 @@ public class PathRoute
     {
         pathRouteList = new List<Vector3>();
         foreach (GameNode pathNode in pathNodeList)
-            pathRouteList.Add(pathNode.GetWorldVectorFromPath() + new Vector3(0, offset, 0));
+            pathRouteList.Add(pathNode.GetVector() + new Vector3(0, offset, 0));
     }
 }

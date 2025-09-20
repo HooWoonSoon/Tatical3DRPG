@@ -3,10 +3,10 @@ using UnityEngine;
 
 public static class DDADectector
 {
-    public static bool CheckCubeAtPosition(Vector3 position, Dictionary<(int, int, int), GameNode> loadedNodes)
+    public static bool CheckCubeAtPosition(Vector3 position, Dictionary<Vector3Int, GameNode> loadedNodes)
     {
         Vector3Int blockPosition = Vector3Int.RoundToInt(position);
-        return loadedNodes.TryGetValue((blockPosition.x, blockPosition.y, blockPosition.z), out GameNode node) && node.hasNode;
+        return loadedNodes.TryGetValue((blockPosition), out GameNode node) && node.hasNode;
     }
 
     #region DDA Algorithms by calculate the rasterization of the ray
@@ -32,7 +32,7 @@ public static class DDADectector
         return (blockPosition, step, tMax, tDelta);
     }
 
-    public static bool DDARaycast(Vector3 startPosition, Vector3 direction, int maxDistance, Dictionary<(int, int, int), GameNode> loadedNodes, 
+    public static bool DDARaycast(Vector3 startPosition, Vector3 direction, int maxDistance, Dictionary<Vector3Int, GameNode> loadedNodes, 
         out Vector3Int? cubePosition)
     {
         cubePosition = null;
@@ -41,7 +41,7 @@ public static class DDADectector
 
         var (currentDDAblock, step, tMax, tDelta) = InitializeDDA(startPosition, direction);
 
-        if (loadedNodes.TryGetValue((currentDDAblock.x, currentDDAblock.y, currentDDAblock.z), out GameNode startNode))
+        if (loadedNodes.TryGetValue((currentDDAblock), out GameNode startNode))
         {
             if (startNode.hasNode)
             {
@@ -81,7 +81,7 @@ public static class DDADectector
 
             Debug.DrawLine(startPosition, currentDDAblock, Color.green);
 
-            if (loadedNodes.TryGetValue((currentDDAblock.x, currentDDAblock.y, currentDDAblock.z), out GameNode node))
+            if (loadedNodes.TryGetValue((currentDDAblock), out GameNode node))
             {
                 if (node.hasNode)
                 {
@@ -92,7 +92,7 @@ public static class DDADectector
         }
         return false;
     }
-    public static Vector3Int GetDDAWorldPosition(int maxDistance, Dictionary<(int, int, int), GameNode> loadedNodes)
+    public static Vector3Int GetDDAWorldPosition(int maxDistance, Dictionary<Vector3Int, GameNode> loadedNodes)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         Vector3 startPosition = ray.origin;
@@ -102,11 +102,11 @@ public static class DDADectector
         return DDAAlgorithms(startPosition, direction, maxDistance, loadedNodes);
     }
 
-    public static Vector3Int DDAAlgorithms(Vector3 startPosition, Vector3 direction, int maxDistance, Dictionary<(int, int, int), GameNode> loadedNodes)
+    public static Vector3Int DDAAlgorithms(Vector3 startPosition, Vector3 direction, int maxDistance, Dictionary<Vector3Int, GameNode> loadedNodes)
     {
         var (blockPosition, step, tMax, tDelta) = InitializeDDA(startPosition, direction);
 
-        if (loadedNodes.TryGetValue((blockPosition.x, blockPosition.y, blockPosition.z), out GameNode startNode))
+        if (loadedNodes.TryGetValue((blockPosition), out GameNode startNode))
         {
             if (startNode.hasNode)
             {
@@ -143,7 +143,7 @@ public static class DDADectector
                 }
             }
 
-            if (loadedNodes.TryGetValue((blockPosition.x, blockPosition.y, blockPosition.z), out GameNode node))
+            if (loadedNodes.TryGetValue((blockPosition), out GameNode node))
             {
                 if (node.hasNode)
                 {

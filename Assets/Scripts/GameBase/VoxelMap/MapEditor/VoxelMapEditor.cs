@@ -2,10 +2,42 @@
 using UnityEditor;
 using UnityEngine.Tilemaps;
 using System.Collections.Generic;
+using System;
+using System.IO;
+using Newtonsoft.Json;
 
+[Serializable]
+public class GameNodeData
+{
+    public int x, y, z;
+    public bool isWalkable;
+    public bool hasNode;
+
+    public GameNodeData(int x, int y, int z, bool isWalkable, bool hasNode)
+    {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.isWalkable = isWalkable;
+        this.hasNode = hasNode;
+    }
+}
+
+#region Structor
+public struct BlockFace
+{
+    public Vector3 position;
+    public List<Vector3Int> normal;
+    public Material material;
+}
+#endregion
 public class VoxelMapEditor : EditorWindow
 {
+    private float gridOffsetXZ = 0.5f;
+
     private bool hideBlockMergeToggle = true;
+
+    private string filePath = "VoxelMap.json";
 
     [MenuItem("Utils/VoxelMapEditor")]
     public static void ShowWindow()
@@ -16,22 +48,30 @@ public class VoxelMapEditor : EditorWindow
 
     private void OnGUI()
     {
+        EditorGUILayout.LabelField("Grid Map Properties", EditorStyles.boldLabel);
+        gridOffsetXZ = EditorGUILayout.FloatField("Grid Offset X and Z", gridOffsetXZ);
+
         if (GUILayout.Button("Add new Level"))
         {
             if (Selection.activeGameObject != null) { AddNewLevel(Selection.activeGameObject); }
         }
-        if (GUILayout.Button("Merge chunk of the block")) 
-        {
-            if (Selection.activeGameObject != null) { CombineChunkOfBlock(Selection.activeGameObject); }
-        }
         hideBlockMergeToggle = EditorGUILayout.ToggleLeft("Hide blocks after merging mesh", hideBlockMergeToggle);
-        if (GUILayout.Button("Save Binary Data"))
+        if (GUILayout.Button("Redefine block properties with covered block"))
         {
-            if (Selection.activeGameObject != null) { SavaBinaryData(Selection.activeGameObject); }
+            if (Selection.activeGameObject != null) { RedefineBlockProperities(Selection.activeGameObject); }
+        }
+        if (GUILayout.Button("Combine Block"))
+        {
+            if (Selection.activeGameObject != null) { CombineBlock(Selection.activeGameObject); }
         }
         if (GUILayout.Button("Reactive hided blocks")) 
         {
             if (Selection.activeGameObject != null) { ReactiveHidedBlocks(Selection.activeGameObject); }
+        }
+        filePath = EditorGUILayout.TextField("Save JSON File Path", filePath);
+        if (GUILayout.Button("Save JSON Map"))
+        {
+            if (Selection.activeGameObject != null) { SaveJSONData(Selection.activeGameObject); }
         }
     }
 
@@ -45,10 +85,11 @@ public class VoxelMapEditor : EditorWindow
             if (tilemapList3D.LayerCount() > 16)
             {
                 Debug.Log("The number of layer exceeds 16, " +
-                    "you can't out to the maximum value of the chunk height");
+                    "you can't out to the maximum value of the world height");
                 return;
             }
-            tilemapList3D.ResetTileMapList();
+
+            tilemapList3D.ResetTileMapList(gridOffsetXZ);
             GameObject newLayer = new GameObject();
             newLayer.AddComponent<Tilemap>();
             newLayer.AddComponent<TilemapRenderer>();
@@ -57,41 +98,41 @@ public class VoxelMapEditor : EditorWindow
 
             newLayer.transform.parent = grid.transform;
             float newHeightLevel = tilemapList3D.LayerCount() * grid.cellSize.y * grid.transform.localScale.y;
-            newLayer.transform.position = new Vector3(0, newHeightLevel, 0);
+            newLayer.transform.position = new Vector3(gridOffsetXZ, newHeightLevel, gridOffsetXZ);
             newLayer.transform.localScale = Vector3.one;
 
-            tilemapList3D.AddLayer(newLayer);
+            tilemapList3D.AddLayer(newLayer, gridOffsetXZ);
             Debug.Log($"Add new Level: {newLayer.name}");
         }
     }
 
-    private void CombineChunkOfBlock(GameObject gridObject)
+    private void RedefineBlockProperities(GameObject gridObject)
     {
-        ChunkList3D chunkList3D = gridObject.GetComponent<ChunkList3D>();
-        if (chunkList3D == null)
+        GetAllBlock(gridObject, out List<GameObject> blocks);
+        HashSet<Vector3Int> blockPositions = new HashSet<Vector3Int>();
+        foreach (var block in blocks)
         {
-            Debug.Log("Require ChunkList3D Component inside the Grid");
-            return;
+            blockPositions.Add(Vector3Int.RoundToInt(block.transform.position));
         }
+        Debug.Log(blocks.Count);
 
-        GetAllChunkBlock(gridObject, out Dictionary<(int, int, int), Chunk> chunks);
-
-        foreach (var kvp in chunks)
+        for (int i = 0; i < blocks.Count; i++)
         {
-            Chunk chunk = kvp.Value;
-            GameObject combinedMeshObject = chunk.CombineBlockChunk();
-            combinedMeshObject.transform.position = chunk.startPoint;
-            combinedMeshObject.name = "Chunk" + kvp.Key;
-            chunkList3D.AddChunk(combinedMeshObject);
+            Vector3Int position = Vector3Int.RoundToInt(blocks[i].transform.position);
+            BlockProperites properities = blocks[i].GetComponent<BlockProperites>();
+
+            Vector3Int abovePosition = position + Vector3Int.up;
+            if (blockPositions.Contains(abovePosition))
+            {
+                properities.isWalkable = false;
+            }
         }
     }
 
-    private void SavaBinaryData(GameObject gridObject)
+    public void CombineBlock(GameObject gridObject)
     {
-        GetAllChunkBlock(gridObject, out Dictionary<(int, int, int), Chunk> chunks);
-        SaveSystem saveSystem = gridObject.GetComponent<SaveSystem>();
-        saveSystem.SerializeBlockData(chunks);
-        Debug.Log("Save Binary Data Success!");
+        GetAllBlock(gridObject, out List<GameObject> blocks);
+        BlockCombiner blockCombiner = new BlockCombiner(RedrawVisibleFace(blocks));
     }
 
     private void ReactiveHidedBlocks(GameObject gridObject)
@@ -107,45 +148,111 @@ public class VoxelMapEditor : EditorWindow
             }
         }
     }
+
+    private void SaveJSONData(GameObject gridObject)
+    {
+        GetAllBlock(gridObject, out List<GameObject> blocks);
+
+        List<GameNodeData> gameNodesData = new List<GameNodeData>();
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            BlockProperites properites = blocks[i].GetComponent<BlockProperites>();
+            GameNodeData gameNodeData = new GameNodeData(
+                Mathf.RoundToInt(blocks[i].transform.position.x),
+                Mathf.RoundToInt(blocks[i].transform.position.y),
+                Mathf.RoundToInt(blocks[i].transform.position.z),
+                properites.isWalkable,
+                properites.hasCube
+                );
+            gameNodesData.Add(gameNodeData);
+        }
+
+        string jsonData = JsonConvert.SerializeObject(gameNodesData, Formatting.Indented);
+        string filePathFull = Path.Combine(Application.dataPath, filePath);
+
+        try
+        {
+            File.WriteAllText(filePathFull, jsonData);
+            Debug.Log($"Successfully saved data to {filePathFull}");
+        }
+        catch (System.Exception exception)
+        {
+            Debug.LogError($"Failed to save data to {filePathFull}. \n {exception}");
+        }
+    }
     #endregion
 
-    #region simplify function
-    private void SetRecordChunkPos(Vector3Int blockPosition, out int x, out int y, out int z)
-    {
-        x = Mathf.FloorToInt(blockPosition.x / Chunk.CHUNK_SIZE);
-        y = Mathf.FloorToInt(blockPosition.y / Chunk.CHUNK_SIZE);
-        z = Mathf.FloorToInt(blockPosition.z / Chunk.CHUNK_SIZE);
-    }
-    private void GetAllChunkBlock(GameObject gridObject, out Dictionary<(int, int, int), Chunk> chunks)
+    private void GetAllBlock(GameObject gridObject, out List<GameObject> blocks)
     {
         Grid grid = gridObject.GetComponent<Grid>();
         List<Transform> allLayer = new List<Transform>();
-        Vector3 offset = Vector3.one * 0.5f;
 
-        chunks = new Dictionary<(int, int, int), Chunk>();
+        blocks = new List<GameObject>();
 
         foreach (Transform layer in grid.transform)
         {
             allLayer.Add(layer);
         }
 
-
         for (int i = 0; i < allLayer.Count; i++)
         {
             Transform parentTransform = allLayer[i];
             foreach (Transform child in parentTransform)
             {
-                Vector3Int childPos = Vector3Int.FloorToInt(child.position + offset);
-                SetRecordChunkPos(childPos, out int x, out int y, out int z);
-                if (!chunks.TryGetValue((x, y, z), out Chunk chunk))
+                if (child.GetComponent<BlockProperites>() != null)
                 {
-                    chunk = new Chunk(x, y, z);
-                    chunks.Add((x, y, z), chunk);
+                    blocks.Add(child.gameObject);
+                    if (hideBlockMergeToggle) { child.gameObject.SetActive(false); }
                 }
-                chunk.AddBlock(childPos, child.gameObject);
-                if (hideBlockMergeToggle) { child.gameObject.SetActive(false); }
             }
         }
+    }
+
+    #region Combine Block
+    private Dictionary<Vector3, BlockFace> RedrawVisibleFace(List<GameObject> blocks)
+    {
+        Dictionary<Vector3, BlockFace> visibleFaces = new Dictionary<Vector3, BlockFace>();
+        HashSet<Vector3> blocksPosition = new HashSet<Vector3>();
+        foreach (var block in blocks)
+        {
+            blocksPosition.Add(Vector3Int.RoundToInt(block.transform.position));
+        }
+
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            Vector3 blockPosition = blocks[i].transform.position;
+
+            List<Vector3Int> visibleNormal = new List<Vector3Int>();
+            Vector3Int[] directions =
+            {
+                Vector3Int.right, Vector3Int.left, Vector3Int.forward,
+                Vector3Int.back, Vector3Int.up, Vector3Int.down
+            };
+
+            foreach (Vector3Int direction in directions)
+            {
+                Vector3 neighbourPos = blocks[i].transform.position + direction;
+                if (!blocksPosition.Contains(neighbourPos))
+                {
+                    visibleNormal.Add(direction);
+                }
+            }
+
+            Material blockMaterial = null;
+            MeshRenderer renderer = blocks[i].GetComponent<MeshRenderer>();
+            if (renderer != null) { blockMaterial = renderer.sharedMaterial; }
+
+            if (visibleNormal.Count > 0)
+            {
+                visibleFaces[blockPosition] = new BlockFace
+                {
+                    position = blockPosition,
+                    normal = visibleNormal,
+                    material = blockMaterial
+                };
+            }
+        }
+        return visibleFaces;
     }
     #endregion
 }
