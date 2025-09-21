@@ -34,7 +34,7 @@ public class TeamSystem : Entity
                 {
                     if (IsTargetPositionExist(pathRoutes, range[j])) { continue; }
 
-                    List<Vector3> pathVectorList = (pathFinding.GetPathRoute(unitPosition, range[j]).pathRouteList);
+                    List<Vector3> pathVectorList = (pathFinding.GetPathRoute(unitPosition, range[j], 1, 1).pathRouteList);
 
                     if (pathVectorList.Count != 0)
                     {

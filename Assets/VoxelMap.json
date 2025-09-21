@@ -3,3087 +3,3087 @@
     "x": 3,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 6,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 7,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 0,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 0,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 0,
     "z": 19,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -3158,13 +3158,6 @@
   },
   {
     "x": 20,
-    "y": 1,
-    "z": 19,
-    "isWalkable": true,
-    "hasNode": true
-  },
-  {
-    "x": 0,
     "y": 1,
     "z": 19,
     "isWalkable": true,
@@ -3173,8 +3166,15 @@
   {
     "x": 0,
     "y": 1,
-    "z": -1,
+    "z": 19,
     "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 0,
+    "y": 1,
+    "z": -1,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -3188,70 +3188,70 @@
     "x": 1,
     "y": 1,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 1,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 1,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": -1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -3321,77 +3321,77 @@
     "x": 0,
     "y": 1,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 1,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 1,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 1,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -3468,77 +3468,77 @@
     "x": 0,
     "y": 1,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 1,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 1,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 1,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -3615,77 +3615,77 @@
     "x": 0,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -3720,21 +3720,21 @@
     "x": 15,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -3762,77 +3762,77 @@
     "x": 0,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -3867,21 +3867,21 @@
     "x": 15,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -3909,77 +3909,77 @@
     "x": 0,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -4014,21 +4014,21 @@
     "x": 15,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -4056,77 +4056,77 @@
     "x": 0,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 1,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -4161,21 +4161,21 @@
     "x": 15,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -4504,42 +4504,42 @@
     "x": 1,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -4553,91 +4553,91 @@
     "x": 8,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 1,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -4651,42 +4651,42 @@
     "x": 1,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -4700,91 +4700,91 @@
     "x": 8,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 1,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -4798,42 +4798,42 @@
     "x": 1,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -4847,91 +4847,91 @@
     "x": 8,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 1,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -4945,42 +4945,42 @@
     "x": 1,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -4994,91 +4994,91 @@
     "x": 8,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 1,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -5092,42 +5092,42 @@
     "x": 1,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -5141,91 +5141,91 @@
     "x": 8,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 1,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -5239,42 +5239,42 @@
     "x": 1,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -5288,91 +5288,91 @@
     "x": 8,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 1,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -5435,91 +5435,91 @@
     "x": 8,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 1,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -5582,91 +5582,91 @@
     "x": 8,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 1,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -5729,91 +5729,91 @@
     "x": 8,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 1,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -5876,91 +5876,91 @@
     "x": 8,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 1,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -6023,91 +6023,91 @@
     "x": 8,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 1,
     "z": 18,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -6296,84 +6296,84 @@
     "x": 9,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -6387,84 +6387,84 @@
     "x": 9,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -6478,84 +6478,84 @@
     "x": 9,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -6569,84 +6569,84 @@
     "x": 9,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -6660,84 +6660,84 @@
     "x": 9,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 2,
     "z": 13,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -6751,84 +6751,84 @@
     "x": 9,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 2,
     "z": 14,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -6842,84 +6842,84 @@
     "x": 9,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 2,
     "z": 15,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -6933,84 +6933,84 @@
     "x": 9,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 2,
     "z": 16,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7024,84 +7024,84 @@
     "x": 9,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 10,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 11,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 12,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 13,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 14,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 15,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 16,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 18,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 19,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 20,
     "y": 2,
     "z": 17,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7185,35 +7185,35 @@
     "x": 1,
     "y": 2,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 2,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 2,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 2,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 2,
     "z": 8,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7227,35 +7227,35 @@
     "x": 1,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 2,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7269,35 +7269,35 @@
     "x": 1,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 2,
     "z": 10,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7311,35 +7311,35 @@
     "x": 1,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 2,
     "z": 11,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7353,35 +7353,35 @@
     "x": 1,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 2,
     "z": 12,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7514,63 +7514,63 @@
     "x": 1,
     "y": 2,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 2,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 2,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 2,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 2,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 2,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 2,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 2,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 2,
     "z": 0,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7591,63 +7591,63 @@
     "x": 1,
     "y": 2,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 2,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 2,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 2,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 2,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 2,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 2,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 2,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 2,
     "z": 1,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7668,63 +7668,63 @@
     "x": 1,
     "y": 2,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 2,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 2,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 2,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 2,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 2,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 2,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 2,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 2,
     "z": 2,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7745,63 +7745,63 @@
     "x": 1,
     "y": 2,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 2,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 2,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 2,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 2,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 2,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 2,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 2,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 2,
     "z": 3,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7822,63 +7822,63 @@
     "x": 1,
     "y": 2,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 2,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 2,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 2,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 2,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 2,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 2,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 2,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 2,
     "z": 4,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7899,63 +7899,63 @@
     "x": 1,
     "y": 2,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 2,
     "y": 2,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 3,
     "y": 2,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 4,
     "y": 2,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 5,
     "y": 2,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 6,
     "y": 2,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 7,
     "y": 2,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 8,
     "y": 2,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 9,
     "y": 2,
     "z": 5,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -7963,6 +7963,90 @@
     "y": 2,
     "z": 5,
     "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 15,
+    "y": 2,
+    "z": 2,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 2,
+    "z": 2,
+    "isWalkable": false,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 2,
+    "z": 2,
+    "isWalkable": false,
+    "hasNode": true
+  },
+  {
+    "x": 15,
+    "y": 2,
+    "z": 3,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 2,
+    "z": 3,
+    "isWalkable": false,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 2,
+    "z": 3,
+    "isWalkable": false,
+    "hasNode": true
+  },
+  {
+    "x": 15,
+    "y": 2,
+    "z": 4,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 2,
+    "z": 4,
+    "isWalkable": false,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 2,
+    "z": 4,
+    "isWalkable": false,
+    "hasNode": true
+  },
+  {
+    "x": 15,
+    "y": 2,
+    "z": 5,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 2,
+    "z": 5,
+    "isWalkable": false,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 2,
+    "z": 5,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -8018,14 +8102,14 @@
     "x": 16,
     "y": 3,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
     "x": 17,
     "y": 3,
     "z": 9,
-    "isWalkable": true,
+    "isWalkable": false,
     "hasNode": true
   },
   {
@@ -9299,6 +9383,132 @@
     "x": 9,
     "y": 3,
     "z": 5,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 3,
+    "z": 2,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 3,
+    "z": 2,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 3,
+    "z": 3,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 3,
+    "z": 3,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 3,
+    "z": 4,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 3,
+    "z": 4,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 3,
+    "z": 5,
+    "isWalkable": false,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 3,
+    "z": 5,
+    "isWalkable": false,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 4,
+    "z": 5,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 4,
+    "z": 5,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 4,
+    "z": 6,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 4,
+    "z": 6,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 4,
+    "z": 7,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 4,
+    "z": 7,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 4,
+    "z": 8,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 4,
+    "z": 8,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 16,
+    "y": 4,
+    "z": 9,
+    "isWalkable": true,
+    "hasNode": true
+  },
+  {
+    "x": 17,
+    "y": 4,
+    "z": 9,
     "isWalkable": true,
     "hasNode": true
   }

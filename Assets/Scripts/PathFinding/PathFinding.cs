@@ -18,7 +18,8 @@ public class PathFinding
     //      Example I passing the world position to the pathfinding function,
     //      even if I save every chunk as the local position, I may not need to convert the world position to the local position
     //      because the pathfinding receive the world position and just check for the grid world position without interaction with the chunk
-    private List<GameNode> FindPath(int startWorldX, int startWorldY, int startWorldZ, int endWorldX, int endWorldY, int endWorldZ)
+    private List<GameNode> FindPath(int startWorldX, int startWorldY, int startWorldZ, int endWorldX, int endWorldY, int endWorldZ,
+        int riseLimit, int lowerLimit)
     {
         float startTime = Time.realtimeSinceStartup;
         List<GameNode> ret = new List<GameNode>();
@@ -55,7 +56,7 @@ public class PathFinding
             closedList.Add(currentNode);
 
 
-            foreach (GameNode neighbourNode in GetNeighbourList(currentNode))
+            foreach (GameNode neighbourNode in GetNeighbourList(currentNode, riseLimit, lowerLimit))
             {
                 if (closedList.Contains(neighbourNode)) continue;
 
@@ -129,19 +130,45 @@ public class PathFinding
         return world.GetNode(x, y, z);
     }
 
-    private List<GameNode> GetNeighbourList(GameNode currentNode)
+    private List<GameNode> GetNeighbourList(GameNode currentNode, int riseLimit, int lowerLimit)
     {
         List<GameNode> neighbourList = new List<GameNode>();
 
-        Vector3Int[] directions = new Vector3Int[]
+        List<Vector3Int> directions = new List<Vector3Int>
         {
             new Vector3Int(-1, 0, 0), // Left
             new Vector3Int(1, 0, 0),  // Right
             new Vector3Int(0, 0, -1), // Back
             new Vector3Int(0, 0, 1),  // Forward
             new Vector3Int(0, 1, 0),  // Up
-            new Vector3Int(0, -1, 0)  // Down
+            new Vector3Int(0, -1, 0), // Down
+            new Vector3Int(1, 0, 1), // Diagonal Forward-Right
+            new Vector3Int(-1, 0, 1), // Diagonal Forward-Left
+            new Vector3Int(1, 0, -1), // Diagonal Backward-Right
+            new Vector3Int(-1, 0, -1) // Diagonal Backward-Left
         };
+
+        for (int y = 1; y <= riseLimit; y++)
+        {
+            directions.AddRange(new[]
+            {
+            new Vector3Int(1, y, 0),
+            new Vector3Int(-1, y, 0),
+            new Vector3Int(0, y, 1),
+            new Vector3Int(0, y, -1)
+        });
+        }
+
+        for (int y = 1; y <= lowerLimit; y++)
+        {
+            directions.AddRange(new[]
+            {
+            new Vector3Int(1, -y, 0),
+            new Vector3Int(-1, -y, 0),
+            new Vector3Int(0, -y, 1),
+            new Vector3Int(0, -y, -1)
+        });
+        }
 
         foreach (var direction in directions)
         {
@@ -154,7 +181,7 @@ public class PathFinding
         return neighbourList;
     }
 
-    public void SetProcessPath(Vector3 currentPosition, Vector3 targetPosition)
+    public void SetProcessPath(Vector3 currentPosition, Vector3 targetPosition, int riseLimit, int lowerLimit)
     {
         float startTime = Time.realtimeSinceStartup;
 
@@ -167,15 +194,15 @@ public class PathFinding
             return;
         }
 
-        processedPath = FindPath(startX, startY, startZ, endX, endY, endZ);
+        processedPath = FindPath(startX, startY, startZ, endX, endY, endZ, riseLimit, lowerLimit);
 
         float endTime = Time.realtimeSinceStartup;
         Debug.Log($"Set process path completed in {endTime - startTime:F4} seconds");
     }
 
-    public PathRoute GetPathRoute(Vector3 start, Vector3 end)
+    public PathRoute GetPathRoute(Vector3 start, Vector3 end, int riseLimit, int lowerLimit)
     {
-        SetProcessPath(start, end);
+        SetProcessPath(start, end, riseLimit, lowerLimit);
         return new PathRoute(processedPath, start);
     }
 }

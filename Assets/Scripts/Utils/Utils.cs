@@ -166,6 +166,7 @@ public static class Utils
 
             if (loadedNodes.TryGetValue(blockPos, out GameNode node))
             {
+                Debug.Log($"raycast hit node at {blockPos}");
                 return node;
             }
         }

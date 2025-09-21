@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System;
 using System.IO;
 using Newtonsoft.Json;
+using UnityEditor.Formats.Fbx.Exporter;
 
 [Serializable]
 public class GameNodeData
@@ -31,6 +32,7 @@ public struct BlockFace
     public Material material;
 }
 #endregion
+
 public class VoxelMapEditor : EditorWindow
 {
     private float gridOffsetXZ = 0.5f;
@@ -38,6 +40,7 @@ public class VoxelMapEditor : EditorWindow
     private bool hideBlockMergeToggle = true;
 
     private string filePath = "VoxelMap.json";
+    private string fbxExportPath = "MapModel.fbx";
 
     [MenuItem("Utils/VoxelMapEditor")]
     public static void ShowWindow()
@@ -72,6 +75,10 @@ public class VoxelMapEditor : EditorWindow
         if (GUILayout.Button("Save JSON Map"))
         {
             if (Selection.activeGameObject != null) { SaveJSONData(Selection.activeGameObject); }
+        }
+        if (GUILayout.Button("Export FBX Combined Mesh"))
+        {
+            if (Selection.activeGameObject != null) { ExportGameObjectToFbx(Selection.activeGameObject); }
         }
     }
 
@@ -135,6 +142,13 @@ public class VoxelMapEditor : EditorWindow
         BlockCombiner blockCombiner = new BlockCombiner(RedrawVisibleFace(blocks));
     }
 
+    public GameObject GetCombineBlock(GameObject gridObject)
+    {
+        GetAllBlock(gridObject, out List<GameObject> blocks);
+        BlockCombiner blockCombiner = new BlockCombiner(RedrawVisibleFace(blocks));
+        return blockCombiner.GetCombinedMesh();
+    }
+
     private void ReactiveHidedBlocks(GameObject gridObject)
     {
         Grid grid = gridObject.GetComponent<Grid>();
@@ -168,7 +182,7 @@ public class VoxelMapEditor : EditorWindow
         }
 
         string jsonData = JsonConvert.SerializeObject(gameNodesData, Formatting.Indented);
-        string filePathFull = Path.Combine(Application.dataPath, filePath);
+        string filePathFull = Path.Combine(Application.persistentDataPath, filePath);
 
         try
         {
@@ -179,6 +193,17 @@ public class VoxelMapEditor : EditorWindow
         {
             Debug.LogError($"Failed to save data to {filePathFull}. \n {exception}");
         }
+    }
+
+    private void ExportGameObjectToFbx(GameObject gridObject)
+    {
+        string fbxPathFull = Path.Combine(Application.dataPath, fbxExportPath);
+        ExportModelOptions exportSettings = new ExportModelOptions();
+        exportSettings.ExportFormat = ExportFormat.Binary;
+        exportSettings.KeepInstances = false;
+        GameObject mesh = GetCombineBlock(gridObject);
+        ModelExporter.ExportObject(fbxPathFull, mesh, exportSettings);
+        DestroyImmediate(mesh);
     }
     #endregion
 

@@ -1,20 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public struct GridPosition
-{
-    public int x;
-    public int z;
-    public int height;
-
-    public GridPosition(int x, int z, int height)
-    {
-        this.x = x;
-        this.z = z;
-        this.height = height;
-    }
-}
-
 public class World
 {
     //  Summary
@@ -70,7 +56,7 @@ public class World
     {
         GameNode node = GetNode(x, y, z);
         GameNode aboveNode = GetNode(x, y + 1, z);
-        if (aboveNode != null && aboveNode != null && aboveNode.hasNode)
+        if (aboveNode != null && aboveNode != null && aboveNode.hasCube)
         {
             node.isWalkable = false;
         }
@@ -119,7 +105,7 @@ public class World
         {
             if (loadedNodes.TryGetValue(new Vector3Int(x, y, z), out GameNode node))
             {
-                if (node.hasNode) return node;
+                if (node.hasCube) return node;
             }   
         }
         return null;

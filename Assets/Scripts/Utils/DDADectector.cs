@@ -6,7 +6,7 @@ public static class DDADectector
     public static bool CheckCubeAtPosition(Vector3 position, Dictionary<Vector3Int, GameNode> loadedNodes)
     {
         Vector3Int blockPosition = Vector3Int.RoundToInt(position);
-        return loadedNodes.TryGetValue((blockPosition), out GameNode node) && node.hasNode;
+        return loadedNodes.TryGetValue((blockPosition), out GameNode node) && node.hasCube;
     }
 
     #region DDA Algorithms by calculate the rasterization of the ray
@@ -43,7 +43,7 @@ public static class DDADectector
 
         if (loadedNodes.TryGetValue((currentDDAblock), out GameNode startNode))
         {
-            if (startNode.hasNode)
+            if (startNode.hasCube)
             {
                 cubePosition = currentDDAblock;
                 return true;
@@ -83,7 +83,7 @@ public static class DDADectector
 
             if (loadedNodes.TryGetValue((currentDDAblock), out GameNode node))
             {
-                if (node.hasNode)
+                if (node.hasCube)
                 {
                     cubePosition = currentDDAblock;
                     return true;
@@ -108,7 +108,7 @@ public static class DDADectector
 
         if (loadedNodes.TryGetValue((blockPosition), out GameNode startNode))
         {
-            if (startNode.hasNode)
+            if (startNode.hasCube)
             {
                 return blockPosition;
             }
@@ -145,7 +145,7 @@ public static class DDADectector
 
             if (loadedNodes.TryGetValue((blockPosition), out GameNode node))
             {
-                if (node.hasNode)
+                if (node.hasCube)
                 {
                     return blockPosition;
                 }

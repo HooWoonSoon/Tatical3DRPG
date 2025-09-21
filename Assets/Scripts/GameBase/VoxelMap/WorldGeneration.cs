@@ -48,7 +48,7 @@ public class WorldGeneration : MonoBehaviour
                 {
                     world.GenerateNode(x, y, z);
                     GameNode node = world.GetNode(x, y, z);
-                    if (node.hasNode)
+                    if (node.hasCube)
                     {
                         Instantiate(prefab, new Vector3(x, y, z), Quaternion.identity);
                     }
@@ -58,7 +58,7 @@ public class WorldGeneration : MonoBehaviour
 
         world.GenerateNode(3, 4, 3);
         GameNode node1 = world.GetNode(3, 4, 3);
-        if (node1.hasNode)
+        if (node1.hasCube)
         {
             Instantiate(prefab, new Vector3(3, 4, 3), Quaternion.identity);
         }

@@ -228,7 +228,7 @@ public class PlayerCharacter : CharacterBase
 
     public void SetMovePosition(PlayerCharacter character, Vector3Int targetPosition)
     {
-        List<Vector3> pathVectorList = pathFinding.GetPathRoute(character.transform.position, targetPosition).pathRouteList;
+        List<Vector3> pathVectorList = pathFinding.GetPathRoute(character.transform.position, targetPosition, 1, 1).pathRouteList;
         if (pathVectorList.Count != 0)
         {
             pathRoute = new PathRoute

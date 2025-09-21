@@ -68,12 +68,11 @@ public class PlayerTeamSystem : TeamSystem
             stateMachine.ChangeState(teamSortPathFindingState);
         }
 
-        GameNode hitNode = Utils.GetRaycastHitNode(world.loadedNodes);
         if (Input.GetMouseButtonDown(0))
         {
+            GameNode hitNode = Utils.GetRaycastHitNode(world.loadedNodes);
             if (hitNode == null) { return;}
             Vector3Int targetPosition = hitNode.GetVectorInt();
-            Debug.Log(hitNode);
             if (targetPosition == new Vector3Int(-1, -1, -1)) return;
             Debug.Log(world.loadedNodes[(targetPosition)].isWalkable);
 
@@ -324,7 +323,7 @@ public class PlayerTeamSystem : TeamSystem
 
         for (int i = 0; i < sortedTarget.Count; i++)
         {
-            List<Vector3> pathVectorList = pathFinding.GetPathRoute(fromPosition, sortedTarget[i]).pathRouteList;
+            List<Vector3> pathVectorList = pathFinding.GetPathRoute(fromPosition, sortedTarget[i], 1, 1).pathRouteList;
 
             bool existSameTarget = IsTargetPositionExist(pathRoute, sortedTarget[i]);
             if (existSameTarget == true)
