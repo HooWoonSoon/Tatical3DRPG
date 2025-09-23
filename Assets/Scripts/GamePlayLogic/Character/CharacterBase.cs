@@ -1,6 +1,8 @@
 ﻿using Assets.Script.BattleVisualTilemap;
 using System.Collections.Generic;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public abstract class CharacterBase : Entity
 {
@@ -134,13 +136,20 @@ public abstract class CharacterBase : Entity
         return oppositeCharacter;
     }
 
+    public List<GameNode> GetMovableGameNode()
+    {
+        int movableRange = data.movableRange;
+        return pathFinding.GetCostDijkstraCoverangeNodes(Utils.RoundXZFloorYInt(transform.position), movableRange, 1, 1);
+    }
+
     public void ResetVisualTilemap()
     {
         TilemapVisual.instance.InitializeValidPosition(GameNode.TilemapSprite.None);
     }
-    public void ShowMovableTilemap(int range)
+    public void ShowMovableTilemap()
     {
-        List<Vector3Int> reachableRange = pathFinding.GetCostCoverangeFromPos(Utils.RoundXZFloorYInt(transform.position), range, 1, 1);
+        int selfRange = data.movableRange;
+        List<Vector3Int> reachableRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
         foreach (Vector3Int position in reachableRange)
         {
             TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
@@ -154,22 +163,60 @@ public abstract class CharacterBase : Entity
         }
     }
 
-    public void ShowMultipleCoverageTilemap(int selfRange, List<CharacterBase> characters)
+    public void ShowDangerCoverageTileFromNode()
     {
+        int selfRange = data.movableRange;
+        Vector3Int selfPos = Utils.RoundXZFloorYInt(transform.position);
+        List<GameNode> selfRangeExtend = pathFinding.GetCalculateDijkstraCost(selfPos, 1, 1);
+        List<GameNode> selfMovableNode = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, selfRange, 1, 1);
+        HashSet<GameNode> selfMovableNodeSet = new HashSet<GameNode>(selfMovableNode);
+        foreach (GameNode node in selfMovableNodeSet)
+        {
+            Vector3Int nodePos = node.GetVectorInt();
+            TilemapVisual.instance.SetTilemapSprite(nodePos, GameNode.TilemapSprite.Blue);
+        }
+
+        foreach (GameNode node in selfRangeExtend)
+        {
+            if (node.character == null) continue;
+            CharacterBase character = node.character;
+            TeamDeployment oppositeTeam = character.currentTeam;
+            if (oppositeTeam != currentTeam)
+            {
+                int oppositeRange = character.data.movableRange;
+                Vector3Int oppositePos = Utils.RoundXZFloorYInt(character.transform.position);
+                List<GameNode> oppositeRangeNodes = pathFinding.GetCostDijkstraCoverangeNodes(oppositePos, oppositeRange, 1, 1);
+                foreach (GameNode rangeNode in oppositeRangeNodes)
+                {
+                    if (selfMovableNodeSet.Contains(rangeNode))
+                    {
+                        Vector3Int rangeNodePos = rangeNode.GetVectorInt();
+                        TilemapVisual.instance.SetTilemapSprite(rangeNodePos, GameNode.TilemapSprite.Red);
+                    }
+                }
+            }
+        }
+    }
+
+    public void ShowDangerCoverageTile()
+    {
+        List<CharacterBase> characters = GetOppositeCharacter();
+        int selfRange = data.movableRange;
         if (characters.Contains(this))
         {
             characters.Remove(this);
         }
 
         HashSet<Vector3Int> coverage = new HashSet<Vector3Int>();
-        List<Vector3Int> reachableRange = pathFinding.GetCostCoverangeFromPos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
+        List<Vector3Int> reachableRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
         foreach (Vector3Int position in reachableRange)
         {
             TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
         }
         for (int i = 0; i < characters.Count; i++)
         {
-            List<Vector3Int> coverageRange = pathFinding.GetCostCoverangeFromPos(Utils.RoundXZFloorYInt(characters[i].transform.position), characters[i].data.movableRange, 1, 1);
+            int oppositeRange = characters[i].data.movableRange;
+            List<Vector3Int> coverageRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(characters[i].transform.position), oppositeRange, 1, 1);
             foreach (var pos in coverageRange)
             {
                 if (reachableRange.Contains(pos))
@@ -182,7 +229,7 @@ public abstract class CharacterBase : Entity
     }
     public void ShowMultipleCoverageTilemap(int selfRange, List<Vector3Int> coverage)
     {
-        List<Vector3Int> reachableRange = pathFinding.GetCostCoverangeFromPos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
+        List<Vector3Int> reachableRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
         foreach (Vector3Int position in reachableRange)
         {
             TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);

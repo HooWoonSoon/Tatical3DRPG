@@ -206,10 +206,16 @@ public class PathFinding
         return new PathRoute(processedPath, start);
     }
 
-    public List<Vector3Int> GetCostCoverangeFromPos(Vector3 start, int movableRangeCost, int riseLimit, int lowerLimit)
+    #region Dijkstra Region Search
+
+    //  Summary
+    //      Get the coverange from input position then use the dijkstra algorithm
+    //      to calculate the cost of each node check if the cost is lower than the
+    //      movable range cost then add to the result list
+    public List<Vector3Int> GetCostDijkstraCoverangePos(Vector3 start, int movableRangeCost, int riseLimit, int lowerLimit)
     {
         List<Vector3Int > result = new List<Vector3Int>();
-        List<GameNode> costNodes = CalculateDijkstraCostFromPos(start, riseLimit, lowerLimit);
+        List<GameNode> costNodes = GetCalculateDijkstraCost(start, riseLimit, lowerLimit);
         foreach (GameNode node in costNodes)
         {
             if (node.dijkstraCost <= movableRangeCost)
@@ -219,8 +225,25 @@ public class PathFinding
         }
         return result;
     }
+    public List<GameNode> GetCostDijkstraCoverangeNodes(Vector3 start, int movableRangeCost, int riseLimit, int lowerLimit)
+    {
+        List<GameNode> result = new List<GameNode>();
+        List<GameNode> costNodes = GetCalculateDijkstraCost(start, riseLimit, lowerLimit);
+        foreach (GameNode node in costNodes)
+        {
+            if (node.dijkstraCost <= movableRangeCost)
+            {
+                result.Add(node);
+            }
+        }
+        return result;
+    }
 
-    public List<GameNode> CalculateDijkstraCostFromPos(Vector3 start, int riseLimit, int lowerLimit)
+    //  Summary
+    //      Get the coverange gamenode from input position then use the dijkstra algorithm
+    //      to calculate the cost of each node till all the walkable node is calculated
+    //      or the cost is over the 200 limit
+    public List<GameNode> GetCalculateDijkstraCost(Vector3 start, int riseLimit, int lowerLimit)
     {
         GameNode startNode = world.GetNode(start);
         if (startNode == null)
@@ -248,6 +271,11 @@ public class PathFinding
             foreach (GameNode neighbourNode in neighbourNodes)
             {
                 int tentativeGCost = currentNode.dijkstraCost + CalculateSlopeCost(currentNode, neighbourNode);
+
+                //  Limit the searching range to avoid the long pathfinding time
+                if (tentativeGCost > 200)
+                    continue;
+
                 if (tentativeGCost < neighbourNode.dijkstraCost)
                 {
                     neighbourNode.dijkstraCost = tentativeGCost;
@@ -275,4 +303,5 @@ public class PathFinding
             return xCost + zCost;
         }
     }
+    #endregion
 }

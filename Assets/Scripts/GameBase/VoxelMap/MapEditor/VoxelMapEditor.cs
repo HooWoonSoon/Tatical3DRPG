@@ -254,7 +254,7 @@ public class VoxelMapEditor : EditorWindow
         mesh.name = "HeatMapMesh";
         meshFilter.mesh = mesh;
 
-        List<GameNode> dijsktraCostNode = pathFinding.CalculateDijkstraCostFromPos(character.transform.position, 1, 1);
+        List<GameNode> dijsktraCostNode = pathFinding.GetCalculateDijkstraCost(character.transform.position, 1, 1);
         if (dijsktraCostNode == null || dijsktraCostNode.Count == 0)
         {
             Debug.LogWarning("No nodes returned from pathfinding.");

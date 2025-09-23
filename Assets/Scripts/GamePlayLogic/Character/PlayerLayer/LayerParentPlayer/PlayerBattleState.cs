@@ -11,8 +11,7 @@ public class PlayerBattleState : PlayerBaseState
     {
         base.Enter();
         character.ResetVisualTilemap();
-        List<CharacterBase> oppositeCharacter = character.GetOppositeCharacter();
-        character.ShowMultipleCoverageTilemap(character.data.movableRange, oppositeCharacter);
+        character.ShowDangerCoverageTileFromNode();
     }
 
     public override void Exit()
