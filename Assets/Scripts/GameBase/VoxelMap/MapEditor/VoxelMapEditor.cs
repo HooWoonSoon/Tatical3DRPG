@@ -6,6 +6,7 @@ using System;
 using System.IO;
 using Newtonsoft.Json;
 using UnityEditor.Formats.Fbx.Exporter;
+using TMPro;
 
 [Serializable]
 public class GameNodeData
@@ -22,6 +23,11 @@ public class GameNodeData
         this.isWalkable = isWalkable;
         this.hasNode = hasNode;
     }
+}
+public class Heatmap
+{
+    public const int HEATMAP_MAX_VALUE = 45;
+    public const int HEATMAP_MIN_VALUE = 0;
 }
 
 #region Structor
@@ -41,6 +47,13 @@ public class VoxelMapEditor : EditorWindow
 
     private string filePath = "VoxelMap.json";
     private string fbxExportPath = "MapModel.fbx";
+    private string loadMapDataPath = "VoxelMap.json";
+    private GameObject heatMapObject;
+    private List<TextMeshPro> textMeshPros = new List<TextMeshPro>();
+    private CharacterBase character;
+    private Material heatMaterial;
+
+    private Vector2 scrollPos;
 
     [MenuItem("Utils/VoxelMapEditor")]
     public static void ShowWindow()
@@ -51,6 +64,8 @@ public class VoxelMapEditor : EditorWindow
 
     private void OnGUI()
     {
+        scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+
         EditorGUILayout.LabelField("Grid Map Properties", EditorStyles.boldLabel);
         gridOffsetXZ = EditorGUILayout.FloatField("Grid Offset X and Z", gridOffsetXZ);
 
@@ -80,6 +95,19 @@ public class VoxelMapEditor : EditorWindow
         {
             if (Selection.activeGameObject != null) { ExportGameObjectToFbx(Selection.activeGameObject); }
         }
+        loadMapDataPath = EditorGUILayout.TextField("Map Data File Path", "VoxelMap.json");
+        heatMaterial = (Material)EditorGUILayout.ObjectField("Heat Map Material", heatMaterial, typeof(Material), false);
+        character = (CharacterBase)EditorGUILayout.ObjectField("Character", character, typeof(CharacterBase), true);
+        if (GUILayout.Button("Show Movable Cost Map"))
+        {
+            SaveAndLoad.LoadMap(loadMapDataPath, out World world);
+            GenerateVisibleCostMap(character, world);
+        }
+        if (GUILayout.Button("Remove Movable Cost Map"))
+        {
+            RemoveVisibleMapCost();
+        }
+        EditorGUILayout.EndScrollView();
     }
 
     #region Function For Editor
@@ -189,7 +217,7 @@ public class VoxelMapEditor : EditorWindow
             File.WriteAllText(filePathFull, jsonData);
             Debug.Log($"Successfully saved data to {filePathFull}");
         }
-        catch (System.Exception exception)
+        catch (Exception exception)
         {
             Debug.LogError($"Failed to save data to {filePathFull}. \n {exception}");
         }
@@ -204,6 +232,60 @@ public class VoxelMapEditor : EditorWindow
         GameObject mesh = GetCombineBlock(gridObject);
         ModelExporter.ExportObject(fbxPathFull, mesh, exportSettings);
         DestroyImmediate(mesh);
+    }
+
+    //  Summary
+    //      Generate a heat map to show the cost of movement from the character's position
+    //      The cost is calculated using Dijkstra's algorithm
+    //      Only take the nodes which is walkable
+    private void GenerateVisibleCostMap(CharacterBase character, World world)
+    {
+        PathFinding pathFinding = new PathFinding(world);
+
+        DestroyImmediate(heatMapObject);
+        textMeshPros.Clear();
+
+        heatMapObject = new GameObject("HeatMapVisible");
+        heatMapObject.transform.position = new Vector3(0, 0.55f, 0);
+        MeshFilter meshFilter = heatMapObject.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = heatMapObject.AddComponent<MeshRenderer>();
+        meshRenderer.material = heatMaterial;
+        Mesh mesh = new Mesh();
+        mesh.name = "HeatMapMesh";
+        meshFilter.mesh = mesh;
+
+        List<GameNode> dijsktraCostNode = pathFinding.CalculateDijkstraCostFromPos(character.transform.position, 1, 1);
+        if (dijsktraCostNode == null || dijsktraCostNode.Count == 0)
+        {
+            Debug.LogWarning("No nodes returned from pathfinding.");
+            return;
+        }
+
+        Utils.CreateEmptyMeshArrays(dijsktraCostNode.Count, out Vector3[] vertices, out Vector2[] uvs, out int[] triangles);
+        for (int i = 0; i < dijsktraCostNode.Count; i++)
+        {
+            int cost = dijsktraCostNode[i].dijkstraCost;
+
+            float heatMapNornalizeValue = (float)cost / Heatmap.HEATMAP_MAX_VALUE;
+            Vector3 position = dijsktraCostNode[i].GetVector();
+            Vector2 heatMapUV = new Vector2(heatMapNornalizeValue, 0);
+            Utils.AddToMeshArrays(vertices, uvs, triangles, i, position, 0f, new Vector3(1, 0, 1), heatMapUV, heatMapUV);
+
+            string text = cost.ToString();
+            textMeshPros.Add(Utils.CreateWorldText(text, position + Vector3.zero, Quaternion.Euler(90, 0, 0), 5, Color.white, TextAlignmentOptions.Center));
+        }
+        GameObject textParent = GameObject.Find("World_Text_Parent");
+        if (textParent != null) { textParent.transform.position = new Vector3(0, 0.6f, 0); }
+        textParent.transform.SetParent(heatMapObject.transform, true);
+        mesh.vertices = vertices;
+        mesh.uv = uvs;
+        mesh.triangles = triangles;
+    }
+
+    private void RemoveVisibleMapCost()
+    {
+        DestroyImmediate(heatMapObject);
+        textMeshPros.Clear();
     }
     #endregion
 

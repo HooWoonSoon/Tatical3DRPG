@@ -28,7 +28,7 @@ public class TeamSystem : Entity
 
             while (!found && minSize <= maxSize)
             {
-                List<Vector3Int> range = world.GetManhattas3DRange(unitPosition, minSize);
+                List<Vector3Int> range = world.GetManhattas3DGameNodePosition(unitPosition, minSize);
                 range = SortTargetRangeByDistance(unitPosition, range);
                 for (int j = 0; j < range.Count; j++)
                 {

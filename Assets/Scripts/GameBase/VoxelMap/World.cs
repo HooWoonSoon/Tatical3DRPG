@@ -142,12 +142,50 @@ public class World
     #endregion
 
     #region Manhattan Distance Logic
-    //  Summary
-    //      This function calculates the Manhattan distance range in 3D space
-    public List<Vector3Int> GetManhattas3DRange(
+    public List<Vector3Int> GetManhattas3DGameNodePosition(
+    Vector3Int unitPosition,
+    int size,
+    bool limitY = false,
+    bool checkWalkable = false,
+    int yLength = 0
+    )
+    {
+        List<Vector3Int> coverage = new List<Vector3Int>();
+        List<Vector3Int> positions = GetManhattas3DRangePosition(unitPosition, size, limitY, yLength);
+        foreach (Vector3Int pos in positions)
+        {
+            GameNode node = GetNode(pos);
+            if (node == null) continue;
+            if (checkWalkable && !node.isWalkable) continue;
+            coverage.Add(pos);
+        }
+        return coverage;
+    }
+
+    public List<GameNode> GetManhattas3DGameNode(
         Vector3Int unitPosition,
         int size,
-        bool checkWalkable = true,
+        bool limitY = false,
+        bool checkWalkable = false,
+        int yLength = 0
+        )
+    {
+        List<GameNode> coverage = new List<GameNode>();
+        List<Vector3Int> positions = GetManhattas3DRangePosition(unitPosition, size, limitY, yLength);
+        foreach (Vector3Int pos in positions)
+        {
+            GameNode node = GetNode(pos);
+            if (node == null) continue;
+            if (checkWalkable && !node.isWalkable) continue;
+            coverage.Add(node);
+        }
+        return coverage;
+    }
+    //  Summary
+    //      This function calculates the Manhattan distance range in 3D space
+    public List<Vector3Int> GetManhattas3DRangePosition(
+        Vector3Int unitPosition,
+        int size,
         bool limitY = false,
         int yLength = 0)
     {
@@ -173,13 +211,6 @@ public class World
                              + Mathf.Abs(unitPosition.y - y)
                              + Mathf.Abs(unitPosition.z - z);
                     if (manhattasDistance > size) continue;
-                    if (!IsValidNode(x, y, z)) continue;
-
-                    GameNode node = GetNode(x, y, z);
-                    if (node == null) continue;
-
-                    if (checkWalkable && !node.isWalkable)
-                        continue;
 
                     coverage.Add(new Vector3Int(x, y, z));
                 }

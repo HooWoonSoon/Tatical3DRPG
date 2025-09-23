@@ -7,6 +7,7 @@ public class BattleManager : Entity
 {
     public static BattleManager instance { get; private set; }
 
+    public List<TeamDeployment> battleTeams = new List<TeamDeployment>();
     public List<CharacterBase> joinedBattleUnits = new List<CharacterBase>();
 
     public CTTurnUIGenerator ctTurnUIGenerator;
@@ -89,5 +90,12 @@ public class BattleManager : Entity
     {
         this.joinedBattleUnits = joinedBattleUnits;
     }
+
+    public void SetJoinedTeam(List<TeamDeployment> joinedTeam)
+    {
+        battleTeams = joinedTeam;
+    }
+
+    public List<TeamDeployment> GetBattleTeam() => battleTeams;
 }
 

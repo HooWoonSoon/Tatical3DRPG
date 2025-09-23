@@ -5,7 +5,7 @@ public class UnitDetectable : Entity
 {
     public Vector3 center;
     public Vector3 size;
-    private int mahhatassRange;
+    [SerializeField] private int mahhatassRange;
 
     public static List<UnitDetectable> all = new List<UnitDetectable>();
 
@@ -65,7 +65,7 @@ public class UnitDetectable : Entity
         if (world != null)
         {
             Gizmos.color = Color.yellow;
-            List<Vector3Int> coverage = world.GetManhattas3DRange(Utils.RoundXZFloorYInt(transform.position), mahhatassRange, false);
+            List<Vector3Int> coverage = world.GetManhattas3DRangePosition(Utils.RoundXZFloorYInt(transform.position), mahhatassRange, false);
 
             if (coverage.Count == 0 || mahhatassRange == 0) { return; }
             for (int i = 0; i < coverage.Count; i++)

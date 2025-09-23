@@ -1,16 +1,20 @@
 ﻿using System.Collections.Generic;
+using TMPro;
+using Unity.Mathematics;
 using UnityEngine;
 
 public class GridSystem : Entity
 {
     public List<CharacterBase> characters = new List<CharacterBase>();
     private bool updateCharacter = true;
+
     protected override void Start()
     {
         base.Start();
     }
     private void Update()
     {
+
     }
     private void LateUpdate()
     {

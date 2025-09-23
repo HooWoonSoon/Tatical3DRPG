@@ -86,7 +86,16 @@ public abstract class CharacterBase : Entity
             Vector3 currentPos = pathRoute.character.transform.position;
             Vector3 direction = (nextPathPosition - currentPos).normalized;
 
+            float heightDifferent = nextPathPosition.y - currentPos.y;
+            if (Mathf.Abs(heightDifferent) > 0.1f)
+            {
+                Vector3 heightPos = new Vector3(currentPos.x, currentPos.y + heightDifferent, currentPos.z);
+                pathRoute.character.transform.position = Vector3.MoveTowards(currentPos, heightPos, moveSpeed * 2 * Time.deltaTime);
+                currentPos = pathRoute.character.transform.position;
+            }
+
             FacingDirection(direction);
+            
             pathRoute.character.transform.position = Vector3.MoveTowards(currentPos, nextPathPosition, moveSpeed * Time.deltaTime);
 
             if (Vector3.Distance(pathRoute.character.transform.position, nextPathPosition) <= 0.1f)
@@ -107,23 +116,80 @@ public abstract class CharacterBase : Entity
         if (character == CTTimeline.instance.GetCurrentCharacter()) return true;
         return false;
     }
+
+    public List<CharacterBase> GetOppositeCharacter()
+    {
+        List<CharacterBase> oppositeCharacter = new List<CharacterBase>();
+        List<TeamDeployment> battleTeam = BattleManager.instance.GetBattleTeam();
+        foreach (var team in battleTeam)
+        {
+            foreach (var character in team.teamCharacter)
+            {
+                if (character.currentTeam != currentTeam)
+                {
+                    oppositeCharacter.Add(character);
+                }
+            }
+        }
+        return oppositeCharacter;
+    }
+
     public void ResetVisualTilemap()
     {
         TilemapVisual.instance.InitializeValidPosition(GameNode.TilemapSprite.None);
     }
-    public void ShowVisualTilemapMahattasRange(int range)
+    public void ShowMovableTilemap(int range)
     {
-        List<Vector3Int> movableRange = world.GetManhattas3DRange(Utils.RoundXZFloorYInt(transform.position), range);
-        foreach (Vector3Int position in movableRange)
+        List<Vector3Int> reachableRange = pathFinding.GetCostCoverangeFromPos(Utils.RoundXZFloorYInt(transform.position), range, 1, 1);
+        foreach (Vector3Int position in reachableRange)
         {
             TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
         }
     }
-    public void ShowVisualTilemap(List<Vector3Int> coverage)
+    public void ShowMovableTilemap(List<Vector3Int> coverage)
     {
         foreach (Vector3Int position in coverage)
         {
             TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+        }
+    }
+
+    public void ShowMultipleCoverageTilemap(int selfRange, List<CharacterBase> characters)
+    {
+        if (characters.Contains(this))
+        {
+            characters.Remove(this);
+        }
+
+        HashSet<Vector3Int> coverage = new HashSet<Vector3Int>();
+        List<Vector3Int> reachableRange = pathFinding.GetCostCoverangeFromPos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
+        foreach (Vector3Int position in reachableRange)
+        {
+            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+        }
+        for (int i = 0; i < characters.Count; i++)
+        {
+            List<Vector3Int> coverageRange = pathFinding.GetCostCoverangeFromPos(Utils.RoundXZFloorYInt(characters[i].transform.position), characters[i].data.movableRange, 1, 1);
+            foreach (var pos in coverageRange)
+            {
+                if (reachableRange.Contains(pos))
+                {
+                    coverage.Add(pos); 
+                    TilemapVisual.instance.SetTilemapSprite(pos, GameNode.TilemapSprite.Red);
+                }
+            }
+        }
+    }
+    public void ShowMultipleCoverageTilemap(int selfRange, List<Vector3Int> coverage)
+    {
+        List<Vector3Int> reachableRange = pathFinding.GetCostCoverangeFromPos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
+        foreach (Vector3Int position in reachableRange)
+        {
+            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+        }
+        foreach (Vector3Int position in coverage)
+        {
+            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
         }
     }
     public abstract void EnterBattle();

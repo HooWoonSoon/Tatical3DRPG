@@ -68,7 +68,6 @@ public class PlayerCharacter : CharacterBase
         base.Start();
         anim = GetComponent<Animator>();
         stateMachine.Initialize(exploreState, idleStateExplore);
-
     }
 
     private void Update()

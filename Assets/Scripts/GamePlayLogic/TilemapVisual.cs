@@ -67,6 +67,13 @@ public class TilemapVisual : Entity
             tilemapNode.SetTilemapSprite(tilemapSprite);
         }
     }
+    public void SetTilemapSprite(GameNode gameNode, GameNode.TilemapSprite tilemapSprite)
+    {
+        if (gameNode != null)
+        {
+            gameNode.SetTilemapSprite(tilemapSprite);
+        }
+    }
     private void SubscribeAllNodes()
     {
         foreach (var kvp in world.loadedNodes)
@@ -82,17 +89,12 @@ public class TilemapVisual : Entity
     }
     public void InitializeValidPosition(GameNode.TilemapSprite tilemapSprite)
     {
-        for (int x = 0; x < world.worldMaxX; x++)
+        foreach (GameNode gameNode in world.loadedNodes.Values)
         {
-            for (int y = 0; y < world.worldHeight; y++)
-            {
-                for (int z = 0; z < world.worldMaxZ; z++)
-                {
-                    SetTilemapSprite(new Vector3Int(x, y, z), tilemapSprite);
-                }
-            }
+            SetTilemapSprite(gameNode, tilemapSprite);
         }
     }
+
     public void UpdateTilemapVisual()
     {
         Utils.CreateEmptyMeshArrays(world.loadedNodes.Count, out Vector3[] vertices, out Vector2[] uvs, out int[] triangles);

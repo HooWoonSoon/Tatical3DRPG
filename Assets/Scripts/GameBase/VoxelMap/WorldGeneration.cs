@@ -13,26 +13,12 @@ public class WorldGeneration : MonoBehaviour
     private void Awake()
     {
         instance = this;
-        world = new World();
+        SaveAndLoad.LoadMap(mapDataPath, out world);
     }
 
     private void Start()
     {
-        LoadMap();
         //GenerateBlock();
-    }
-
-    public void LoadMap()
-    {
-        string fullPath = Path.Combine(Application.dataPath, mapDataPath);
-        if (!File.Exists(fullPath))
-        {
-            Debug.LogError($"Map data file not found at path: {fullPath}");
-            return;
-        }
-        string json = File.ReadAllText(fullPath);
-        List<GameNodeData> nodeDataList = JsonConvert.DeserializeObject<List<GameNodeData>>(json);
-        world.InitializeMapNode(nodeDataList);
     }
 
     //Debug

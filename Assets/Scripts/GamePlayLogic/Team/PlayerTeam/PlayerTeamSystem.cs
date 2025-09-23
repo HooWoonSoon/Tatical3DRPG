@@ -284,7 +284,7 @@ public class PlayerTeamSystem : TeamSystem
 
             if (IsWithinFollowRange(fromPosition, lastTargetPosition))
             {
-                List<Vector3Int> unitRange = world.GetManhattas3DRange(lastTargetPosition, 2);
+                List<Vector3Int> unitRange = world.GetManhattas3DGameNodePosition(lastTargetPosition, 2);
 
                 unitRange.RemoveAll(pos => usedTargetPositions.Contains(pos));
                 teamPathRoute.Add(new PathRoute

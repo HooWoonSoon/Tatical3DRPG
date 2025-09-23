@@ -17,12 +17,17 @@ public class GameNode
     public bool isWalkable;
     public bool hasCube;
 
+    #region Dijkstra Pathfinding Data
+    public int dijkstraCost;
+    #endregion
+
     #region A * Pathfinding Data
     public int gCost;
     public int hCost;
     public int fCost;
-    public GameNode cameFromNode;
     #endregion
+
+    public GameNode cameFromNode;
 
     public GameNode(int x, int y, int z, bool isWalkable, bool hasCube)
     {

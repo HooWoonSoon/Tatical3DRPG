@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class EnemyTeamSystem : TeamSystem
@@ -8,9 +9,8 @@ public class EnemyTeamSystem : TeamSystem
     public TeamStateMachine stateMechine;
     public TeamScoutingState teamScoutingState { get; private set; }
 
-    public List<TeamDeployment> allDetectedTeam = new List<TeamDeployment>();
+    public List<TeamDeployment> detectedTeam = new List<TeamDeployment>();
     public List<CharacterBase> detectedCharacters = new List<CharacterBase>();
-    public List<CharacterBase> lastDetectedCharacter = new List<CharacterBase>();
 
     private Vector3 lastPosition;
     private float eslapseTime = 0;
@@ -39,9 +39,9 @@ public class EnemyTeamSystem : TeamSystem
             MemberDetectedCharacter(character);
         }
 
-        if (allDetectedTeam.Count == 0 || lastDetectedCharacter == detectedCharacters) { return; }
+        if (detectedTeam.Count == 0 || detectedCharacters.Count == 0) { return; }
         
-        GetInfluenceUnits(allDetectedTeam, out List<CharacterBase> joinedBattleUnit);
+        GetInfluenceUnits(detectedTeam, out List<CharacterBase> joinedBattleUnit);
         List<PathRoute> pathRoutes = GetGridBattlePath(joinedBattleUnit);
         for (int i = 0; i < joinedBattleUnit.Count; i++)
         {
@@ -49,9 +49,13 @@ public class EnemyTeamSystem : TeamSystem
             joinedBattleUnit[i].pathRoute = pathRoutes[i];
             joinedBattleUnit[i].EnterBattle();
         }
+        List<TeamDeployment> allTeam = new List<TeamDeployment>();
+        allTeam.AddRange(detectedTeam);
+        allTeam.Add(teamDeployment);
+
+        BattleManager.instance.SetJoinedTeam(allTeam);
         BattleManager.instance.SetJoinedBattleUnit(joinedBattleUnit);
         CTTimeline.instance.SetupTimeline();
-        lastDetectedCharacter = detectedCharacters;
     }
 
     private void MemberDetectedCharacter(CharacterBase character)
@@ -66,9 +70,9 @@ public class EnemyTeamSystem : TeamSystem
             if (dectectTeam != null && !IsSameTeamMember(dectectTeam))
             {
                 Debug.Log("true, Inside Mahhatass Range");
-                if (!allDetectedTeam.Contains(dectectTeam))
+                if (!detectedTeam.Contains(dectectTeam))
                 {
-                    allDetectedTeam.Add(dectectTeam);
+                    detectedTeam.Add(dectectTeam);
                 }
             }
         }

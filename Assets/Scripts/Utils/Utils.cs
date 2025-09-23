@@ -69,7 +69,32 @@ public static class Utils
         triangles[tIndex + 4] = vIndex3;
         triangles[tIndex + 5] = vIndex2;
     }
-    
+
+    public static TextMeshPro CreateWorldText(string text, Vector3 localPosition, Quaternion quaternion, int fontSize, Color color, TextAlignmentOptions textAlignment, int sortingOrder = 0)
+    {
+        GameObject parent = GameObject.Find("World_Text_Parent");
+        if (parent == null)
+        { 
+            parent = new GameObject("World_Text_Parent");
+            parent.transform.position = Vector3.zero;
+        }
+        GameObject gameObject = new GameObject("World_Text", typeof(TextMeshPro));
+        Transform transform = gameObject.transform;
+        transform.SetParent(parent.transform, false);
+        transform.localPosition = localPosition;
+        transform.rotation = quaternion;
+
+        TextMeshPro textMeshPro = gameObject.GetComponent<TextMeshPro>();
+        textMeshPro.text = text;
+        textMeshPro.fontSize = fontSize;
+        textMeshPro.color = color;
+        textMeshPro.alignment = textAlignment;
+
+        textMeshPro.GetComponent<MeshRenderer>().sortingOrder = sortingOrder;
+
+        return textMeshPro;
+    }
+
     public static TextMeshPro CreateWorldText(string text, Transform parent, Vector3 localPosition, Quaternion quaternion, int fontSize, Color color, TextAlignmentOptions textAlignment, int sortingOrder = 0)
     {
         GameObject gameObject = new GameObject("World_Text", typeof(TextMeshPro));

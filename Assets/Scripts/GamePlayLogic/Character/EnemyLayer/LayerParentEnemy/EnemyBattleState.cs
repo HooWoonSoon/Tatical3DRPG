@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
 
 public class EnemyBattleState : EnemyBaseState
 {
@@ -10,7 +10,8 @@ public class EnemyBattleState : EnemyBaseState
     {
         base.Enter();
         character.ResetVisualTilemap();
-        character.ShowVisualTilemapMahattasRange(character.data.movableRange);
+        List<CharacterBase> oppositeCharacter = character.GetOppositeCharacter();
+        character.ShowMultipleCoverageTilemap(character.data.movableRange, oppositeCharacter);
     }
 
     public override void Exit()

@@ -30,9 +30,9 @@ public class PathFinding
         openList = new List<GameNode> { startNode };
         closedList = new HashSet<GameNode>();
 
-        foreach (var key in world.loadedNodes.Keys.ToList())
+        foreach (GameNode pathNode in world.loadedNodes.Values.ToList())
         {
-            GameNode pathNode = world.loadedNodes[key];
+            if (!pathNode.isWalkable) { continue; }
             pathNode.gCost = int.MaxValue;
             pathNode.CalculateFCost();
             pathNode.cameFromNode = null;
@@ -89,10 +89,10 @@ public class PathFinding
     //      Note that the A* algorithm triggers this function once every time the cell is moved.
     private int CalculateDistanceCost(GameNode a, GameNode b)
     {
-        int xDistance = Mathf.Abs(a.x - b.x);
-        int yDistance = Mathf.Abs(a.y - b.y);
-        int zDistance = Mathf.Abs(a.z - b.z);
-        return (xDistance + yDistance + zDistance);
+        int xCost = Mathf.Abs(b.x - a.x);
+        int yCost = Mathf.Abs(b.y - a.y);
+        int zCost = Mathf.Abs(b.z - a.z);
+        return (xCost + yCost + zCost);
     }
 
     private GameNode GetLowestFCostNode(List<GameNode> nodeList)
@@ -204,5 +204,75 @@ public class PathFinding
     {
         SetProcessPath(start, end, riseLimit, lowerLimit);
         return new PathRoute(processedPath, start);
+    }
+
+    public List<Vector3Int> GetCostCoverangeFromPos(Vector3 start, int movableRangeCost, int riseLimit, int lowerLimit)
+    {
+        List<Vector3Int > result = new List<Vector3Int>();
+        List<GameNode> costNodes = CalculateDijkstraCostFromPos(start, riseLimit, lowerLimit);
+        foreach (GameNode node in costNodes)
+        {
+            if (node.dijkstraCost <= movableRangeCost)
+            {
+                result.Add(new Vector3Int(node.x, node.y, node.z));
+            }
+        }
+        return result;
+    }
+
+    public List<GameNode> CalculateDijkstraCostFromPos(Vector3 start, int riseLimit, int lowerLimit)
+    {
+        GameNode startNode = world.GetNode(start);
+        if (startNode == null)
+        {
+            Debug.LogWarning("Invalid start node position");
+            return new List<GameNode>();
+        }
+        foreach (GameNode gameNode in world.loadedNodes.Values.ToList())
+        {
+            if (!gameNode.isWalkable) { continue; }
+            gameNode.dijkstraCost = int.MaxValue;
+            gameNode.cameFromNode = null;
+        }
+        startNode.dijkstraCost = 0;
+
+        List<GameNode> openList = new List<GameNode> { startNode };
+        List<GameNode> calcualtedNode = new List<GameNode> { startNode };
+
+        while (openList.Count > 0)
+        {
+            GameNode currentNode = openList[0];
+            openList.RemoveAt(0);
+
+            List<GameNode> neighbourNodes = GetNeighbourList(currentNode, riseLimit, lowerLimit);
+            foreach (GameNode neighbourNode in neighbourNodes)
+            {
+                int tentativeGCost = currentNode.dijkstraCost + CalculateSlopeCost(currentNode, neighbourNode);
+                if (tentativeGCost < neighbourNode.dijkstraCost)
+                {
+                    neighbourNode.dijkstraCost = tentativeGCost;
+                    neighbourNode.cameFromNode = currentNode;
+                    calcualtedNode.Add(neighbourNode);
+                    if (!openList.Contains(neighbourNode))
+                        openList.Add(neighbourNode);
+                }
+            }
+        }
+        return calcualtedNode;
+    }
+
+    private int CalculateSlopeCost(GameNode a, GameNode b)
+    {
+        int xCost = Mathf.Abs(b.x - a.x);
+        int height = b.y - a.y;
+        int zCost = Mathf.Abs(b.z - a.z);
+        if (height > 0)
+        {
+            return height + xCost + zCost;
+        }
+        else
+        {
+            return xCost + zCost;
+        }
     }
 }
