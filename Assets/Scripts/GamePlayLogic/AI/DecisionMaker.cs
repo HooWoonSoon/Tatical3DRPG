@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 public enum UnitType
 {
     Melee, Ranged
@@ -28,6 +29,7 @@ public class DecisionMaker
         foreach (SkillData skill in character.skillData)
         {
             List<GameNode> skillInflueneNode = character.GetSkillAttackableNode(skill);
+            Debug.Log($"Skill Node: {skillInflueneNode.Count}");
             if (skillInflueneNode.Count == 0) continue;
             float score = 0;
             foreach (GameNode node in skillInflueneNode)

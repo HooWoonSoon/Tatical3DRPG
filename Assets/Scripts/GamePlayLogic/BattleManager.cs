@@ -77,6 +77,7 @@ public class BattleManager : Entity
             }
         }
     }
+
     public void HandleBattle()
     {
         CharacterBase character = CTTimeline.instance.GetCurrentCharacter();

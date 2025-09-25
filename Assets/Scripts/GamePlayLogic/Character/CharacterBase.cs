@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -78,7 +79,7 @@ public abstract class CharacterBase : Entity
         else if (direction.x < 0)
             transform.localScale = new Vector3(-1, 1, 1);
     }
-    public void PathfindingMoveToTarget()
+    public void PathToTarget()
     {
         if (pathRoute == null) return;
 
@@ -113,6 +114,58 @@ public abstract class CharacterBase : Entity
             }
         }
     }
+    public IEnumerator PathToTargetCorroutine()
+    {
+        if (pathRoute == null) yield break;
+
+        while (pathRoute != null && pathRoute.pathIndex != -1)
+        {
+            Vector3 nextPathPosition = pathRoute.pathRouteList[pathRoute.pathIndex];
+            Vector3 currentPos = pathRoute.character.transform.position;
+            Vector3 direction = (nextPathPosition - currentPos).normalized;
+
+            float heightDifferent = nextPathPosition.y - currentPos.y;
+            if (Mathf.Abs(heightDifferent) > 0.1f)
+            {
+                Vector3 heightPos = new Vector3(
+                    currentPos.x,
+                    currentPos.y + heightDifferent,
+                    currentPos.z
+                );
+                pathRoute.character.transform.position = Vector3.MoveTowards(
+                    currentPos,
+                    heightPos,
+                    moveSpeed * 2 * Time.deltaTime
+                );
+                currentPos = pathRoute.character.transform.position;
+            }
+
+            FacingDirection(direction);
+
+            pathRoute.character.transform.position = Vector3.MoveTowards(
+                currentPos,
+                nextPathPosition,
+                moveSpeed * Time.deltaTime
+            );
+
+            if (Vector3.Distance(pathRoute.character.transform.position, nextPathPosition) <= 0.1f)
+            {
+                pathRoute.character.transform.position = nextPathPosition;
+                pathRoute.pathIndex++;
+
+                if (pathRoute.pathIndex >= pathRoute.pathRouteList.Count)
+                {
+                    Debug.Log($"Reached target {pathRoute.targetPosition}");
+                    pathRoute.pathIndex = -1;
+                    pathRoute = null;
+                    yield break;
+                }
+            }
+
+            yield return null;
+        }
+    }
+
     public bool IsYourTurn(CharacterBase character)
     {
         if (character == CTTimeline.instance.GetCurrentCharacter()) return true;

@@ -17,7 +17,7 @@
     public override void Update()
     {
         base.Update();
-        character.PathfindingMoveToTarget();
+        character.PathToTarget();
     }
 }
 

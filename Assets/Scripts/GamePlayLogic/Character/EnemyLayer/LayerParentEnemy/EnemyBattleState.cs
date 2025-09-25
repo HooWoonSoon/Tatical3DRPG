@@ -15,6 +15,8 @@ public class EnemyBattleState : EnemyBaseState
         DecisionMaker decisionMaker = new DecisionMaker(character);
         decisionMaker.MakeDecision();
         decisionMaker.GetResult(out SkillData skill, out GameNode targetNode);
+        Debug.Log($"Target Node: {targetNode}");
+        Debug.Log($"Skill: {skill}");
         if (targetNode != null && skill != null)
         {
             Debug.Log($"Move To {targetNode.GetVector()}, Use {skill.skillName}");
@@ -28,6 +30,7 @@ public class EnemyBattleState : EnemyBaseState
     public override void Exit()
     {
         base.Exit();
+        Debug.Log("Exit Battle State");
     }
 
     public override void Update()

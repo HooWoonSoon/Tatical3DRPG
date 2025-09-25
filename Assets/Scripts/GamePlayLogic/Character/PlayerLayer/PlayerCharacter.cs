@@ -28,7 +28,7 @@ public class PlayerCharacter : CharacterBase
     public Vector3? targetPosition = null;
     #endregion
 
-    public PlayerStateMachine stateMachine;
+    public PlayerStateMachine stateMechine;
     private Animator anim;
 
     public PlayerBattleState battleState { get; private set; }
@@ -49,31 +49,31 @@ public class PlayerCharacter : CharacterBase
 
     private void Awake()
     {
-        stateMachine = new PlayerStateMachine();
+        stateMechine = new PlayerStateMachine();
 
-        exploreState = new PlayerExploreState(stateMachine, this);
-        battleState = new PlayerBattleState(stateMachine, this);
-        waitState = new PlayerWaitState(stateMachine, this);
+        exploreState = new PlayerExploreState(stateMechine, this);
+        battleState = new PlayerBattleState(stateMechine, this);
+        waitState = new PlayerWaitState(stateMechine, this);
 
-        idleStateExplore = new PlayerIdleStateExplore(stateMachine, this);
-        moveStateExplore = new PlayerMoveStateExplore(stateMachine, this);
-        movePathStateExplore = new PlayerMovePathStateExplore(stateMachine, this);
+        idleStateExplore = new PlayerIdleStateExplore(stateMechine, this);
+        moveStateExplore = new PlayerMoveStateExplore(stateMechine, this);
+        movePathStateExplore = new PlayerMovePathStateExplore(stateMechine, this);
 
-        idleStateBattle = new PlayerIdleStateBattle(stateMachine, this);
-        movePathStateBattle = new PlayerMovePathStateBattle(stateMachine, this);
+        idleStateBattle = new PlayerIdleStateBattle(stateMechine, this);
+        movePathStateBattle = new PlayerMovePathStateBattle(stateMechine, this);
     }
 
     protected override void Start()
     {
         base.Start();
         anim = GetComponent<Animator>();
-        stateMachine.Initialize(exploreState, idleStateExplore);
+        stateMechine.Initialize(exploreState, idleStateExplore);
     }
 
     private void Update()
     {
-        stateMachine.roofState.Update();
-        stateMachine.subState.Update();
+        stateMechine.roofState.Update();
+        stateMechine.subState.Update();
     }
 
     public void UpdateHistory()
@@ -237,13 +237,13 @@ public class PlayerCharacter : CharacterBase
                 pathRouteList = pathVectorList,
                 pathIndex = 0
             };
-            stateMachine.ChangeSubState(movePathStateExplore);
+            stateMechine.ChangeSubState(movePathStateExplore);
         }
     }
 
     public override void EnterBattle()
     {
-        stateMachine.ChangeRoofState(waitState);
-        stateMachine.ChangeSubState(movePathStateBattle);
+        stateMechine.ChangeRoofState(waitState);
+        stateMechine.ChangeSubState(movePathStateBattle);
     }
 }

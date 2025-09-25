@@ -20,7 +20,7 @@ public class EnemyMovePathStateBattle : EnemyBaseState
     public override void Update()
     {
         base.Update();
-        character.PathfindingMoveToTarget();
+        character.PathToTarget();
         if (character.pathRoute == null)
         {
             stateMachine.ChangeSubState(character.idleStateBattle);

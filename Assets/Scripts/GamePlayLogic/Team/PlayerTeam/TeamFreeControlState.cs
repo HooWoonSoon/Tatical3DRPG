@@ -10,7 +10,7 @@
         for (int i = 0; i < team.linkMembers.Count; i++)
         {
             PlayerCharacter character = team.linkMembers[i].character;
-            character.stateMachine.ChangeSubState(character.idleStateExplore);
+            character.stateMechine.ChangeSubState(character.idleStateExplore);
         }
     }
 
