@@ -1,8 +1,6 @@
-﻿using Assets.Script.BattleVisualTilemap;
-using System.Collections.Generic;
-using UnityEditor.Experimental.GraphView;
+﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public abstract class CharacterBase : Entity
 {
@@ -18,10 +16,12 @@ public abstract class CharacterBase : Entity
 
     [Header("Character Information")]
     public CharacterData data;
+    public List<SkillData> skillData;
     public int currenthealth;
 
     public PathRoute pathRoute;
     public Orientation orientation = Orientation.right;
+    public UnitType unitType = UnitType.Melee;
 
     protected override void Start()
     {
@@ -136,46 +136,30 @@ public abstract class CharacterBase : Entity
         return oppositeCharacter;
     }
 
-    public List<GameNode> GetMovableGameNode()
+    public List<GameNode> GetMovableNode()
     {
+        List<GameNode> result = new List<GameNode>();
         int movableRange = data.movableRange;
-        return pathFinding.GetCostDijkstraCoverangeNodes(Utils.RoundXZFloorYInt(transform.position), movableRange, 1, 1);
+        Vector3Int selfPos = Utils.RoundXZFloorYInt(transform.position);
+        List<GameNode> coverage = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, movableRange, 1, 1);
+        foreach (var node in coverage)
+        {
+            if (node.character == null || node.character == this)
+            {
+                result.Add(node);
+            }
+        }
+        return result;
     }
 
-    public void ResetVisualTilemap()
-    {
-        TilemapVisual.instance.InitializeValidPosition(GameNode.TilemapSprite.None);
-    }
-    public void ShowMovableTilemap()
-    {
-        int selfRange = data.movableRange;
-        List<Vector3Int> reachableRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
-        foreach (Vector3Int position in reachableRange)
-        {
-            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
-        }
-    }
-    public void ShowMovableTilemap(List<Vector3Int> coverage)
-    {
-        foreach (Vector3Int position in coverage)
-        {
-            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
-        }
-    }
-
-    public void ShowDangerCoverageTileFromNode()
+    public List<GameNode> GetConflictNode()
     {
         int selfRange = data.movableRange;
         Vector3Int selfPos = Utils.RoundXZFloorYInt(transform.position);
         List<GameNode> selfRangeExtend = pathFinding.GetCalculateDijkstraCost(selfPos, 1, 1);
         List<GameNode> selfMovableNode = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, selfRange, 1, 1);
         HashSet<GameNode> selfMovableNodeSet = new HashSet<GameNode>(selfMovableNode);
-        foreach (GameNode node in selfMovableNodeSet)
-        {
-            Vector3Int nodePos = node.GetVectorInt();
-            TilemapVisual.instance.SetTilemapSprite(nodePos, GameNode.TilemapSprite.Blue);
-        }
-
+        List<GameNode> conflictNode = new List<GameNode>();
         foreach (GameNode node in selfRangeExtend)
         {
             if (node.character == null) continue;
@@ -190,22 +174,87 @@ public abstract class CharacterBase : Entity
                 {
                     if (selfMovableNodeSet.Contains(rangeNode))
                     {
-                        Vector3Int rangeNodePos = rangeNode.GetVectorInt();
-                        TilemapVisual.instance.SetTilemapSprite(rangeNodePos, GameNode.TilemapSprite.Red);
+                        conflictNode.Add(rangeNode);
                     }
                 }
             }
         }
+        return conflictNode;
     }
 
-    public void ShowDangerCoverageTile()
+    public List<GameNode> GetSkillAttackableNode(SkillData skill)
+    {
+        List<GameNode> movableNodes = GetMovableNode();
+        HashSet<GameNode> result = new HashSet<GameNode>();
+
+        foreach (GameNode moveNode in movableNodes)
+        {
+            List<GameNode> influenceNodes = skill.GetInflueneNode(world, moveNode);
+            foreach (GameNode node in influenceNodes)
+            {
+                if (node.character != null && node.character != this && 
+                    node.character.currentTeam != currentTeam)
+                {
+                    result.Add(moveNode);
+                    break;
+                }
+            }
+        }
+        return result.ToList();
+    }
+
+    public List<CharacterBase> GetSkillAttackableCharacter(SkillData skill, GameNode gameNode)
+    {
+        HashSet<CharacterBase> result = new HashSet<CharacterBase>();
+        List<GameNode> influenceNodes = skill.GetInflueneNode(world, gameNode);
+
+        foreach (GameNode node in influenceNodes)
+        {
+            if (node.character != null && node.character != this &&
+                node.character.currentTeam != currentTeam)
+            {
+                result.Add(node.character);
+            }
+        }
+        return result.ToList();
+    }
+
+    public void ResetVisualTilemap()
+    {
+        TilemapVisual.instance.InitializeValidPosition(GameNode.TilemapSprite.None);
+    }
+
+    public void ShowMovableTilemap()
+    {
+        int selfRange = data.movableRange;
+        List<GameNode> movableNode = GetMovableNode();
+        foreach (GameNode node in movableNode)
+        {
+            Vector3Int position = node.GetVectorInt();
+            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+        }
+    }
+
+    public void ShowDangerAndMovableTileFromNode()
+    {
+        List<GameNode> selfMovableNode = GetMovableNode();
+        foreach (GameNode node in selfMovableNode)
+        {
+            Vector3Int nodePos = node.GetVectorInt();
+            TilemapVisual.instance.SetTilemapSprite(nodePos, GameNode.TilemapSprite.Blue);
+        }
+        List<GameNode> dangerNode = GetConflictNode();
+        foreach (GameNode rangeNode in dangerNode)
+        {
+            Vector3Int rangeNodePos = rangeNode.GetVectorInt();
+            TilemapVisual.instance.SetTilemapSprite(rangeNodePos, GameNode.TilemapSprite.Purple);
+        }
+    }
+
+    public void ShowDangerAndMovableTile()
     {
         List<CharacterBase> characters = GetOppositeCharacter();
         int selfRange = data.movableRange;
-        if (characters.Contains(this))
-        {
-            characters.Remove(this);
-        }
 
         HashSet<Vector3Int> coverage = new HashSet<Vector3Int>();
         List<Vector3Int> reachableRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
@@ -222,11 +271,12 @@ public abstract class CharacterBase : Entity
                 if (reachableRange.Contains(pos))
                 {
                     coverage.Add(pos); 
-                    TilemapVisual.instance.SetTilemapSprite(pos, GameNode.TilemapSprite.Red);
+                    TilemapVisual.instance.SetTilemapSprite(pos, GameNode.TilemapSprite.Purple);
                 }
             }
         }
     }
+
     public void ShowMultipleCoverageTilemap(int selfRange, List<Vector3Int> coverage)
     {
         List<Vector3Int> reachableRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
@@ -239,5 +289,6 @@ public abstract class CharacterBase : Entity
             TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
         }
     }
+
     public abstract void EnterBattle();
 }

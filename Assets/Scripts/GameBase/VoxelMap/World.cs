@@ -143,7 +143,7 @@ public class World
 
     #region Manhattan Distance Logic
     public List<Vector3Int> GetManhattas3DGameNodePosition(
-    Vector3Int unitPosition,
+    Vector3Int position,
     int size,
     bool limitY = false,
     bool checkWalkable = false,
@@ -151,7 +151,7 @@ public class World
     )
     {
         List<Vector3Int> coverage = new List<Vector3Int>();
-        List<Vector3Int> positions = GetManhattas3DRangePosition(unitPosition, size, limitY, yLength);
+        List<Vector3Int> positions = GetManhattas3DRangePosition(position, size, limitY, yLength);
         foreach (Vector3Int pos in positions)
         {
             GameNode node = GetNode(pos);

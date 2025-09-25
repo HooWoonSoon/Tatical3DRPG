@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class EnemyBattleState : EnemyBaseState
 {
@@ -10,7 +11,18 @@ public class EnemyBattleState : EnemyBaseState
     {
         base.Enter();
         character.ResetVisualTilemap();
-        character.ShowDangerCoverageTileFromNode();
+        character.ShowDangerAndMovableTileFromNode();
+        DecisionMaker decisionMaker = new DecisionMaker(character);
+        decisionMaker.MakeDecision();
+        decisionMaker.GetResult(out SkillData skill, out GameNode targetNode);
+        if (targetNode != null && skill != null)
+        {
+            Debug.Log($"Move To {targetNode.GetVector()}, Use {skill.skillName}");
+        }
+        else
+        {
+            Debug.Log("No valid action");
+        }
     }
 
     public override void Exit()

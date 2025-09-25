@@ -11,7 +11,7 @@ public class PlayerBattleState : PlayerBaseState
     {
         base.Enter();
         character.ResetVisualTilemap();
-        character.ShowDangerCoverageTileFromNode();
+        character.ShowDangerAndMovableTileFromNode();
     }
 
     public override void Exit()
