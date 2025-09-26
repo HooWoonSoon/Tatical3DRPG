@@ -9,6 +9,7 @@ public class BattleManager : Entity
 
     public List<TeamDeployment> battleTeams = new List<TeamDeployment>();
     public List<CharacterBase> joinedBattleUnits = new List<CharacterBase>();
+    public bool isBattleStarted = false;
 
     public CTTurnUIGenerator ctTurnUIGenerator;
 
@@ -80,6 +81,10 @@ public class BattleManager : Entity
 
     public void HandleBattle()
     {
+        for (int i = 0; i < joinedBattleUnits.Count; i++)
+        {
+            joinedBattleUnits[i].ReadyBattle();
+        }
         CharacterBase character = CTTimeline.instance.GetCurrentCharacter();
         ctTurnUIGenerator.TargetCursorCharacterUI(character);
         cursor.SetActive(true);
@@ -92,11 +97,83 @@ public class BattleManager : Entity
         this.joinedBattleUnits = joinedBattleUnits;
     }
 
-    public void SetJoinedTeam(List<TeamDeployment> joinedTeam)
+    private void FindJoinedTeam()
     {
-        battleTeams = joinedTeam;
+        foreach (CharacterBase character in joinedBattleUnits)
+        {
+            TeamDeployment team = character.currentTeam;
+            if (!battleTeams.Contains(team))
+            {
+                battleTeams.Add(team);
+            }
+        }
+    }
+
+    private void EnterBattleUnitRefinePath()
+    {
+        List<PathRoute> pathRoutes = GetBattleUnitRefinePath();
+
+        for (int i = 0; i < joinedBattleUnits.Count; i++)
+        {
+            joinedBattleUnits[i].pathRoute = pathRoutes[i];
+            joinedBattleUnits[i].ReadyBattle();
+        }
+    }
+
+    private List<PathRoute> GetBattleUnitRefinePath()
+    {
+        List<PathRoute> pathRoutes = new List<PathRoute>();
+        HashSet<Vector3Int> occupiedPos = new HashSet<Vector3Int>();
+        foreach (CharacterBase character in joinedBattleUnits)
+        {
+            int iteration = 1;
+            bool found = false;
+            Vector3Int unitPosition = character.GetCharacterNodePosition();
+            while (iteration <= 16 && !found)
+            {
+                List<Vector3Int> optionPos = character.GetUnlimitedMovablePos(iteration);
+                List<Vector3Int> sortPos = Utils.SortTargetRangeByDistance(unitPosition, optionPos);
+                for (int i = 0; i < sortPos.Count; i++)
+                {
+                    if (!occupiedPos.Contains(sortPos[i]))
+                    {
+                        List<Vector3> pathVectorList = (pathFinding.GetPathRoute(unitPosition, sortPos[i], 1, 1).pathRouteList);
+                        if (pathVectorList.Count != 0)
+                        {
+                            pathRoutes.Add(new PathRoute
+                            {
+                                character = character,
+                                targetPosition = sortPos[i],
+                                pathRouteList = pathVectorList,
+                                pathIndex = 0
+                            });
+                            occupiedPos.Add(sortPos[i]);
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                iteration++;
+            }
+
+            if (!found)
+            {
+                Debug.LogError($"{character.name} Not Found Path");
+                return null;
+            }
+        }
+        return pathRoutes;
+    }
+
+    public void PreapreBattleContent()
+    {
+        CTTimeline.instance.SetJoinedBattleUnit(joinedBattleUnits);
+        CTTimeline.instance.SetupTimeline();
+        FindJoinedTeam();
+        EnterBattleUnitRefinePath();
     }
 
     public List<TeamDeployment> GetBattleTeam() => battleTeams;
+
 }
 

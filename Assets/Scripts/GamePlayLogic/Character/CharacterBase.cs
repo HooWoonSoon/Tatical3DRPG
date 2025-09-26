@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public abstract class CharacterBase : Entity
 {
@@ -23,6 +25,7 @@ public abstract class CharacterBase : Entity
     public PathRoute pathRoute;
     public Orientation orientation = Orientation.right;
     public UnitType unitType = UnitType.Melee;
+
 
     protected override void Start()
     {
@@ -68,7 +71,7 @@ public abstract class CharacterBase : Entity
                 return Vector3Int.zero;
         }
     }
-    public Vector3Int GetCharacterPosition()
+    public Vector3Int GetCharacterNodePosition()
     {
         return Utils.RoundXZFloorYInt(transform.position);
     }
@@ -79,6 +82,21 @@ public abstract class CharacterBase : Entity
         else if (direction.x < 0)
             transform.localScale = new Vector3(-1, 1, 1);
     }
+
+    public PathRoute GetPathRoute(GameNode targetNode)
+    {
+        Vector3 selfPos = GetCharacterNodePosition();
+        Vector3 targetPos = targetNode.GetVector();
+        List<Vector3> pathVectorList = pathFinding.GetPathRoute(selfPos, targetPos, 1, 1).pathRouteList;
+        return new PathRoute
+        {
+            character = this,
+            targetPosition = targetNode.GetVectorInt(),
+            pathRouteList = pathVectorList,
+            pathIndex = 0
+        };
+    }
+
     public void PathToTarget()
     {
         if (pathRoute == null) return;
@@ -105,6 +123,7 @@ public abstract class CharacterBase : Entity
             {
                 pathRoute.character.transform.position = nextPathPosition;
                 pathRoute.pathIndex++;
+                GridCharacter.instance.SetGridCharacter(Utils.RoundXZFloorYInt(transform.position), this);
                 if (pathRoute.pathIndex >= pathRoute.pathRouteList.Count)
                 {
                     Debug.Log($"Reached target {pathRoute.targetPosition}");
@@ -112,57 +131,6 @@ public abstract class CharacterBase : Entity
                     pathRoute = null;
                 }
             }
-        }
-    }
-    public IEnumerator PathToTargetCorroutine()
-    {
-        if (pathRoute == null) yield break;
-
-        while (pathRoute != null && pathRoute.pathIndex != -1)
-        {
-            Vector3 nextPathPosition = pathRoute.pathRouteList[pathRoute.pathIndex];
-            Vector3 currentPos = pathRoute.character.transform.position;
-            Vector3 direction = (nextPathPosition - currentPos).normalized;
-
-            float heightDifferent = nextPathPosition.y - currentPos.y;
-            if (Mathf.Abs(heightDifferent) > 0.1f)
-            {
-                Vector3 heightPos = new Vector3(
-                    currentPos.x,
-                    currentPos.y + heightDifferent,
-                    currentPos.z
-                );
-                pathRoute.character.transform.position = Vector3.MoveTowards(
-                    currentPos,
-                    heightPos,
-                    moveSpeed * 2 * Time.deltaTime
-                );
-                currentPos = pathRoute.character.transform.position;
-            }
-
-            FacingDirection(direction);
-
-            pathRoute.character.transform.position = Vector3.MoveTowards(
-                currentPos,
-                nextPathPosition,
-                moveSpeed * Time.deltaTime
-            );
-
-            if (Vector3.Distance(pathRoute.character.transform.position, nextPathPosition) <= 0.1f)
-            {
-                pathRoute.character.transform.position = nextPathPosition;
-                pathRoute.pathIndex++;
-
-                if (pathRoute.pathIndex >= pathRoute.pathRouteList.Count)
-                {
-                    Debug.Log($"Reached target {pathRoute.targetPosition}");
-                    pathRoute.pathIndex = -1;
-                    pathRoute = null;
-                    yield break;
-                }
-            }
-
-            yield return null;
         }
     }
 
@@ -189,11 +157,26 @@ public abstract class CharacterBase : Entity
         return oppositeCharacter;
     }
 
+    public List<Vector3Int> GetUnlimitedMovablePos(int size)
+    {
+        List<Vector3Int> result = new List<Vector3Int>();
+        Vector3Int selfPos = GetCharacterNodePosition();
+        List<GameNode> coverage = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, size, 1, 1);
+        foreach (var node in coverage)
+        {
+            if (node.character == null || node.character == this)
+            {
+                result.Add(node.GetVectorInt());
+            }
+        }
+        return result;
+    }
+
     public List<GameNode> GetMovableNode()
     {
         List<GameNode> result = new List<GameNode>();
         int movableRange = data.movableRange;
-        Vector3Int selfPos = Utils.RoundXZFloorYInt(transform.position);
+        Vector3Int selfPos = GetCharacterNodePosition();
         List<GameNode> coverage = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, movableRange, 1, 1);
         foreach (var node in coverage)
         {
@@ -208,7 +191,7 @@ public abstract class CharacterBase : Entity
     public List<GameNode> GetConflictNode()
     {
         int selfRange = data.movableRange;
-        Vector3Int selfPos = Utils.RoundXZFloorYInt(transform.position);
+        Vector3Int selfPos = GetCharacterNodePosition();
         List<GameNode> selfRangeExtend = pathFinding.GetCalculateDijkstraCost(selfPos, 1, 1);
         List<GameNode> selfMovableNode = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, selfRange, 1, 1);
         HashSet<GameNode> selfMovableNodeSet = new HashSet<GameNode>(selfMovableNode);
@@ -274,7 +257,7 @@ public abstract class CharacterBase : Entity
 
     public void ResetVisualTilemap()
     {
-        TilemapVisual.instance.InitializeValidPosition(GameNode.TilemapSprite.None);
+        GridTilemapVisual.instance.SetAllTileSprite(GameNode.TilemapSprite.None);
     }
 
     public void ShowMovableTilemap()
@@ -284,7 +267,7 @@ public abstract class CharacterBase : Entity
         foreach (GameNode node in movableNode)
         {
             Vector3Int position = node.GetVectorInt();
-            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
         }
     }
 
@@ -294,13 +277,13 @@ public abstract class CharacterBase : Entity
         foreach (GameNode node in selfMovableNode)
         {
             Vector3Int nodePos = node.GetVectorInt();
-            TilemapVisual.instance.SetTilemapSprite(nodePos, GameNode.TilemapSprite.Blue);
+            GridTilemapVisual.instance.SetTilemapSprite(nodePos, GameNode.TilemapSprite.Blue);
         }
         List<GameNode> dangerNode = GetConflictNode();
         foreach (GameNode rangeNode in dangerNode)
         {
             Vector3Int rangeNodePos = rangeNode.GetVectorInt();
-            TilemapVisual.instance.SetTilemapSprite(rangeNodePos, GameNode.TilemapSprite.Purple);
+            GridTilemapVisual.instance.SetTilemapSprite(rangeNodePos, GameNode.TilemapSprite.Purple);
         }
     }
 
@@ -313,7 +296,7 @@ public abstract class CharacterBase : Entity
         List<Vector3Int> reachableRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
         foreach (Vector3Int position in reachableRange)
         {
-            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
         }
         for (int i = 0; i < characters.Count; i++)
         {
@@ -324,7 +307,7 @@ public abstract class CharacterBase : Entity
                 if (reachableRange.Contains(pos))
                 {
                     coverage.Add(pos); 
-                    TilemapVisual.instance.SetTilemapSprite(pos, GameNode.TilemapSprite.Purple);
+                    GridTilemapVisual.instance.SetTilemapSprite(pos, GameNode.TilemapSprite.Purple);
                 }
             }
         }
@@ -335,13 +318,13 @@ public abstract class CharacterBase : Entity
         List<Vector3Int> reachableRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
         foreach (Vector3Int position in reachableRange)
         {
-            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
         }
         foreach (Vector3Int position in coverage)
         {
-            TilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
+            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
         }
     }
 
-    public abstract void EnterBattle();
+    public abstract void ReadyBattle();
 }

@@ -10,20 +10,17 @@ public class EnemyBattleState : EnemyBaseState
     public override void Enter()
     {
         base.Enter();
+        Debug.Log("Execute");
         character.ResetVisualTilemap();
         character.ShowDangerAndMovableTileFromNode();
         DecisionMaker decisionMaker = new DecisionMaker(character);
         decisionMaker.MakeDecision();
         decisionMaker.GetResult(out SkillData skill, out GameNode targetNode);
-        Debug.Log($"Target Node: {targetNode}");
-        Debug.Log($"Skill: {skill}");
-        if (targetNode != null && skill != null)
+        if (targetNode != null)
         {
-            Debug.Log($"Move To {targetNode.GetVector()}, Use {skill.skillName}");
-        }
-        else
-        {
-            Debug.Log("No valid action");
+            character.pathRoute = character.GetPathRoute(targetNode);
+            character.pathRoute.DebugPathRoute();
+            stateMachine.ChangeSubState(character.movePathStateBattle);
         }
     }
 

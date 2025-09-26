@@ -74,7 +74,14 @@ public class CTTimeline : MonoBehaviour
             NextCharacter();
         }
     }
-    public void InsertCharacter(CharacterBase character)
+    public void SetJoinedBattleUnit(List<CharacterBase> characters)
+    {
+        for (int i = 0; i < characters.Count; i++)
+        {
+            InsertCharacter(characters[i]);
+        }
+    }
+    private void InsertCharacter(CharacterBase character)
     {
         if (!battleCharacter.ContainsKey(character))
         {

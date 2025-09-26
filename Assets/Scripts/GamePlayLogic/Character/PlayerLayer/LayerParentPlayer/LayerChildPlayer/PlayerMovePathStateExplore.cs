@@ -18,6 +18,10 @@
     {
         base.Update();
         character.PathToTarget();
+        if (character.pathRoute == null)
+        {
+            stateMachine.ChangeSubState(character.idleStateExplore);
+        }
     }
 }
 

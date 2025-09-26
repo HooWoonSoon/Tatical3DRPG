@@ -5,6 +5,7 @@ public class EnemyCharacter : CharacterBase
     public EnemyStateMachine stateMechine;
 
     public EnemyExploreState exploreState { get; private set; }
+    public EnemyReadyBattleState readyBattleState { get; private set; }
     public EnemyBattleState battleState { get; private set; }
     public EnemyWaitState waitState { get; private set; }
 
@@ -17,11 +18,11 @@ public class EnemyCharacter : CharacterBase
         stateMechine = new EnemyStateMachine();
 
         exploreState = new EnemyExploreState(stateMechine, this);
+        readyBattleState = new EnemyReadyBattleState(stateMechine, this);
         battleState = new EnemyBattleState(stateMechine, this);
         waitState = new EnemyWaitState(stateMechine, this);
 
         idleStateExplore = new EnemyIdleStateExplore(stateMechine, this);
-
         idleStateBattle = new EnemyIdleStateBattle(stateMechine, this);
         movePathStateBattle = new EnemyMovePathStateBattle(stateMechine, this);
     }
@@ -35,10 +36,10 @@ public class EnemyCharacter : CharacterBase
         stateMechine.roofState.Update();
         stateMechine.subState.Update();
     }
-    public override void EnterBattle()
+    public override void ReadyBattle()
     {
-        stateMechine.ChangeRoofState(waitState);
-        stateMechine.ChangeSubState(movePathStateBattle);
+        stateMechine.ChangeRoofState(readyBattleState);
+        stateMechine.ChangeSubState(idleStateBattle);
     }
 }
 

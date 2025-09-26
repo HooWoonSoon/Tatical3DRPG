@@ -19,8 +19,8 @@ public class DecisionMaker
     public void MakeDecision()
     {
         Dictionary<GameNode, float> nodeScore = new Dictionary<GameNode, float>();
-        List<GameNode> movableNode = character.GetMovableNode();
-        List<GameNode> conflictNode = character.GetConflictNode();
+        //List<GameNode> movableNode = character.GetMovableNode();
+        //List<GameNode> conflictNode = character.GetConflictNode();
 
         SkillData bestSkill = null;
         GameNode bestNode = null;

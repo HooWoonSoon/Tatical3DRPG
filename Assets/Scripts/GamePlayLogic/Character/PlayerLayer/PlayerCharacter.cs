@@ -20,19 +20,16 @@ public class PlayerCharacter : CharacterBase
     public bool isSelected;
     public bool isLink;
     public bool isBusy;
-
-    public bool isExplore;
-    public bool isBattle;
-
     public bool isMoving;
-    public Vector3? targetPosition = null;
     #endregion
+
+    public Vector3? targetPosition = null;
 
     public PlayerStateMachine stateMechine;
     private Animator anim;
-
-    public PlayerBattleState battleState { get; private set; }
     public PlayerExploreState exploreState { get; private set; }
+    public PlayerReadyBattleState readyBattleState { get; private set; }
+    public PlayerBattleState battleState { get; private set; }
     public PlayerWaitState waitState { get; private set; }
 
     public PlayerIdleStateExplore idleStateExplore { get; private set; }
@@ -52,6 +49,7 @@ public class PlayerCharacter : CharacterBase
         stateMechine = new PlayerStateMachine();
 
         exploreState = new PlayerExploreState(stateMechine, this);
+        readyBattleState = new PlayerReadyBattleState(stateMechine, this);
         battleState = new PlayerBattleState(stateMechine, this);
         waitState = new PlayerWaitState(stateMechine, this);
 
@@ -103,8 +101,6 @@ public class PlayerCharacter : CharacterBase
     //      Move the unit character with the frequence input
     public void Move(float x, float z)
     {
-        if (isBattle) { return; }
-
         if (x == 0 && z == 0)
         {
             //  No movement input
@@ -241,9 +237,9 @@ public class PlayerCharacter : CharacterBase
         }
     }
 
-    public override void EnterBattle()
+    public override void ReadyBattle()
     {
-        stateMechine.ChangeRoofState(waitState);
+        stateMechine.ChangeRoofState(readyBattleState);
         stateMechine.ChangeSubState(movePathStateBattle);
     }
 }

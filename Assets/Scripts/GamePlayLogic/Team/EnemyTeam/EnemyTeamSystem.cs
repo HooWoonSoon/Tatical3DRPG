@@ -43,20 +43,9 @@ public class EnemyTeamSystem : TeamSystem
             if (detectedTeam.Count == 0 || detectedCharacters.Count == 0) { return; }
 
             GetInfluenceUnits(detectedTeam, out List<CharacterBase> joinedBattleUnit);
-            List<PathRoute> pathRoutes = GetGridBattlePath(joinedBattleUnit);
-            for (int i = 0; i < joinedBattleUnit.Count; i++)
-            {
-                CTTimeline.instance.InsertCharacter(joinedBattleUnit[i]);
-                joinedBattleUnit[i].pathRoute = pathRoutes[i];
-                joinedBattleUnit[i].EnterBattle();
-            }
-            List<TeamDeployment> allTeam = new List<TeamDeployment>();
-            allTeam.AddRange(detectedTeam);
-            allTeam.Add(teamDeployment);
 
-            BattleManager.instance.SetJoinedTeam(allTeam);
             BattleManager.instance.SetJoinedBattleUnit(joinedBattleUnit);
-            CTTimeline.instance.SetupTimeline();
+            BattleManager.instance.PreapreBattleContent();
         }
     }
 

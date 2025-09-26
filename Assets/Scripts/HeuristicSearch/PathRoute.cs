@@ -17,5 +17,21 @@ public class PathRoute
         pathRouteList = new List<Vector3>();
         foreach (GameNode pathNode in pathNodeList)
             pathRouteList.Add(pathNode.GetVector() + new Vector3(0, offset, 0));
+        if (pathRouteList.Count > 0)
+        {
+            pathIndex = 0;
+        }
+    }
+
+    public void DebugPathRoute()
+    {
+        if (pathRouteList == null || pathRouteList.Count == 0)
+        {
+            Debug.Log("PathRoute is empty");
+            return;
+        }
+
+        string pathLog = string.Join(" -> ", pathRouteList.ConvertAll(p => p.ToString()));
+        Debug.Log($"PathRoute: {pathLog}");
     }
 }

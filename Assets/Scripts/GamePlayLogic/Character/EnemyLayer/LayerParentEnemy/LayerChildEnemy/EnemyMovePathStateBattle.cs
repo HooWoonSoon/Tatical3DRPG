@@ -10,6 +10,7 @@ public class EnemyMovePathStateBattle : EnemyBaseState
     public override void Enter()
     {
         base.Enter();
+        Debug.Log("Execute Move Path State Battle");
     }
 
     public override void Exit()

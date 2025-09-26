@@ -319,7 +319,7 @@ public class PlayerTeamSystem : TeamSystem
         if (pathRoute.targetRangeList == null || pathRoute.targetRangeList.Count == 0)
             return false;
 
-        var sortedTarget = SortTargetRangeByDistance(fromPosition, pathRoute.targetRangeList);
+        var sortedTarget = Utils.SortTargetRangeByDistance(fromPosition, pathRoute.targetRangeList);
 
         for (int i = 0; i < sortedTarget.Count; i++)
         {

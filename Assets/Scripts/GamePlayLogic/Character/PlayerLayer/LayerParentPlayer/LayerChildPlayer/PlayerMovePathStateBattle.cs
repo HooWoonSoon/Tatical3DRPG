@@ -1,4 +1,6 @@
 ﻿
+using UnityEngine;
+
 public class PlayerMovePathStateBattle : PlayerBaseState
 {
     public PlayerMovePathStateBattle(PlayerStateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
