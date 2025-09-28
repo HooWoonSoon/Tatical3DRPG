@@ -11,6 +11,7 @@ public class EnemyTeamSystem : TeamSystem
 
     public List<TeamDeployment> detectedTeam = new List<TeamDeployment>();
     public List<CharacterBase> detectedCharacters = new List<CharacterBase>();
+    public HashSet<CharacterBase> lastUnit = new HashSet<CharacterBase>();
 
     private Vector3 lastPosition;
     private float eslapseTime = 0;
@@ -34,62 +35,63 @@ public class EnemyTeamSystem : TeamSystem
     #region Scouting
     public void TeamSouting()
     {
-        bool hasNewDetected = false;
         foreach (CharacterBase character in teamDeployment.teamCharacter)
         {
-            hasNewDetected = IsDetectedCharacter(character); 
-
-            if (!hasNewDetected) { return; }
-            if (detectedTeam.Count == 0 || detectedCharacters.Count == 0) { return; }
-
-            GetInfluenceUnits(detectedTeam, out List<CharacterBase> joinedBattleUnit);
-
-            BattleManager.instance.SetJoinedBattleUnit(joinedBattleUnit);
-            BattleManager.instance.PreapreBattleContent();
+            DetectedEntireTeamCharacter(character);
         }
+
+        if (detectedCharacters.Count == 0 || detectedTeam.Count == 0) { return; }
+        HashSet<CharacterBase> allUnit = GetDetectableAndSelfTeamUnit();
+        if (lastUnit.SetEquals(allUnit)) { return; }
+        Debug.Log("Last Unit different");
+        lastUnit = new HashSet<CharacterBase>(allUnit);
+        BattleManager.instance.SetJoinedBattleUnit(allUnit);
+        BattleManager.instance.PreapreBattleContent();
     }
 
-    private bool IsDetectedCharacter(CharacterBase character)
+    private HashSet<CharacterBase> GetDetectableAndSelfTeamUnit()
     {
-        bool newDetected = false;
+        HashSet<CharacterBase> result = new HashSet<CharacterBase>();
+        foreach (CharacterBase character in teamDeployment.teamCharacter)
+        {
+            if (!result.Contains(character))
+            {
+                result.Add(character);
+            }
+        }
+        foreach (CharacterBase character in detectedCharacters)
+        {
+            if (!result.Contains(character))
+            {
+                result.Add(character);
+            }
+        }
+        return result;
+    }
+
+    private void DetectedEntireTeamCharacter(CharacterBase character)
+    {
         UnitDetectable[] unitDetectable = character.detectable.OverlapMahhatassRange(5);
 
         foreach (UnitDetectable hit in unitDetectable)
         {
             CharacterBase detectedCharacter = hit.GetComponent<CharacterBase>();
+
             if (detectedCharacter == null) { continue; }
+            if (IsSameTeamMember(detectedCharacter)) { continue; }
 
-            if (!detectedCharacters.Contains(detectedCharacter))
+            TeamDeployment dectectTeam = detectedCharacter.currentTeam;
+            if (IsSameTeam(dectectTeam)) { continue;}
+
+            List<CharacterBase> dectectTeamCharacter = dectectTeam.teamCharacter;
+            detectedTeam.Add(dectectTeam);
+            foreach (CharacterBase teamCharacter in dectectTeamCharacter)
             {
-                detectedCharacters.Add(detectedCharacter);
-                TeamDeployment dectectTeam = detectedCharacter.currentTeam;
-                if (!IsSameTeam(dectectTeam))
+                if (!detectedCharacters.Contains(teamCharacter))
                 {
-                    detectedTeam.Add(dectectTeam);
+                    detectedCharacters.Add(teamCharacter);
                 }
-                newDetected = true;
             }
-        }
-        return newDetected;
-    }
-
-    private void GetInfluenceUnits(List<TeamDeployment> allDetectedTeam, out List<CharacterBase> joinedBattleUnit)
-    {
-        joinedBattleUnit = new List<CharacterBase>();
-
-        foreach (TeamDeployment team in allDetectedTeam)
-        {
-            foreach (CharacterBase character in team.teamCharacter)
-            {
-                if (!joinedBattleUnit.Contains(character))
-                    joinedBattleUnit.Add(character);
-            }
-        }
-
-        foreach (var member in teamDeployment.teamCharacter)
-        {
-            if (!joinedBattleUnit.Contains(member))
-                joinedBattleUnit.Add(member);
         }
     }
 
@@ -97,6 +99,12 @@ public class EnemyTeamSystem : TeamSystem
     {
         if (teamDeployment == team) { return true; }
         else if (team == null) { return false; }
+        return false;
+    }
+
+    private bool IsSameTeamMember(CharacterBase character)
+    {
+        if (character.currentTeam == teamDeployment) { return true; }
         return false;
     }
     #endregion

@@ -20,6 +20,7 @@ public class EnemyBattleState : EnemyBaseState
         {
             character.pathRoute = character.GetPathRoute(targetNode);
             character.pathRoute.DebugPathRoute();
+
             stateMachine.ChangeSubState(character.movePathStateBattle);
         }
     }
