@@ -226,13 +226,14 @@ public class PlayerCharacter : CharacterBase
         List<Vector3> pathVectorList = pathFinding.GetPathRoute(character.transform.position, targetPosition, 1, 1).pathRouteList;
         if (pathVectorList.Count != 0)
         {
-            pathRoute = new PathRoute
+            PathRoute pathRoute = new PathRoute
             {
                 character = character,
                 targetPosition = targetPosition,
                 pathRouteList = pathVectorList,
                 pathIndex = 0
             };
+            character.SetPathRoute(pathRoute);
             stateMechine.ChangeSubState(movePathStateExplore);
         }
     }

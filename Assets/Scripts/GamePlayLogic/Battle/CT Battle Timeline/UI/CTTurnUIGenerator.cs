@@ -59,6 +59,7 @@ public class CTTurnUIGenerator : MonoBehaviour
     }
 
     [Header("Unit Image")]
+    [SerializeField] private GameObject targetImageObject;
     [SerializeField] private GameObject turnUIContent;
     [SerializeField] private GameObject turnPhaseUI;
     [SerializeField] private List<TurnUIImage> turnUIImages = new List<TurnUIImage>();
@@ -72,9 +73,14 @@ public class CTTurnUIGenerator : MonoBehaviour
     private bool isFocusing = false;
     private Vector2 velocity = Vector2.zero;
 
-    private void Start()
+    private void OnEnable()
     {
-        UIManager.instance.onReadyBattlePanel += GenerateTimelineUI;
+        CTTimeline.instance.confirmCTTimeline += GenerateTimelineUI;
+    }
+
+    private void OnDisable()
+    {
+        CTTimeline.instance.confirmCTTimeline -= GenerateTimelineUI;
     }
 
     private void Update()
@@ -144,8 +150,10 @@ public class CTTurnUIGenerator : MonoBehaviour
             {
                 if (turnUIImages[i].character == character)
                 {
+                    UpdateTargetCharacterUI(character);
                     RectTransform target = turnUIImages[i].backgroundPanel.rectTransform;
                     FocusOnCharacterUI(target);
+
                 }
             }
         }
@@ -163,5 +171,17 @@ public class CTTurnUIGenerator : MonoBehaviour
 
         targetAnchoredPos = new Vector2(rectContent.anchoredPosition.x - distance, rectContent.anchoredPosition.y);
         isFocusing = true;
+    }
+
+    private void UpdateTargetCharacterUI(CharacterBase character)
+    {
+        Image image = targetImageObject.GetComponent<Image>();
+        if (image == null) { return; }
+
+        Sprite sprite = character.data.characterTurnUISprite;
+        if (sprite != null)
+        {
+            image.sprite = sprite;
+        }
     }
 }

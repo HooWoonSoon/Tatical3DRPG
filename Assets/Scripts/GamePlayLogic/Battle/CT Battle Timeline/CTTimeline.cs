@@ -53,6 +53,7 @@ public class CTTimeline : MonoBehaviour
     private int currentNumberIndex = 0;
     private CharacterBase currentCharacter;
 
+    [SerializeField] private CTTurnUIGenerator cTTurnUIGenerator;
     [SerializeField] private UITransitionToolkit uITransitionToolkit;
     public event Action confirmCTTimeline;
     public static CTTimeline instance { get; private set; }

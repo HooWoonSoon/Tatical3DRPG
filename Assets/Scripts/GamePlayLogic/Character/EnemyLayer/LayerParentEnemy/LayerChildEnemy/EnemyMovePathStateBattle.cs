@@ -15,6 +15,7 @@ public class EnemyMovePathStateBattle : EnemyBaseState
     public override void Exit()
     {
         base.Exit();
+        character.ResetVisualTilemap();
     }
 
     public override void Update()
@@ -23,7 +24,14 @@ public class EnemyMovePathStateBattle : EnemyBaseState
         character.PathToTarget();
         if (character.pathRoute == null)
         {
-            stateMachine.ChangeSubState(character.idleStateBattle);
+            if (character.currentSkill != null)
+            {
+                stateMachine.ChangeSubState(character.skillCastStateBattle);
+            }
+            else
+            {
+                stateMachine.ChangeSubState(character.idleStateBattle);
+            }
         }
     }
 }

@@ -10,19 +10,12 @@ public class EnemyBattleState : EnemyBaseState
     public override void Enter()
     {
         base.Enter();
-        Debug.Log("Execute");
         character.ResetVisualTilemap();
-        character.ShowDangerAndMovableTileFromNode();
         DecisionMaker decisionMaker = new DecisionMaker(character);
-        decisionMaker.MakeDecision();
-        decisionMaker.GetResult(out SkillData skill, out GameNode targetNode);
-        if (targetNode != null)
-        {
-            character.pathRoute = character.GetPathRoute(targetNode);
-            character.pathRoute.DebugPathRoute();
-
-            stateMachine.ChangeSubState(character.movePathStateBattle);
-        }
+        decisionMaker.GetResult(out SkillData skill, out GameNode movaToNode, out GameNode skillTargetNode);
+        character.SetPathRoute(movaToNode);
+        character.ShowDangerMovableAndTargetTilemap(movaToNode);
+        character.SetSkillAndTarget(skill, skillTargetNode);
     }
 
     public override void Exit()
@@ -37,6 +30,10 @@ public class EnemyBattleState : EnemyBaseState
         if (!character.IsYourTurn(character))
         {
             stateMachine.ChangeRoofState(character.waitState);
+        }
+        if (character.pathRoute != null)
+        {
+            stateMachine.ChangeSubState(character.movePathStateBattle);
         }
     }
 }

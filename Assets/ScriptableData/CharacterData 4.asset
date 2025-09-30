@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   characterName: EA
   characterProfile: {fileID: 0}
-  characterTurnUISprite: {fileID: 0}
+  characterTurnUISprite: {fileID: 21300000, guid: 379d867ef8d53db49806ef1adfd55d19, type: 3}
   ID: 4
   type: 0
   healthPoint: 100

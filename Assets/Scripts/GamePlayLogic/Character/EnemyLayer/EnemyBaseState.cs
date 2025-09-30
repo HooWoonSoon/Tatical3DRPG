@@ -4,6 +4,7 @@ public abstract class EnemyBaseState
 {
     protected EnemyCharacter character;
     protected EnemyStateMachine stateMachine;
+    protected float timeInState;
 
     public EnemyBaseState(EnemyStateMachine stateMachine, EnemyCharacter character)
     {
@@ -20,7 +21,7 @@ public abstract class EnemyBaseState
     }
     public virtual void Update()
     {
-        Debug.Log($"Update {StateName()}");
+        timeInState += Time.deltaTime;
     }
     public virtual void Exit()
     {

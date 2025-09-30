@@ -7,7 +7,7 @@ using UnityEngine.EventSystems;
 public class BattleManager : Entity
 {
     public static BattleManager instance { get; private set; }
-    public BattleUI battleUI;
+    public BattleUIController battleUI;
 
     public List<TeamDeployment> battleTeams = new List<TeamDeployment>();
     public List<CharacterBase> joinedBattleUnits = new List<CharacterBase>();
@@ -50,7 +50,7 @@ public class BattleManager : Entity
 
         for (int i = 0; i < joinedBattleUnits.Count; i++)
         {
-            joinedBattleUnits[i].pathRoute = pathRoutes[i];
+            joinedBattleUnits[i].SetPathRoute(pathRoutes[i]);
             joinedBattleUnits[i].ReadyBattle();
         }
     }
@@ -104,13 +104,13 @@ public class BattleManager : Entity
     {
         if (isBattleStarted) { return; }
         Debug.Log("PreapareBattleContent");
-        CTTimeline.instance.SetJoinedBattleUnit(joinedBattleUnits);
-        CTTimeline.instance.SetupTimeline();
         FindJoinedTeam();
         EnterBattleUnitRefinePath();
+        battleUI.PrepareBattleUI();
+        CTTimeline.instance.SetJoinedBattleUnit(joinedBattleUnits);
+        CTTimeline.instance.SetupTimeline();
         
         battleUI.OnBattleUIFinish += StartBattle;
-        battleUI.PlayBattleUI();
     }
 
     public void StartBattle()

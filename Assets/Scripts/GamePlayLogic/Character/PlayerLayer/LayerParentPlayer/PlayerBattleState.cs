@@ -12,11 +12,13 @@ public class PlayerBattleState : PlayerBaseState
         base.Enter();
         character.ResetVisualTilemap();
         character.ShowDangerAndMovableTileFromNode();
+        BattleUIController.instance.OpenUpdateSkillUI(character);
     }
 
     public override void Exit()
     {
         base.Exit();
+        BattleUIController.instance.CloseSkillUI();
     }
 
     public override void Update()

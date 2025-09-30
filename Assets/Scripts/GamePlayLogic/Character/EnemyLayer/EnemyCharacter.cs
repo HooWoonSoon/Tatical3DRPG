@@ -12,6 +12,7 @@ public class EnemyCharacter : CharacterBase
     public EnemyIdleStateExplore idleStateExplore { get; private set; }
     public EnemyIdleStateBattle idleStateBattle { get; private set; }
     public EnemyMovePathStateBattle movePathStateBattle { get; private set; }
+    public EnemySkillCastStateBattle skillCastStateBattle { get; private set; }
 
     private void Awake()
     {
@@ -25,6 +26,7 @@ public class EnemyCharacter : CharacterBase
         idleStateExplore = new EnemyIdleStateExplore(stateMechine, this);
         idleStateBattle = new EnemyIdleStateBattle(stateMechine, this);
         movePathStateBattle = new EnemyMovePathStateBattle(stateMechine, this);
+        skillCastStateBattle = new EnemySkillCastStateBattle(stateMechine, this);
     }
     protected override void Start()
     {

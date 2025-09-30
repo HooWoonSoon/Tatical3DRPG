@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public abstract class CharacterBase : Entity
 {
@@ -19,10 +18,13 @@ public abstract class CharacterBase : Entity
 
     [Header("Character Information")]
     public CharacterData data;
-    public List<SkillData> skillData;
     public int currenthealth;
+    public List<SkillData> skillData;
+    
+    public SkillData currentSkill { get; private set;}
+    public GameNode currentSkillTargetNode { get; private set; }
+    public PathRoute pathRoute { get; private set; }
 
-    public PathRoute pathRoute;
     public Orientation orientation = Orientation.right;
     public UnitType unitType = UnitType.Melee;
 
@@ -83,6 +85,19 @@ public abstract class CharacterBase : Entity
             transform.localScale = new Vector3(-1, 1, 1);
     }
 
+    public void SetPathRoute(PathRoute pathRoute)
+    {
+        this.pathRoute = pathRoute;
+        pathRoute.DebugPathRoute();
+    }
+
+    public void SetPathRoute(GameNode targetNode)
+    {
+        if (targetNode == null) return;
+        pathRoute = GetPathRoute(targetNode);
+        pathRoute.DebugPathRoute();
+    }
+
     public PathRoute GetPathRoute(GameNode targetNode)
     {
         Vector3 selfPos = GetCharacterNodePosition();
@@ -133,9 +148,32 @@ public abstract class CharacterBase : Entity
             }
         }
     }
+    
+    public void SetSkillAndTarget(SkillData skill, GameNode targetNode)
+    {
+        if (skill == null) { return; }
+        currentSkill = skill;
+        currentSkillTargetNode = targetNode;
+    }
+    public void UseSkill()
+    {
+        if (currentSkill == null) { return; }
+
+    }
+    public void SkillCalculate()
+    {
+        CharacterBase character = currentSkillTargetNode.GetUnitGridCharacter();
+        int damage = currentSkill.baseDamage;
+        if (character != null)
+        {
+            character.currenthealth -= damage;
+            Debug.Log($"{this.gameObject.name} damage {character.gameObject.name} for {damage} points. Remaining health: {character.currenthealth}");
+        }
+    }
 
     public bool IsYourTurn(CharacterBase character)
     {
+        if (!BattleManager.instance.isBattleStarted) { return false; }
         if (character == CTTimeline.instance.GetCurrentCharacter()) return true;
         return false;
     }
@@ -218,7 +256,7 @@ public abstract class CharacterBase : Entity
         return conflictNode;
     }
 
-    public List<GameNode> GetSkillAttackableNode(SkillData skill)
+    public List<GameNode> GetSkillAttackMovableNode(SkillData skill)
     {
         List<GameNode> movableNodes = GetMovableNode();
         HashSet<GameNode> result = new HashSet<GameNode>();
@@ -237,6 +275,16 @@ public abstract class CharacterBase : Entity
             }
         }
         return result.ToList();
+    }
+
+    public List<GameNode> GetSkillRangeFromNode(SkillData skill, GameNode gameNode)
+    {
+        return skill.GetInflueneNode(world, gameNode);
+    }
+
+    private List<GameNode> GetSkillRangeFromNode(SkillData skill)
+    {
+        return skill.GetInflueneNode(world, world.GetNode(GetCharacterNodePosition()));
     }
 
     public List<CharacterBase> GetSkillAttackableCharacter(SkillData skill, GameNode gameNode)
@@ -322,6 +370,34 @@ public abstract class CharacterBase : Entity
         }
         foreach (Vector3Int position in coverage)
         {
+            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Purple);
+        }
+    }
+
+    public void ShowDangerMovableAndTargetTilemap(GameNode targetNode)
+    {
+        List<GameNode> movableNode = GetMovableNode();
+        foreach (GameNode gameNode in movableNode)
+        {
+            Vector3Int position = gameNode.GetVectorInt();
+            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+        }
+        List<GameNode> conflictNode = GetConflictNode();
+        foreach (GameNode gameNode in conflictNode)
+        {
+            Vector3Int position = gameNode.GetVectorInt();
+            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Purple);
+        }
+        GridTilemapVisual.instance.SetTilemapSprite(targetNode.GetVectorInt(), GameNode.TilemapSprite.Red);
+    }
+
+    public void ShowSkillTargetTilemap()
+    {
+        if (currentSkill == null || currentSkillTargetNode == null) return;
+        List<GameNode> influenceNodes = GetSkillRangeFromNode(currentSkill);
+        foreach (GameNode node in influenceNodes)
+        {
+            Vector3Int position = node.GetVectorInt();
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
         }
     }

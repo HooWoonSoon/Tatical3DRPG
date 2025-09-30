@@ -262,7 +262,7 @@ public class PlayerTeamSystem : TeamSystem
             teamPathRoutes = teamSortRoute;
             for (int i = 0; i < teamSortRoute.Count; i++)
             {
-                teamSortRoute[i].character.pathRoute = teamSortRoute[i];
+                teamSortRoute[i].character.SetPathRoute(teamSortRoute[i]);
             }
             for (int i = 0; i < linkMembers.Count; i++)
             {

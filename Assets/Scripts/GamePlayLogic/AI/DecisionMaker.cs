@@ -8,41 +8,37 @@ public class DecisionMaker
 {
     public CharacterBase character;
 
-    public SkillData skill;
-    public GameNode moveToNode;
+    private SkillData skill;
+    private GameNode moveToNode;
+    private GameNode skillTargetNode;
     
     public DecisionMaker(CharacterBase character)
     {
         this.character = character;
+        MakeDecision();
     }
 
     public void MakeDecision()
     {
         Dictionary<GameNode, float> nodeScore = new Dictionary<GameNode, float>();
-        //List<GameNode> movableNode = character.GetMovableNode();
+        List<GameNode> movableNode = character.GetMovableNode();
         //List<GameNode> conflictNode = character.GetConflictNode();
 
         SkillData bestSkill = null;
-        GameNode bestNode = null;
+        GameNode bestMoveNode = null;
+        GameNode bestSkillTargetNode = null;
         float bestScore = int.MinValue;
 
         foreach (SkillData skill in character.skillData)
         {
-            List<GameNode> skillInflueneNode = character.GetSkillAttackableNode(skill);
-            Debug.Log($"Skill Node: {skillInflueneNode.Count}");
-            if (skillInflueneNode.Count == 0) continue;
+            List<GameNode> skillInflueneMovableNode = character.GetSkillAttackMovableNode(skill);
+            Debug.Log($"Skill Node: {skillInflueneMovableNode.Count}");
+            if (skillInflueneMovableNode.Count == 0) continue;
             float score = 0;
-            foreach (GameNode node in skillInflueneNode)
+            foreach (GameNode node in skillInflueneMovableNode)
             {
                 List<CharacterBase> influenceCharacter = character.GetSkillAttackableCharacter(skill, node);
-                foreach (CharacterBase target in influenceCharacter)
-                {
-                    if (skill.baseDamage > target.currenthealth)
-                    {
-                        score += 50;
-                        break;
-                    }
-                }
+
                 if (influenceCharacter.Count == 1)
                 {
                     score += 10;
@@ -51,25 +47,71 @@ public class DecisionMaker
                 {
                     score += 10 / influenceCharacter.Count;
                 }
+                foreach (CharacterBase target in influenceCharacter)
+                {
+                    if (skill.baseDamage >= target.currenthealth)
+                    {
+                        score += 50;
+                        break;
+                    }
+                }
                 if (score > bestScore)
                 {
                     bestScore = score;
                     bestSkill = skill;
-                    bestNode = node;
+                    bestMoveNode = node;
+                    bestSkillTargetNode = GetSkillCastNode(bestSkill, bestMoveNode);
                 }
             }
         }
 
-        if (bestSkill != null && bestNode != null)
+        if (bestMoveNode != null)
         {
             skill = bestSkill;
-            moveToNode = bestNode;
+            moveToNode = bestMoveNode;
+            skillTargetNode = bestSkillTargetNode;
         }
     }    
 
-    public void GetResult(out SkillData skill, out GameNode targetNode)
+    public GameNode GetSkillCastNode(SkillData skill, GameNode originNode)
+    {
+        float bestScore = int.MinValue;
+        GameNode bestNode = null;
+
+        List<GameNode> optionNode = character.GetSkillRangeFromNode(skill, originNode);
+        foreach (GameNode node in optionNode)
+        {
+            float score = 0;
+            CharacterBase character = node.GetUnitGridCharacter();
+            if (character != null)
+            {
+                if (skill.baseDamage >= character.currenthealth)
+                {
+                    score += 50;
+                }
+                else
+                {
+                    score += 10;
+                }
+
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestNode = node;
+                }
+            }
+        }
+        return bestNode;
+    }
+
+    public void GetResult(out SkillData skill, out GameNode moveToNode, out GameNode skillTargetNode)
     {
         skill = this.skill;
-        targetNode = moveToNode;
+        moveToNode = this.moveToNode;
+        skillTargetNode = this.skillTargetNode;
     }
+
+    public GameNode GetMoveNode => moveToNode;
+    public SkillData GetSkill => skill;
+    public GameNode GetSkillTargetNode => skillTargetNode;
 }
