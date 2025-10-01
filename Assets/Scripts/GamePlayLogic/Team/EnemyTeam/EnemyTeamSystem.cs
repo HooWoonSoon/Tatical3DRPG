@@ -43,7 +43,7 @@ public class EnemyTeamSystem : TeamSystem
         if (detectedCharacters.Count == 0 || detectedTeam.Count == 0) { return; }
         HashSet<CharacterBase> allUnit = GetDetectableAndSelfTeamUnit();
         if (lastUnit.SetEquals(allUnit)) { return; }
-        Debug.Log("Last Unit different");
+        //Debug.Log("Last Unit different");
         lastUnit = new HashSet<CharacterBase>(allUnit);
         BattleManager.instance.SetJoinedBattleUnit(allUnit);
         BattleManager.instance.PreapreBattleContent();

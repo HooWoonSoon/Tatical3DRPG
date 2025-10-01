@@ -8,7 +8,11 @@ public class CameraMovement : MonoBehaviour
     public Transform followTarget;
     private Vector3 cameraCurrentTargetPos;
     private bool isTargeting = false;
-
+    public static CameraMovement instance { get; private set; }
+    private void Awake()
+    {
+        instance = this;
+    }
     public void Start()
     {
         cameraCurrentTargetPos = transform.position;
@@ -74,5 +78,11 @@ public class CameraMovement : MonoBehaviour
             yield return null;
         }
         transform.position = cameraCurrentTargetPos;
+    }
+
+    public void ChangeFollowTarget(Transform transform)
+    {
+        followTarget = transform;
+        isTargeting = true;
     }
 }

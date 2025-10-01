@@ -3,10 +3,12 @@ using UnityEngine.UI;
 using UnityEngine;
 using System.Collections.Generic;
 using System;
+using System.Collections;
 
 [RequireComponent(typeof(RectTransform))]
 public class CTTurnUIGenerator : MonoBehaviour
 {
+    [Serializable]
     public class TurnUIImage
     {
         public Image characterImage;
@@ -15,11 +17,13 @@ public class CTTurnUIGenerator : MonoBehaviour
 
         public CharacterBase character;
         public int turnCount;
+        public int turnQueue;
 
-        public TurnUIImage(Transform parent, CharacterBase character, TMP_FontAsset fontAsset, int turnCount)
+        public TurnUIImage(Transform parent, CharacterBase character, TMP_FontAsset fontAsset, int turnCount, int turnQueue)
         {
             this.character = character;
             this.turnCount = turnCount;
+            this.turnQueue = turnQueue;
 
             CreateBackgroundPanel(parent);
             CreateCharacterImage(backgroundPanel.transform);
@@ -59,13 +63,14 @@ public class CTTurnUIGenerator : MonoBehaviour
     }
 
     [Header("Unit Image")]
-    [SerializeField] private GameObject targetImageObject;
+    [SerializeField] private GameObject targetUnitImage;
     [SerializeField] private GameObject turnUIContent;
     [SerializeField] private GameObject turnPhaseUI;
-    [SerializeField] private List<TurnUIImage> turnUIImages = new List<TurnUIImage>();
+    private List<TurnUIImage> turnUIImages = new List<TurnUIImage>();
     [SerializeField] private TMP_FontAsset fontAsset;
     private List<CTTurn> allCTTurn;
-    private int currentTurnCount;
+    private CTTurn currentCTTurn;
+    private int currentTurnIndex = 0;
 
     [Header("UI Smooth Move")]
     [SerializeField] private float smoothTime = 0.2f;
@@ -104,6 +109,13 @@ public class CTTurnUIGenerator : MonoBehaviour
         if (allCTTurn.Count == 0) { return; }
         ResetTurnUI();
         GenerateTurnImages();
+        //  Wait 1 frame to let LayoutGroup/Canvas finish
+        StartCoroutine(DelayTargetFocus());
+    }
+    private IEnumerator DelayTargetFocus()
+    {
+        yield return null;
+        TargetCurrentCTTurnUI(CTTimeline.instance.GetCurrentCTTurn(), CTTimeline.instance.GetCurrentTurnIndex());
     }
 
     private void GenerateTurnImages()
@@ -113,9 +125,10 @@ public class CTTurnUIGenerator : MonoBehaviour
             GameObject turnPhaseGameObject = Instantiate(turnPhaseUI);
             turnPhaseGameObject.transform.SetParent(turnUIContent.transform);
 
-            for (int j = 0; j < allCTTurn[i].GetCharacterQueue().Count; j++)
+            List<CharacterBase> characterQueues = allCTTurn[i].GetCharacterQueue();
+            for (int j = 0; j < characterQueues.Count; j++)
             {
-                TurnUIImage turnUIImage = new TurnUIImage(turnUIContent.transform, allCTTurn[i].GetCharacterQueue()[j], fontAsset, allCTTurn[i].turnCount);
+                TurnUIImage turnUIImage = new TurnUIImage(turnUIContent.transform, allCTTurn[i].GetCharacterQueue()[j], fontAsset, allCTTurn[i].turnCount, j);
                 turnUIImages.Add(turnUIImage);
             }
         }
@@ -141,11 +154,31 @@ public class CTTurnUIGenerator : MonoBehaviour
     }
 
     #region External Called
+    public void TargetCurrentCTTurnUI(CTTurn turn, int currentTurnIndex)
+    {
+        currentCTTurn = turn;
+        this.currentTurnIndex = currentTurnIndex;
+
+        for (int i = 0; i < turnUIImages.Count; i++)
+        {
+            if (turnUIImages[i].turnCount == turn.turnCount)
+            {
+                if (turnUIImages[i].turnQueue == currentTurnIndex)
+                {
+                    UpdateTargetCharacterUI(turnUIImages[i].character);
+                    RectTransform target = turnUIImages[i].backgroundPanel.rectTransform;
+                    FocusOnCharacterUI(target);
+                    break;
+                }
+            }
+        }
+    }
+
     public void TargetCursorCharacterUI(CharacterBase character)
     {
         for (int i = 0; i < turnUIImages.Count; i++)
         {
-            if (turnUIImages[i].turnCount != currentTurnCount) { continue; }
+            if (turnUIImages[i].turnCount != currentCTTurn.turnCount) { continue; }
             else
             {
                 if (turnUIImages[i].character == character)
@@ -153,7 +186,7 @@ public class CTTurnUIGenerator : MonoBehaviour
                     UpdateTargetCharacterUI(character);
                     RectTransform target = turnUIImages[i].backgroundPanel.rectTransform;
                     FocusOnCharacterUI(target);
-
+                    break;
                 }
             }
         }
@@ -175,7 +208,7 @@ public class CTTurnUIGenerator : MonoBehaviour
 
     private void UpdateTargetCharacterUI(CharacterBase character)
     {
-        Image image = targetImageObject.GetComponent<Image>();
+        Image image = targetUnitImage.GetComponent<Image>();
         if (image == null) { return; }
 
         Sprite sprite = character.data.characterTurnUISprite;

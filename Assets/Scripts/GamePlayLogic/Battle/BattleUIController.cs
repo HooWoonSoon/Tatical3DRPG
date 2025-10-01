@@ -43,13 +43,12 @@ public class BattleUIController : MonoBehaviour
     {
         yield return new WaitForSeconds(duration);
         OnBattleUIFinish?.Invoke();
-        Debug.Log("UIFinish");
         battleEventDisplayUI.SetActive(false);
     }
 
     public void UpdateSkillUI(CharacterBase characterBase)
     {
-
+        skillUI.SetActive(true);
     }
 
     public void OpenSkillUI()

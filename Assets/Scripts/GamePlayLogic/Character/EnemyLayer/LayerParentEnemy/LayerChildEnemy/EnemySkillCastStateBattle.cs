@@ -16,7 +16,6 @@ public class EnemySkillCastStateBattle : EnemyBaseState
         base.Exit();
         character.SkillCalculate();
         character.ResetVisualTilemap();
-        CTTimeline.instance.NextCharacter();
     }
 
     public override void Update()

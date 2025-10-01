@@ -16,7 +16,7 @@ public class BattleCursor : Entity
     {
         base.Start();
         cursor.SetActive(false);
-        CTTimeline.instance.confirmCTTimeline += HandleBattle;
+        CTTimeline.instance.confirmCTTimeline += HandleBattleCursor;
     }
 
     private void Update()
@@ -67,10 +67,9 @@ public class BattleCursor : Entity
         }
     }
 
-    public void HandleBattle()
+    public void HandleBattleCursor()
     {
         CharacterBase character = CTTimeline.instance.GetCurrentCharacter();
-        ctTurnUIGenerator.TargetCursorCharacterUI(character);
         cursor.SetActive(true);
         cursor.transform.position = Utils.RoundXZFloorYInt(character.transform.position);
         activateCursor = true;

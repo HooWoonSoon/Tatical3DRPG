@@ -10,6 +10,7 @@ public class EnemyMovePathStateBattle : EnemyBaseState
     public override void Enter()
     {
         base.Enter();
+        CameraMovement.instance.ChangeFollowTarget(character.transform);
     }
 
     public override void Exit()

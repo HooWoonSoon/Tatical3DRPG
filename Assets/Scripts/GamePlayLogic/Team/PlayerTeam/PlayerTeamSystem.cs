@@ -74,7 +74,6 @@ public class PlayerTeamSystem : TeamSystem
             if (hitNode == null) { return;}
             Vector3Int targetPosition = hitNode.GetVectorInt();
             if (targetPosition == new Vector3Int(-1, -1, -1)) return;
-            Debug.Log(world.loadedNodes[(targetPosition)].isWalkable);
 
             currentLeader.SetMovePosition(currentLeader, targetPosition);
         }

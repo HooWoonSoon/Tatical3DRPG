@@ -13,6 +13,12 @@ public class CTTurn
         this.turnCount = turnCount;
     }
 
+    public CharacterBase GetCharacterAt(int index)
+    {
+        if (index < 0 || index >= cTTimelineQueue.Count) return null;
+        return cTTimelineQueue[index];
+    }
+
     public List<CharacterBase> GetCharacterQueue() { return cTTimelineQueue; }
 }
 

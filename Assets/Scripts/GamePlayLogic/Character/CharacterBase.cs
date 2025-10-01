@@ -95,14 +95,14 @@ public abstract class CharacterBase : Entity
     public void SetPathRoute(PathRoute pathRoute)
     {
         this.pathRoute = pathRoute;
-        pathRoute.DebugPathRoute();
+        //pathRoute.DebugPathRoute();
     }
 
     public void SetPathRoute(GameNode targetNode)
     {
         if (targetNode == null) return;
         pathRoute = GetPathRoute(targetNode);
-        pathRoute.DebugPathRoute();
+        //pathRoute.DebugPathRoute();
     }
 
     public PathRoute GetPathRoute(GameNode targetNode)
@@ -148,7 +148,7 @@ public abstract class CharacterBase : Entity
                 GridCharacter.instance.SetGridCharacter(Utils.RoundXZFloorYInt(transform.position), this);
                 if (pathRoute.pathIndex >= pathRoute.pathRouteList.Count)
                 {
-                    Debug.Log($"Reached target {pathRoute.targetPosition}");
+                    //Debug.Log($"Reached target {pathRoute.targetPosition}");
                     pathRoute.pathIndex = -1;
                     pathRoute = null;
                 }
@@ -174,9 +174,10 @@ public abstract class CharacterBase : Entity
         if (character != null)
         {
             character.currenthealth -= damage;
-            Debug.Log($"{this.gameObject.name} damage {character.gameObject.name} for {damage} points. Remaining health: {character.currenthealth}");
+            //Debug.Log($"{this.gameObject.name} damage {character.gameObject.name} for {damage} points. Remaining health: {character.currenthealth}");
             BattleUIController.instance.CreateCountText(character, damage);
         }
+        currentSkill = null;
     }
 
     public bool IsYourTurn(CharacterBase character)

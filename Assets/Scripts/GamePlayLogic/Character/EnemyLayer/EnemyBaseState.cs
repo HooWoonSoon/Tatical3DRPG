@@ -17,7 +17,7 @@ public abstract class EnemyBaseState
     }
     public virtual void Enter()
     {
-        Debug.Log($"Enter {StateName()}");
+        //Debug.Log($"Enter {StateName()}");
     }
     public virtual void Update()
     {
@@ -25,6 +25,7 @@ public abstract class EnemyBaseState
     }
     public virtual void Exit()
     {
-        Debug.Log($"Exit {StateName()}");
+        //Debug.Log($"Exit {StateName()}");
+        timeInState = 0;
     }
 }

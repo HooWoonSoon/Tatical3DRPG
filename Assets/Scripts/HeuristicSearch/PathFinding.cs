@@ -142,7 +142,7 @@ public class PathFinding
             new Vector3Int(0, 0, 1),  // Forward
             new Vector3Int(0, 1, 0),  // Up
             new Vector3Int(0, -1, 0), // Down
-            new Vector3Int(1, 0, 1), // Diagonal Forward-Right
+            new Vector3Int(1, 0, 1),  // Diagonal Forward-Right
             new Vector3Int(-1, 0, 1), // Diagonal Forward-Left
             new Vector3Int(1, 0, -1), // Diagonal Backward-Right
             new Vector3Int(-1, 0, -1) // Diagonal Backward-Left
@@ -197,7 +197,7 @@ public class PathFinding
         processedPath = FindPath(startX, startY, startZ, endX, endY, endZ, riseLimit, lowerLimit);
 
         float endTime = Time.realtimeSinceStartup;
-        Debug.Log($"Set process path completed in {endTime - startTime:F4} seconds");
+        //Debug.Log($"Set process path completed in {endTime - startTime:F4} seconds");
     }
 
     public PathRoute GetPathRoute(Vector3 start, Vector3 end, int riseLimit, int lowerLimit)

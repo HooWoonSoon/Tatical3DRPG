@@ -48,9 +48,9 @@ public class CTTimeline : MonoBehaviour
     public List<CTTurn> cTTurn = new List<CTTurn>();
     private const int MAX_TURNS = 3;
 
-    private CTTurn currentTurn;
+    private CTTurn currentCTTurn;
+    private int currentTurn = 0;
     private int currentTurnIndex = 0;
-    private int currentNumberIndex = 0;
     private CharacterBase currentCharacter;
 
     [SerializeField] private CTTurnUIGenerator cTTurnUIGenerator;
@@ -107,8 +107,8 @@ public class CTTimeline : MonoBehaviour
                 tactics.Reset();
             }
         }
-        currentTurn = cTTurn[0];
-        currentCharacter = currentTurn.cTTimelineQueue[0];
+        currentCTTurn = cTTurn[0];
+        currentCharacter = currentCTTurn.cTTimelineQueue[0];
         confirmCTTimeline?.Invoke();
     }
     private bool IsAllCharacterQueue(List<CharacterTacticsTime> tacticsList)
@@ -140,25 +140,27 @@ public class CTTimeline : MonoBehaviour
     }
     public void NextCharacter()
     {
-        if (currentTurn == null) { return; }
+        if (currentCTTurn == null) { return; }
+        Debug.Log($"{currentCharacter} end this turn");
         NextNumber();
-        currentCharacter = currentTurn.cTTimelineQueue[currentNumberIndex];
+        currentCharacter = currentCTTurn.cTTimelineQueue[currentTurnIndex];
+        cTTurnUIGenerator.TargetCurrentCTTurnUI(currentCTTurn, currentTurnIndex);
     }
     private void NextNumber()
     {
-        if (currentNumberIndex < currentTurn.cTTimelineQueue.Count - 1)
+        if (currentTurnIndex < currentCTTurn.cTTimelineQueue.Count - 1)
         {
-            currentNumberIndex++;
-            Debug.Log($"currentNumber: {currentNumberIndex}");
+            currentTurnIndex++;
+            Debug.Log($"currentNumber: {currentTurnIndex}");
         }
         else
         {
-            if (currentTurnIndex < cTTurn.Count - 1)
+            if (currentTurn < cTTurn.Count - 1)
             {
-                currentTurnIndex++;
-                currentTurn = cTTurn[currentTurnIndex];
-                currentNumberIndex = 0;
-                Debug.Log($"currentTurn: {currentTurnIndex}, currentNumber: {currentNumberIndex}");
+                currentTurn++;
+                currentCTTurn = cTTurn[currentTurn];
+                currentTurnIndex = 0;
+                //Debug.Log($"currentTurn: {currentTurnIndex}, currentNumber: {currentNumberIndex}");
             }
         }
     }
@@ -167,7 +169,9 @@ public class CTTimeline : MonoBehaviour
         uITransitionToolkit.ResetUIFormToTargetPos(1);
     }
     public List<CTTurn> GetAllTurnHistory() => cTTurn;
-    public CTTurn GetCurrentTurn() => currentTurn;
+    public CTTurn GetCurrentCTTurn() => currentCTTurn;
+    public int GetCurrentTurnIndex() => currentTurnIndex;
+    public int GetCurrentTurn() => currentTurn;
     public CharacterBase GetCurrentCharacter() => currentCharacter;
     public Dictionary<CharacterBase, CharacterTacticsTime> GetBattleCharacter() => battleCharacter;
 }

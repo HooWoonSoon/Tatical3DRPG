@@ -19,12 +19,13 @@ public class EnemyBattleState : EnemyBaseState
             character.ShowDangerMovableAndTargetTilemap(movaToNode);
         }
         character.SetSkillAndTarget(skill, skillTargetNode);
+        character.ShowDangerMovableAndTargetTilemap(character.GetCharacterOriginNode());
+        CameraMovement.instance.ChangeFollowTarget(character.transform);
     }
 
     public override void Exit()
     {
         base.Exit();
-        Debug.Log("Exit Battle State");
     }
 
     public override void Update()
@@ -46,7 +47,10 @@ public class EnemyBattleState : EnemyBaseState
             }
             else
             {
-                CTTimeline.instance.NextCharacter();
+                if (timeInState >= 2.0f)
+                {
+                    stateMachine.ChangeSubState(character.idleStateBattle);
+                }
             }
         }
     }
