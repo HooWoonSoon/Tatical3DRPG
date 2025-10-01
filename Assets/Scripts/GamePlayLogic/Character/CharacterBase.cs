@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public abstract class CharacterBase : Entity
@@ -34,7 +35,7 @@ public abstract class CharacterBase : Entity
         base.Start();
         detectable = GetComponent<UnitDetectable>();
 
-        currenthealth = data.mentalPoint;
+        currenthealth = data.healthPoint;
     }
     public void UpdateOrientation(Vector3 direction)
     {
@@ -77,6 +78,12 @@ public abstract class CharacterBase : Entity
     {
         return Utils.RoundXZFloorYInt(transform.position);
     }
+
+    public GameNode GetCharacterOriginNode()
+    {
+        return world.GetNode(GetCharacterNodePosition());
+    }
+
     public void FacingDirection(Vector3 direction)
     {
         if (direction.x > 0)
@@ -168,6 +175,7 @@ public abstract class CharacterBase : Entity
         {
             character.currenthealth -= damage;
             Debug.Log($"{this.gameObject.name} damage {character.gameObject.name} for {damage} points. Remaining health: {character.currenthealth}");
+            BattleUIController.instance.CreateCountText(character, damage);
         }
     }
 

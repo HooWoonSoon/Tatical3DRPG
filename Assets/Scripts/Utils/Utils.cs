@@ -69,6 +69,33 @@ public static class Utils
         triangles[tIndex + 5] = vIndex2;
     }
 
+    public static TextMeshProUGUI CreateCanvasText(string text, Transform canvas, Vector3 localPosition, Quaternion quaternion, int fontSize, Color color, TextAlignmentOptions textAlignment)
+    {
+        GameObject gameObejct = new GameObject("Text", typeof(TextMeshProUGUI));
+        Transform transform = gameObejct.transform;
+        transform.SetParent(canvas, false);
+        transform.localPosition = localPosition;
+        transform.rotation = quaternion;
+
+        TextMeshProUGUI textMeshPro = gameObejct.GetComponent<TextMeshProUGUI>();
+        textMeshPro.text = text;
+        textMeshPro.fontSize = fontSize;
+        textMeshPro.color = color;
+        textMeshPro.fontStyle = FontStyles.Bold;
+        textMeshPro.alignment = textAlignment;
+        textMeshPro.fontSharedMaterial.EnableKeyword("OUTLINE_ON");
+        textMeshPro.fontSharedMaterial.SetColor("_OutlineColor", Color.black);
+        textMeshPro.fontSharedMaterial.SetFloat("_OutlineWidth", 0.15f);
+        textMeshPro.fontSharedMaterial.EnableKeyword("UNDERLAY_ON");
+        textMeshPro.fontSharedMaterial.SetColor("_UnderlayColor", Color.black);
+        textMeshPro.fontSharedMaterial.SetFloat("_UnderlayOffsetX", 0.5f);
+        textMeshPro.fontSharedMaterial.SetFloat("_UnderlayOffsetY", 0f);
+        textMeshPro.fontSharedMaterial.SetFloat("_UnderlayDilate", 0.2f);
+        textMeshPro.fontSharedMaterial.SetFloat("_UnderlaySoftness", 0f);
+
+        return textMeshPro;
+    }
+
     public static TextMeshPro CreateWorldText(string text, Vector3 localPosition, Quaternion quaternion, int fontSize, Color color, TextAlignmentOptions textAlignment, int sortingOrder = 0)
     {
         GameObject parent = GameObject.Find("World_Text_Parent");

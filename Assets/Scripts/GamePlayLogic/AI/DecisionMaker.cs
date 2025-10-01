@@ -20,23 +20,29 @@ public class DecisionMaker
 
     public void MakeDecision()
     {
-        Dictionary<GameNode, float> nodeScore = new Dictionary<GameNode, float>();
-        List<GameNode> movableNode = character.GetMovableNode();
+        //Dictionary<GameNode, float> nodeScore = new Dictionary<GameNode, float>();
+        //List<GameNode> movableNode = character.GetMovableNode();
         //List<GameNode> conflictNode = character.GetConflictNode();
 
         SkillData bestSkill = null;
         GameNode bestMoveNode = null;
         GameNode bestSkillTargetNode = null;
+
         float bestScore = int.MinValue;
 
         foreach (SkillData skill in character.skillData)
         {
             List<GameNode> skillInflueneMovableNode = character.GetSkillAttackMovableNode(skill);
+
             Debug.Log($"Skill Node: {skillInflueneMovableNode.Count}");
             if (skillInflueneMovableNode.Count == 0) continue;
-            float score = 0;
+
+            float bestSkillScore = 0;
+            GameNode bestSkillInflueneNode = null;
+
             foreach (GameNode node in skillInflueneMovableNode)
             {
+                float score = 0;
                 List<CharacterBase> influenceCharacter = character.GetSkillAttackableCharacter(skill, node);
 
                 if (influenceCharacter.Count == 1)
@@ -55,13 +61,19 @@ public class DecisionMaker
                         break;
                     }
                 }
-                if (score > bestScore)
+                if (score >= bestSkillScore)
                 {
-                    bestScore = score;
-                    bestSkill = skill;
-                    bestMoveNode = node;
-                    bestSkillTargetNode = GetSkillCastNode(bestSkill, bestMoveNode);
+                    bestSkillScore = score;
+                    bestSkillInflueneNode = node;
                 }
+            }
+            
+            if (bestSkillScore >= bestScore)
+            {
+                bestScore = bestSkillScore;
+                bestMoveNode = bestSkillInflueneNode;
+                bestSkill = skill;
+                bestSkillTargetNode = GetSkillCastNode(bestSkill, bestMoveNode);
             }
         }
 
