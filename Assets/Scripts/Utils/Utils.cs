@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -279,4 +280,88 @@ public static class Utils
         return sorted;
     }
 
+    public static IEnumerator UIExtraMoveCoroutine(RectTransform rectTransform, Vector2 extra, float duration)
+    {
+        Vector2 start = rectTransform.anchoredPosition;
+        Vector2 end = rectTransform.anchoredPosition += extra;
+        yield return UIMoveCoroutine(rectTransform, start, end, duration);
+    }
+    public static IEnumerator UIMoveCoroutine(RectTransform rectTransform, Vector2 start, Vector2 end, float duration)
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / duration;
+            rectTransform.anchoredPosition = Vector2.Lerp(start, end, t);
+            yield return null;
+        }
+        rectTransform.anchoredPosition = end;
+    }
+
+    public static IEnumerator UIExtraScaleCoroutine(RectTransform rectTransform, Vector2 extra, float duration)
+    {
+        Vector2 start = rectTransform.sizeDelta;
+        Vector2 end = rectTransform.sizeDelta += extra;
+        yield return UIScaleCorroutine(rectTransform, start, end, duration);
+    }
+    public static IEnumerator UIScaleCorroutine(RectTransform rectTransform, Vector2 start, Vector2 end, float duration)
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / duration;
+            rectTransform.sizeDelta = Vector2.Lerp(start, end, t);
+            yield return null;
+        }
+        rectTransform.sizeDelta = end;
+    }
+    public static IEnumerator UIColorInverseCorroutine(Image image, float duration)
+    {
+        Color startColor = image.color;
+        Color endColor = new Color(1f - startColor.r, 1f - startColor.g, 1f - startColor.b, startColor.a);
+        yield return UIColorCorroutine(image, startColor, endColor, duration);
+    }
+
+    public static IEnumerator UIColorCorroutine(Image image, Color endColor, float duration)
+    {
+        Color startColor = image.color;
+        yield return UIColorCorroutine(image, startColor, endColor, duration);
+    }
+
+    public static IEnumerator UIColorCorroutine(Image image, Color startColor, Color endColor, float duration)
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / duration;
+            Color color = Color.Lerp(startColor, endColor, t);
+            image.color = color;
+            yield return null;
+        }
+        image.color = endColor;
+    }
+
+    public static IEnumerator TextColorInverseCorroutine(TextMeshProUGUI text, float duration)
+    {
+        Color startColor = text.color;
+        Color endColor = new Color(1f - startColor.r, 1f - startColor.g, 1f - startColor.b, startColor.a);
+        yield return TextColorCoroutine(text, startColor, endColor, duration);
+    }
+
+    public static IEnumerator TextColorCoroutine(TextMeshProUGUI text, Color startColor, Color endColor, float duration)
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / duration;
+            Color color = Color.Lerp(startColor, endColor, t);
+            text.color = color;
+            yield return null;
+        }
+        text.color = endColor;
+    }
 }

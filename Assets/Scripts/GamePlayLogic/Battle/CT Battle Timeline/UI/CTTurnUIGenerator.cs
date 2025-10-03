@@ -5,14 +5,13 @@ using System.Collections.Generic;
 using System;
 using System.Collections;
 
-[RequireComponent(typeof(RectTransform))]
 public class CTTurnUIGenerator : MonoBehaviour
 {
     [Serializable]
     public class TurnUIImage
     {
         public Image characterImage;
-        public Image backgroundPanel;
+        public Image backgroundImage;
         public TextMeshProUGUI turnUIText;
 
         public CharacterBase character;
@@ -26,16 +25,16 @@ public class CTTurnUIGenerator : MonoBehaviour
             this.turnQueue = turnQueue;
 
             CreateBackgroundPanel(parent);
-            CreateCharacterImage(backgroundPanel.transform);
-            CreateTurnText(backgroundPanel.transform, fontAsset);
+            CreateCharacterImage(backgroundImage.transform);
+            CreateTurnText(backgroundImage.transform, fontAsset);
         }
 
         private void CreateBackgroundPanel(Transform parent)
         {
-            backgroundPanel = new GameObject("BackgroundPanel").AddComponent<Image>();
-            backgroundPanel.transform.SetParent(parent, false);
-            backgroundPanel.rectTransform.sizeDelta = new Vector2(140, 100);
-            backgroundPanel.color = new Color(0, 0, 0, 220 / 255f);
+            backgroundImage = new GameObject("BackgroundPanel").AddComponent<Image>();
+            backgroundImage.transform.SetParent(parent, false);
+            backgroundImage.rectTransform.sizeDelta = new Vector2(140, 100);
+            backgroundImage.color = new Color(0, 0, 0, 220 / 255f);
         }
 
         private void CreateCharacterImage(Transform parent)
@@ -78,14 +77,9 @@ public class CTTurnUIGenerator : MonoBehaviour
     private bool isFocusing = false;
     private Vector2 velocity = Vector2.zero;
 
-    private void OnEnable()
+    private void Start()
     {
         CTTimeline.instance.confirmCTTimeline += GenerateTimelineUI;
-    }
-
-    private void OnDisable()
-    {
-        CTTimeline.instance.confirmCTTimeline -= GenerateTimelineUI;
     }
 
     private void Update()
@@ -140,9 +134,9 @@ public class CTTurnUIGenerator : MonoBehaviour
         {
             if (turnUIImages[i] != null)
             {
-                if (turnUIImages[i].backgroundPanel != null && turnUIImages[i].backgroundPanel.gameObject != null)
+                if (turnUIImages[i].backgroundImage != null && turnUIImages[i].backgroundImage.gameObject != null)
                 {
-                    Destroy(turnUIImages[i].backgroundPanel.gameObject);
+                    Destroy(turnUIImages[i].backgroundImage.gameObject);
                 }
                 if (turnUIImages[i].characterImage != null && turnUIImages[i].characterImage.gameObject != null)
                 {
@@ -166,7 +160,7 @@ public class CTTurnUIGenerator : MonoBehaviour
                 if (turnUIImages[i].turnQueue == currentTurnIndex)
                 {
                     UpdateTargetCharacterUI(turnUIImages[i].character);
-                    RectTransform target = turnUIImages[i].backgroundPanel.rectTransform;
+                    RectTransform target = turnUIImages[i].backgroundImage.rectTransform;
                     FocusOnCharacterUI(target);
                     break;
                 }
@@ -184,7 +178,7 @@ public class CTTurnUIGenerator : MonoBehaviour
                 if (turnUIImages[i].character == character)
                 {
                     UpdateTargetCharacterUI(character);
-                    RectTransform target = turnUIImages[i].backgroundPanel.rectTransform;
+                    RectTransform target = turnUIImages[i].backgroundImage.rectTransform;
                     FocusOnCharacterUI(target);
                     break;
                 }

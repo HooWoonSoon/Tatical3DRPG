@@ -151,7 +151,7 @@ public class CTTimeline : MonoBehaviour
         if (currentTurnIndex < currentCTTurn.cTTimelineQueue.Count - 1)
         {
             currentTurnIndex++;
-            Debug.Log($"currentNumber: {currentTurnIndex}");
+            //Debug.Log($"currentNumber: {currentTurnIndex}");
         }
         else
         {

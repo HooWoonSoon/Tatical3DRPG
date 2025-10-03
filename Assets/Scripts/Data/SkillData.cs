@@ -6,9 +6,13 @@ public class SkillData : ScriptableObject
 {
     [Header("Skill Info")]
     public string skillName;
+    public Sprite mainIcon;
     public int range;
     public int aoeRadius = 1; // If not aoe skill, set to 1
     public int baseDamage;
+
+    public int requiredSP;
+    public Sprite spIcon;
 
     [Header("Visual Preference")]
     [SerializeField] private float skillCastTime = 1f;

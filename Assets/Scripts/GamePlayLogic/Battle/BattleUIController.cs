@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -12,8 +13,11 @@ public class BattleUIController : MonoBehaviour
     public GameObject battleEventDisplayUI;
     public float duration = 2.0f;
 
-    [Header("Battle Set UI")]
+    [Header("Battle Set Skill UI")]
     public GameObject skillUI;
+    public SkillUIGenerator skillUIGenerator;
+
+    [Header("Battle Set Timeline UI")]
     public GameObject cTTimelineUI;
 
     public event Action OnBattleUIFinish;
@@ -46,19 +50,14 @@ public class BattleUIController : MonoBehaviour
         battleEventDisplayUI.SetActive(false);
     }
 
-    public void UpdateSkillUI(CharacterBase characterBase)
-    {
-        skillUI.SetActive(true);
-    }
-
-    public void OpenSkillUI()
-    {
-        skillUI.SetActive(true);
-    }
-
     public void OpenUpdateSkillUI(CharacterBase characterBase)
     {
-        UpdateSkillUI(characterBase);
+        skillUI.SetActive(true);
+        List<SkillData> characterSkillList = characterBase.skillData;
+        if (characterSkillList != null)
+        {
+            skillUIGenerator.InitializeSkillList(characterSkillList);
+        }
     }
 
     public void CloseSkillUI()
