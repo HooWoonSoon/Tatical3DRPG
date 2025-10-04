@@ -2,8 +2,6 @@
 
 public class BattleCursor : Entity
 {
-    public CTTurnUIGenerator ctTurnUIGenerator;
-
     [Header("Battle Cursor")]
     [SerializeField] private GameObject cursor;
     [SerializeField] private float heightOffset = 2.5f;
@@ -11,22 +9,22 @@ public class BattleCursor : Entity
     private bool activateCursor = false;
     private float keyPressTimer;
     private float intervalPressTimer;
+    public GameNode currentGameNode { get; private set; }
 
     protected override void Start()
     {
         base.Start();
         cursor.SetActive(false);
-        CTTimeline.instance.confirmCTTimeline += HandleBattleCursor;
     }
 
     private void Update()
     {
         if (activateCursor)
         {
-            HandleInput(KeyCode.W, Vector3Int.forward, 0.25f, 0.025f);
-            HandleInput(KeyCode.S, Vector3Int.back, 0.25f, 0.025f);
-            HandleInput(KeyCode.A, Vector3Int.left, 0.25f, 0.025f);
-            HandleInput(KeyCode.D, Vector3Int.right, 0.25f, 0.025f);
+            HandleInput(KeyCode.W, Vector3Int.forward, 0.2f, 0.025f);
+            HandleInput(KeyCode.S, Vector3Int.back, 0.2f, 0.025f);
+            HandleInput(KeyCode.A, Vector3Int.left, 0.2f, 0.025f);
+            HandleInput(KeyCode.D, Vector3Int.right, 0.2f, 0.025f);
         }
     }
 
@@ -40,8 +38,9 @@ public class BattleCursor : Entity
             CharacterBase character = gameNode.GetUnitGridCharacter();
             if (character != null)
             {
-                ctTurnUIGenerator.TargetCursorCharacterUI(character);
+                CTTurnUIManager.instance.TargetCursorCharacterUI(character);
             }
+            currentGameNode = gameNode;
         }
     }
 
@@ -67,12 +66,20 @@ public class BattleCursor : Entity
         }
     }
 
-    public void HandleBattleCursor()
+    public void HandleBattleCursor(GameNode targetNode)
     {
         CharacterBase character = CTTimeline.instance.GetCurrentCharacter();
         cursor.SetActive(true);
-        cursor.transform.position = Utils.RoundXZFloorYInt(character.transform.position);
+        CameraMovement.instance.ChangeFollowTarget(cursor.transform);
+        Vector3Int position = targetNode.GetVectorInt();
+        currentGameNode = targetNode;
+        cursor.transform.position = position + new Vector3(0, heightOffset);
         activateCursor = true;
+    }
+
+    public void ActivateMoveCursor(bool active)
+    {
+        activateCursor = active;
     }
 }
 

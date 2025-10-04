@@ -17,10 +17,10 @@ public class PlayerCharacter : CharacterBase
 
     #region state
     public bool isLeader;
-    public bool isSelected;
     public bool isLink;
     public bool isBusy;
     public bool isMoving;
+    public bool isComanding;
     #endregion
 
     public Vector3? targetPosition = null;
@@ -37,6 +37,7 @@ public class PlayerCharacter : CharacterBase
     public PlayerMovePathStateExplore movePathStateExplore { get; private set; }
     public PlayerIdleStateBattle idleStateBattle { get; private set; }
     public PlayerMovePathStateBattle movePathStateBattle { get; private set; }
+    public PlayerComandStateBattle comandStateBattle { get; private set; } 
 
     [Header("Physic")]
     [SerializeField] private float gravity = 9.8f;
@@ -59,6 +60,7 @@ public class PlayerCharacter : CharacterBase
 
         idleStateBattle = new PlayerIdleStateBattle(stateMechine, this);
         movePathStateBattle = new PlayerMovePathStateBattle(stateMechine, this);
+        comandStateBattle = new PlayerComandStateBattle(stateMechine, this);
     }
 
     protected override void Start()

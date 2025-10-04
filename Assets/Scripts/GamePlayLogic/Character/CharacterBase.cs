@@ -7,6 +7,7 @@ using UnityEngine;
 
 public abstract class CharacterBase : Entity
 {
+    public GameObject characterModel;
     public enum Orientation
     {
         right, left, forward, back
@@ -155,6 +156,12 @@ public abstract class CharacterBase : Entity
             }
         }
     }
+
+    public void SetSkill(SkillData skill)
+    {
+        if (skill == null) { return; }
+        currentSkill = skill;
+    }
     
     public void SetSkillAndTarget(SkillData skill, GameNode targetNode)
     {
@@ -162,11 +169,7 @@ public abstract class CharacterBase : Entity
         currentSkill = skill;
         currentSkillTargetNode = targetNode;
     }
-    public void UseSkill()
-    {
-        if (currentSkill == null) { return; }
 
-    }
     public void SkillCalculate()
     {
         CharacterBase character = currentSkillTargetNode.GetUnitGridCharacter();
@@ -175,7 +178,7 @@ public abstract class CharacterBase : Entity
         {
             character.currenthealth -= damage;
             //Debug.Log($"{this.gameObject.name} damage {character.gameObject.name} for {damage} points. Remaining health: {character.currenthealth}");
-            BattleUIController.instance.CreateCountText(character, damage);
+            BattleUIManager.instance.CreateCountText(character, damage);
         }
         currentSkill = null;
     }
@@ -386,28 +389,39 @@ public abstract class CharacterBase : Entity
     public void ShowDangerMovableAndTargetTilemap(GameNode targetNode)
     {
         List<GameNode> movableNode = GetMovableNode();
-        foreach (GameNode gameNode in movableNode)
+        if (movableNode.Contains(targetNode))
         {
-            Vector3Int position = gameNode.GetVectorInt();
-            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+            foreach (GameNode gameNode in movableNode)
+            {
+                Vector3Int position = gameNode.GetVectorInt();
+                GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
+            }
+            List<GameNode> conflictNode = GetConflictNode();
+            foreach (GameNode gameNode in conflictNode)
+            {
+                Vector3Int position = gameNode.GetVectorInt();
+                GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Purple);
+            }
+            GridTilemapVisual.instance.SetTilemapSprite(targetNode.GetVectorInt(), GameNode.TilemapSprite.TinyBlue);
         }
-        List<GameNode> conflictNode = GetConflictNode();
-        foreach (GameNode gameNode in conflictNode)
-        {
-            Vector3Int position = gameNode.GetVectorInt();
-            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Purple);
-        }
-        GridTilemapVisual.instance.SetTilemapSprite(targetNode.GetVectorInt(), GameNode.TilemapSprite.Red);
     }
 
     public void ShowSkillTargetTilemap()
     {
-        if (currentSkill == null || currentSkillTargetNode == null) return;
+        if (currentSkillTargetNode == null) { return; }
+        ShowSkillTilemap();
+        Vector3Int position = currentSkillTargetNode.GetVectorInt();
+        GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
+    }
+
+    public void ShowSkillTilemap()
+    {
+        if (currentSkill == null) return;
         List<GameNode> influenceNodes = GetSkillRangeFromNode(currentSkill);
         foreach (GameNode node in influenceNodes)
         {
             Vector3Int position = node.GetVectorInt();
-            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
+            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.TinyBlue);
         }
     }
 

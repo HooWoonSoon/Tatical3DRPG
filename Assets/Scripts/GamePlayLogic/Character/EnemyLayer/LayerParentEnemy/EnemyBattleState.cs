@@ -31,6 +31,10 @@ public class EnemyBattleState : EnemyBaseState
     public override void Update()
     {
         base.Update();
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            CTTimeline.instance.NextCharacter();
+        }
         if (!character.IsYourTurn(character))
         {
             stateMachine.ChangeRoofState(character.waitState);

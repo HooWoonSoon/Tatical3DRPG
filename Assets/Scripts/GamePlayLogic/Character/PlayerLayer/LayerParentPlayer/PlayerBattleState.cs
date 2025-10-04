@@ -12,13 +12,14 @@ public class PlayerBattleState : PlayerBaseState
         base.Enter();
         character.ResetVisualTilemap();
         character.ShowDangerAndMovableTileFromNode();
-        BattleUIController.instance.OpenUpdateSkillUI(character);
+        CameraMovement.instance.ChangeFollowTarget(character.transform);
+        BattleManager.instance.SetBattleCursorAt(character.GetCharacterOriginNode());
     }
 
     public override void Exit()
     {
         base.Exit();
-        BattleUIController.instance.CloseSkillUI();
+        BattleUIManager.instance.CloseSkillUI();
     }
 
     public override void Update()
@@ -27,6 +28,17 @@ public class PlayerBattleState : PlayerBaseState
         if (!character.IsYourTurn(character))
         {
             stateMachine.ChangeRoofState(character.waitState);
+        }
+        if (BattleManager.instance.IsSelectedNodeChange())
+        {
+            character.ResetVisualTilemap();
+            character.ShowDangerMovableAndTargetTilemap(BattleManager.instance.GetSelectedGameNode());
+        }
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            BattleManager.instance.GeneratePreviewCharacterInMovableRange(character);
+            BattleManager.instance.ActivateMoveCursor(false);
+            BattleUIManager.instance.OpenUpdateSkillUI(character);
         }
     }
 }

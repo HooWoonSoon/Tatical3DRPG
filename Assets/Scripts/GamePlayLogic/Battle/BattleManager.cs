@@ -2,16 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public class BattleManager : Entity
 {
-    public static BattleManager instance { get; private set; }
-    public BattleUIController battleUI;
-
     public List<TeamDeployment> battleTeams = new List<TeamDeployment>();
     public List<CharacterBase> joinedBattleUnits = new List<CharacterBase>();
     public bool isBattleStarted = false;
+    public BattleCursor battleCursor;
+    private GameNode lastSelectedNode;
+
+    [Header("Preview")]
+    public Material previewMaterial;
+    private GameObject previewCharacter;
+
+    public static BattleManager instance { get; private set; }
 
     private void Awake()
     {
@@ -106,11 +110,11 @@ public class BattleManager : Entity
         Debug.Log("PreapareBattleContent");
         FindJoinedTeam();
         EnterBattleUnitRefinePath();
-        battleUI.PrepareBattleUI();
+        BattleUIManager.instance.PrepareBattleUI();
         CTTimeline.instance.SetJoinedBattleUnit(joinedBattleUnits);
         CTTimeline.instance.SetupTimeline();
         
-        battleUI.OnBattleUIFinish += StartBattle;
+        BattleUIManager.instance.OnBattleUIFinish += StartBattle;
     }
 
     public void StartBattle()
@@ -119,6 +123,60 @@ public class BattleManager : Entity
         isBattleStarted = true;
     }
 
+    public void SetBattleCursorAt(GameNode target)
+    {
+        battleCursor.HandleBattleCursor(target);
+    }
+
+    public void GeneratePreviewCharacterInMovableRange(CharacterBase character)
+    {
+        List<GameNode> gameNodes = character.GetMovableNode();
+        if (gameNodes.Contains(lastSelectedNode))
+        {
+            GeneratePreviewCharacter(character);
+        }
+    }
+
+    public void GeneratePreviewCharacter(CharacterBase character)
+    {
+        ResetPreviewModel();
+        if (lastSelectedNode.character != null) { return; }
+        Vector3 offset = character.transform.position - character.GetCharacterNodePosition();
+        previewCharacter = Instantiate(character.characterModel);
+        previewCharacter.transform.position = lastSelectedNode.GetVector() + offset;
+        if (previewMaterial != null)
+        {
+            MeshRenderer[] renderers = previewCharacter.GetComponentsInChildren<MeshRenderer>();
+            foreach (MeshRenderer renderer in renderers)
+            {
+                renderer.material = previewMaterial;
+            }
+        }
+    }
+
+    private void ResetPreviewModel()
+    {
+        Destroy(previewCharacter);
+        previewCharacter = null;
+    }
+
+    public GameNode GetSelectedGameNode()
+    {
+        return battleCursor.currentGameNode;
+    }
+    public bool IsSelectedNodeChange()
+    {
+        if (battleCursor.currentGameNode != lastSelectedNode)
+        {
+            lastSelectedNode = battleCursor.currentGameNode;
+            return true;
+        }
+        return false;
+    }
+    public void ActivateMoveCursor(bool active)
+    {
+        battleCursor.ActivateMoveCursor(active);
+    }
     public List<TeamDeployment> GetBattleTeam() => battleTeams;
     public List<CharacterBase> GetBattleUnit() => joinedBattleUnits;
 

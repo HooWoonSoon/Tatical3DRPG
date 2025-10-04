@@ -60,7 +60,7 @@ public class GameNode
     private TilemapSprite tilemapSprite;
     public enum TilemapSprite
     {
-        None, Blue, Red, Purple
+        None, Blue, Red, Purple, TinyBlue
     }
     public void SetTilemapSprite(TilemapSprite tilemapSprite)
     {

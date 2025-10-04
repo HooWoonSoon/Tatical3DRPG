@@ -15,7 +15,7 @@ public class MainUIController : MonoBehaviour
 
     private void Start()
     {
-        BattleUIController.instance.OnBattleUIFinish += ()=> exploreStatePanel.SetActive(false);
+        BattleUIManager.instance.OnBattleUIFinish += ()=> exploreStatePanel.SetActive(false);
         exploreStatePanel.SetActive(true);
         deploymentPanel.SetActive(false);
     }

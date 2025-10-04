@@ -45,7 +45,7 @@ public class CTTimeline : MonoBehaviour
 
     public Dictionary<CharacterBase, CharacterTacticsTime> battleCharacter = new Dictionary<CharacterBase, CharacterTacticsTime>();
     private HashSet<CharacterBase> lastBattleCharacter = new HashSet<CharacterBase>();
-    public List<CTTurn> cTTurn = new List<CTTurn>();
+    private List<CTTurn> cTTurn = new List<CTTurn>();
     private const int MAX_TURNS = 3;
 
     private CTTurn currentCTTurn;
@@ -53,7 +53,6 @@ public class CTTimeline : MonoBehaviour
     private int currentTurnIndex = 0;
     private CharacterBase currentCharacter;
 
-    [SerializeField] private CTTurnUIGenerator cTTurnUIGenerator;
     [SerializeField] private UITransitionToolkit uITransitionToolkit;
     public event Action confirmCTTimeline;
     public static CTTimeline instance { get; private set; }
@@ -63,13 +62,6 @@ public class CTTimeline : MonoBehaviour
         instance = this;
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            NextCharacter();
-        }
-    }
     public void SetJoinedBattleUnit(List<CharacterBase> characters)
     {
         for (int i = 0; i < characters.Count; i++)
@@ -144,7 +136,7 @@ public class CTTimeline : MonoBehaviour
         Debug.Log($"{currentCharacter} end this turn");
         NextNumber();
         currentCharacter = currentCTTurn.cTTimelineQueue[currentTurnIndex];
-        cTTurnUIGenerator.TargetCurrentCTTurnUI(currentCTTurn, currentTurnIndex);
+        CTTurnUIManager.instance.TargetCurrentCTTurnUI(currentCTTurn, currentTurnIndex);
     }
     private void NextNumber()
     {
