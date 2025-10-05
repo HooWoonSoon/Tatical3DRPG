@@ -15,6 +15,7 @@ public class BattleManager : Entity
     public Material previewMaterial;
     private GameObject previewCharacter;
 
+
     public static BattleManager instance { get; private set; }
 
     private void Awake()
@@ -139,7 +140,7 @@ public class BattleManager : Entity
 
     public void GeneratePreviewCharacter(CharacterBase character)
     {
-        ResetPreviewModel();
+        DestoryPreviewModel();
         if (lastSelectedNode.character != null) { return; }
         Vector3 offset = character.transform.position - character.GetCharacterNodePosition();
         previewCharacter = Instantiate(character.characterModel);
@@ -154,10 +155,13 @@ public class BattleManager : Entity
         }
     }
 
-    private void ResetPreviewModel()
+    public void DestoryPreviewModel()
     {
-        Destroy(previewCharacter);
-        previewCharacter = null;
+        if (previewCharacter != null)
+        {
+            Destroy(previewCharacter);
+            previewCharacter = null;
+        }
     }
 
     public GameNode GetSelectedGameNode()

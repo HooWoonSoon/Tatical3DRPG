@@ -115,6 +115,7 @@ public class SkillUIManager : MonoBehaviour
     private List<SkillUIImage> skillUIImages = new List<SkillUIImage>();
     private List<SkillData> skillDatas;
     private int selectedIndex = -1;
+    
     public static SkillUIManager instance { get; private set; }
 
     private void Awake()
@@ -185,7 +186,8 @@ public class SkillUIManager : MonoBehaviour
     {
         currentCharacter = null;
         selectedIndex = -1;
-        skillUIImages.Clear();
+        skillDatas = new List<SkillData>();
+        skillUIImages = new List<SkillUIImage>();
         foreach (Transform child in skillUIContent.transform)
         {
             Destroy(child.gameObject);
@@ -261,5 +263,6 @@ public class SkillUIManager : MonoBehaviour
     {
         return skillDatas[selectedIndex];
     }
+
     #endregion
 }

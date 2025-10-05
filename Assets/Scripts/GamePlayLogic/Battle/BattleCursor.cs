@@ -9,6 +9,7 @@ public class BattleCursor : Entity
     private bool activateCursor = false;
     private float keyPressTimer;
     private float intervalPressTimer;
+    public bool hasMoved = false;
     public GameNode currentGameNode { get; private set; }
 
     protected override void Start()
@@ -21,6 +22,7 @@ public class BattleCursor : Entity
     {
         if (activateCursor)
         {
+            hasMoved = false;
             HandleInput(KeyCode.W, Vector3Int.forward, 0.2f, 0.025f);
             HandleInput(KeyCode.S, Vector3Int.back, 0.2f, 0.025f);
             HandleInput(KeyCode.A, Vector3Int.left, 0.2f, 0.025f);
@@ -41,6 +43,7 @@ public class BattleCursor : Entity
                 CTTurnUIManager.instance.TargetCursorCharacterUI(character);
             }
             currentGameNode = gameNode;
+            hasMoved = true;
         }
     }
 

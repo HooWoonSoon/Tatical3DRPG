@@ -14,9 +14,8 @@ public class BattleUIManager : MonoBehaviour
     public float duration = 2.0f;
 
     [Header("Battle Set Skill UI")]
+    public GameObject actionOptionPanel;
     public GameObject skillUI;
-
-    [Header("Battle Set Timeline UI")]
     public GameObject cTTimelineUI;
 
     public event Action OnBattleUIFinish;
@@ -30,8 +29,9 @@ public class BattleUIManager : MonoBehaviour
     {
         battleStatePanel.SetActive(false);
         battleEventDisplayUI.SetActive(false);
-        cTTimelineUI.SetActive(false);
+        actionOptionPanel.SetActive(false);
         skillUI.SetActive(false);
+        cTTimelineUI.SetActive(false);
     }
 
     public void PrepareBattleUI()
@@ -62,7 +62,13 @@ public class BattleUIManager : MonoBehaviour
 
     public void CloseSkillUI()
     {
+        SkillUIManager.instance.ResetAll();
         skillUI.SetActive(false);
+    }
+
+    public void ActivateActionPanel(bool active)
+    {
+        actionOptionPanel.SetActive(active);
     }
 
     public void CreateCountText(CharacterBase character, int value)

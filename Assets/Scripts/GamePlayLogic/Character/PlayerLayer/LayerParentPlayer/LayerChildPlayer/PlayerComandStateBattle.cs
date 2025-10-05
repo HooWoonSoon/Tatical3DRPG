@@ -1,4 +1,5 @@
-﻿
+﻿using UnityEngine;
+
 public class PlayerComandStateBattle : PlayerBaseState
 {
     public PlayerComandStateBattle(PlayerStateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
@@ -8,8 +9,7 @@ public class PlayerComandStateBattle : PlayerBaseState
     public override void Enter()
     {
         base.Enter();
-        BattleUIManager.instance.CloseSkillUI();
-        BattleManager.instance.SetBattleCursorAt(character.GetCharacterOriginNode());
+        character.ResetVisualTilemap();
         character.ShowSkillTilemap();
     }
 
@@ -22,5 +22,13 @@ public class PlayerComandStateBattle : PlayerBaseState
     {
         base.Update();
 
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            BattleManager.instance.DestoryPreviewModel();
+            BattleManager.instance.ActivateMoveCursor(true);
+            BattleUIManager.instance.ActivateActionPanel(true);
+            BattleUIManager.instance.CloseSkillUI();
+            stateMachine.ChangeSubState(character.idleStateBattle);
+        }
     }
 }
