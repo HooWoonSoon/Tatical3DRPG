@@ -9,7 +9,7 @@ public class EnemyTeamSystem : TeamSystem
     public TeamStateMachine stateMechine;
     public TeamScoutingState teamScoutingState { get; private set; }
 
-    public List<TeamDeployment> detectedTeam = new List<TeamDeployment>();
+    public HashSet<TeamDeployment> detectedTeam = new HashSet<TeamDeployment>();
     public List<CharacterBase> detectedCharacters = new List<CharacterBase>();
     public HashSet<CharacterBase> lastUnit = new HashSet<CharacterBase>();
 
@@ -84,7 +84,10 @@ public class EnemyTeamSystem : TeamSystem
             if (IsSameTeam(dectectTeam)) { continue;}
 
             List<CharacterBase> dectectTeamCharacter = dectectTeam.teamCharacter;
-            detectedTeam.Add(dectectTeam);
+            if (!detectedTeam.Contains(dectectTeam))
+            {
+                detectedTeam.Add(dectectTeam);
+            }
             foreach (CharacterBase teamCharacter in dectectTeamCharacter)
             {
                 if (!detectedCharacters.Contains(teamCharacter))

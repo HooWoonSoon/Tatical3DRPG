@@ -322,6 +322,7 @@ public abstract class CharacterBase : Entity
 
     public void ShowMovableTilemap()
     {
+        ResetVisualTilemap();
         int selfRange = data.movableRange;
         List<GameNode> movableNode = GetMovableNode();
         foreach (GameNode node in movableNode)
@@ -333,6 +334,7 @@ public abstract class CharacterBase : Entity
 
     public void ShowDangerAndMovableTileFromNode()
     {
+        ResetVisualTilemap();
         List<GameNode> selfMovableNode = GetMovableNode();
         foreach (GameNode node in selfMovableNode)
         {
@@ -349,6 +351,7 @@ public abstract class CharacterBase : Entity
 
     public void ShowDangerAndMovableTile()
     {
+        ResetVisualTilemap();
         List<CharacterBase> characters = GetOppositeCharacter();
         int selfRange = data.movableRange;
 
@@ -375,6 +378,7 @@ public abstract class CharacterBase : Entity
 
     public void ShowMultipleCoverageTilemap(int selfRange, List<Vector3Int> coverage)
     {
+        ResetVisualTilemap();
         List<Vector3Int> reachableRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
         foreach (Vector3Int position in reachableRange)
         {
@@ -388,6 +392,7 @@ public abstract class CharacterBase : Entity
 
     public void ShowDangerMovableAndTargetTilemap(GameNode targetNode)
     {
+        ResetVisualTilemap();
         List<GameNode> movableNode = GetMovableNode();
         if (movableNode.Contains(targetNode))
         {
@@ -417,12 +422,35 @@ public abstract class CharacterBase : Entity
     public void ShowSkillTilemap()
     {
         if (currentSkill == null) return;
+        ResetVisualTilemap();
         List<GameNode> influenceNodes = GetSkillRangeFromNode(currentSkill);
         foreach (GameNode node in influenceNodes)
         {
             Vector3Int position = node.GetVectorInt();
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.TinyBlue);
         }
+    }
+
+    public void ShowSkillTilemap(GameNode gameNode)
+    {
+        if (currentSkill == null) return;
+        ResetVisualTilemap();
+        List<GameNode> influenceNodes = GetSkillRangeFromNode(currentSkill, gameNode);
+        foreach (GameNode node in influenceNodes)
+        {
+            Vector3Int position = node.GetVectorInt();
+            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.TinyBlue);
+        }
+    }
+
+    public bool IsInMovableRange(GameNode gameNode)
+    {
+        HashSet<GameNode> movableNodes = new HashSet<GameNode>(GetMovableNode());
+        if (movableNodes.Contains(gameNode))
+        {
+            return true;
+        }
+        return false;
     }
 
     public abstract void ReadyBattle();

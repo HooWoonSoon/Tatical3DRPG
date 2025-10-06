@@ -1,6 +1,6 @@
-﻿public class PlayerReadyBattleState : PlayerBaseState
+﻿public class PlayerMovePathStateExplore : PlayerBaseState
 {
-    public PlayerReadyBattleState(PlayerStateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
+    public PlayerMovePathStateExplore(PlayerStateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
     {
     }
 
@@ -20,7 +20,8 @@
         character.PathToTarget();
         if (character.pathRoute == null)
         {
-            character.stateMechine.ChangeRoofState(character.waitState);
+            stateMachine.ChangeState(character.idleStateExplore);
         }
     }
 }
+

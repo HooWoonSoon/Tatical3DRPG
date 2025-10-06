@@ -2,6 +2,7 @@
 
 public class PlayerExploreState : PlayerBaseState
 {
+
     public PlayerExploreState(PlayerStateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
     {
 

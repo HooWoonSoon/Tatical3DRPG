@@ -116,6 +116,7 @@ public class SkillUIManager : MonoBehaviour
     private List<SkillData> skillDatas;
     private int selectedIndex = -1;
     
+    public event Action onSkillChanged;
     public static SkillUIManager instance { get; private set; }
 
     private void Awake()
@@ -134,6 +135,7 @@ public class SkillUIManager : MonoBehaviour
                 selectedIndex -= 1;
                 FocusCurrentSkillList(selectedIndex);
                 currentCharacter.SetSkill(GetCurrentSelectedSkill());
+                onSkillChanged?.Invoke();
             }
         }
         else if (Input.GetKeyDown(KeyCode.S))
@@ -143,6 +145,7 @@ public class SkillUIManager : MonoBehaviour
                 selectedIndex += 1;
                 FocusCurrentSkillList(selectedIndex);
                 currentCharacter.SetSkill(GetCurrentSelectedSkill());
+                onSkillChanged?.Invoke();
             }
         }
     }

@@ -266,7 +266,7 @@ public class PlayerTeamSystem : TeamSystem
             for (int i = 0; i < linkMembers.Count; i++)
             {
                 PlayerCharacter character = linkMembers[i].character;
-                character.stateMechine.ChangeSubState(character.movePathStateExplore);
+                character.stateMechine.ChangeState(character.movePathStateExplore);
             }
         }
     }

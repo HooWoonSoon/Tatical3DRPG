@@ -26,7 +26,7 @@ public class PlayerMoveStateExplore : PlayerBaseState
 
         if (character.xInput == 0 && character.zInput == 0)
         {
-            stateMachine.ChangeSubState(character.idleStateExplore);
+            stateMachine.ChangeState(character.idleStateExplore);
         }
     }
 }

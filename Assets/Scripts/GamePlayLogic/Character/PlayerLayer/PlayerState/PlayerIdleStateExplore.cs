@@ -21,7 +21,7 @@ public class PlayerIdleStateExplore : PlayerBaseState
         base.Update();
         if (character.xInput != 0 || character.zInput != 0)
         {
-            stateMachine.ChangeSubState(character.moveStateExplore);
+            stateMachine.ChangeState(character.moveStateExplore);
         }
     }
 }
