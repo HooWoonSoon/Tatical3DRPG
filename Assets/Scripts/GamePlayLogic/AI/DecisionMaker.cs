@@ -55,7 +55,7 @@ public class DecisionMaker
                 }
                 foreach (CharacterBase target in influenceCharacter)
                 {
-                    if (skill.baseDamage >= target.currenthealth)
+                    if (skill.power >= target.currenthealth)
                     {
                         score += 50;
                         break;
@@ -97,7 +97,7 @@ public class DecisionMaker
             CharacterBase character = node.GetUnitGridCharacter();
             if (character != null)
             {
-                if (skill.baseDamage >= character.currenthealth)
+                if (skill.power >= character.currenthealth)
                 {
                     score += 50;
                 }

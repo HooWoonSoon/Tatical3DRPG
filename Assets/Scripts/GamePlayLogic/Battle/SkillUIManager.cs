@@ -5,10 +5,15 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
+public enum Type
+{
+    Skill, Spell, Inventory
+}
+
 public class SkillUIManager : MonoBehaviour
 {
     [Serializable]
-    public class SkillUIImage
+    public class UIImage
     {
         public RectTransform skillListTransform;
         public Image backgroundImage;
@@ -21,7 +26,7 @@ public class SkillUIManager : MonoBehaviour
         public Image conditionIcon;
         public TextMeshProUGUI spText;
 
-        public SkillUIImage(Transform parent, TMP_FontAsset fontAsset = null, Sprite iconSprite = null, string skillName = null,
+        public UIImage(Transform parent, TMP_FontAsset fontAsset = null, Sprite iconSprite = null, string skillName = null,
             int spValue = 0, Sprite iconSPSprite = null)
         {
             GenerateEmptySkillUI(parent);
@@ -109,14 +114,60 @@ public class SkillUIManager : MonoBehaviour
         }
     }
 
-    [SerializeField] private GameObject skillUIContent;
+    [Serializable]
+    public class TypeRespository
+    {
+        public Sprite sprite;
+        public Type type;
+    }
+
+    [Serializable]
+    public class TypeUIImage
+    {
+        public Type type;
+        public Image backgroundImage;
+        public Image contentImage;
+
+        public TypeUIImage(Transform parent, Type type, Sprite sprite)
+        {
+            RectTransform imageRect = new GameObject($"{sprite.name} Icon").AddComponent<RectTransform>();
+            imageRect.transform.SetParent(parent, false);
+            imageRect.sizeDelta = new Vector2(60, 60);
+            this.type = type;
+
+            backgroundImage = new GameObject($"Background").AddComponent<Image>();
+            backgroundImage.transform.SetParent(imageRect.transform, false);
+            backgroundImage.rectTransform.sizeDelta = new Vector2(60, 60);
+            float alpha = 200f / 255f;
+            backgroundImage.color = new Color(0, 0, 0, alpha);
+
+            contentImage = new GameObject($"{sprite.name} Image").AddComponent<Image>();
+            contentImage.transform.SetParent(imageRect.transform, false);
+            contentImage.rectTransform.sizeDelta = new Vector2(60, 60);
+            contentImage.sprite = sprite;
+        }
+    }
+
+    [SerializeField] private Transform typeUIContent;
     [SerializeField] private TMP_FontAsset fontAsset;
-    private CharacterBase currentCharacter;
-    private List<SkillUIImage> skillUIImages = new List<SkillUIImage>();
+    [SerializeField] private TextMeshProUGUI powerTextUI;
+    [SerializeField] private TextMeshProUGUI descriptionTextUI;
+
+    public TypeRespository[] respositories;
+    private Dictionary<Type, Sprite> typeMapDictionary;
+    private List<TypeUIImage> typeUIImages = new List<TypeUIImage>();
+    private int typeIndex = -1;
+    private Type currentSelectedType;
+
+    [SerializeField] private Transform skillUIContent;
+    private List<UIImage> uIImages = new List<UIImage>();
     private List<SkillData> skillDatas;
-    private int selectedIndex = -1;
-    
-    public event Action onSkillChanged;
+    private List<SkillData> spellDatas;
+    private int listOptionIndex = -1;
+
+    private CharacterBase currentCharacter;
+
+    public event Action onListOptionChanged;
     public static SkillUIManager instance { get; private set; }
 
     private void Awake()
@@ -126,26 +177,52 @@ public class SkillUIManager : MonoBehaviour
 
     private void Update()
     {
-        if (skillDatas == null || skillDatas.Count == 0) { return; }
+        if (typeUIImages == null || typeUIImages.Count == 0) { return; }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            if (typeIndex > 0)
+            {
+                typeIndex -= 1;
+                Type type = typeUIImages[typeIndex].type;
+                currentSelectedType = type;
+                FocusCurrentTypeUI(typeIndex);
+                RefreshToNextTypeList(type);
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.D))
+        { 
+            if (typeIndex < typeUIImages.Count - 1)
+            {
+                typeIndex += 1;
+                Type type = typeUIImages[typeIndex].type;
+                currentSelectedType = type;
+                FocusCurrentTypeUI(typeIndex);
+                RefreshToNextTypeList(type);
+                onListOptionChanged?.Invoke();  
+            }
+        }
+
+        if (uIImages == null || uIImages.Count == 0) { return; }
 
         if (Input.GetKeyDown(KeyCode.W))
         {
-            if (selectedIndex > 0)
+            if (listOptionIndex > 0)
             {
-                selectedIndex -= 1;
-                FocusCurrentSkillList(selectedIndex);
-                currentCharacter.SetSkill(GetCurrentSelectedSkill());
-                onSkillChanged?.Invoke();
+                listOptionIndex -= 1;
+                FocusCurrentSkillUI(listOptionIndex);
+                UpdateSkillDescription(listOptionIndex);
+                onListOptionChanged?.Invoke();
             }
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            if (selectedIndex < skillDatas.Count - 1)
+            if (listOptionIndex < uIImages.Count - 1)
             {
-                selectedIndex += 1;
-                FocusCurrentSkillList(selectedIndex);
-                currentCharacter.SetSkill(GetCurrentSelectedSkill());
-                onSkillChanged?.Invoke();
+                listOptionIndex += 1;
+                FocusCurrentSkillUI(listOptionIndex);
+                UpdateSkillDescription(listOptionIndex);
+                onListOptionChanged?.Invoke();
             }
         }
     }
@@ -153,19 +230,140 @@ public class SkillUIManager : MonoBehaviour
     public void Initialize(List<SkillData> skillDatas, CharacterBase character)
     {
         ResetAll();
+        typeIndex = 0;
         currentCharacter = character;
+        InitializeTypeIcon(skillDatas);
         InitializeSkillList(skillDatas);
     }
 
+    public void ResetAll()
+    {
+        StopAllCoroutines();
+        currentCharacter = null;
+        typeIndex = -1;
+        listOptionIndex = -1;
+        typeUIImages = new List<TypeUIImage>();
+        skillDatas = new List<SkillData>();
+        spellDatas = new List<SkillData>();
+        uIImages = new List<UIImage>();
+
+        foreach (Transform child in typeUIContent)
+        {
+            Destroy(child.gameObject);
+        }
+        foreach (Transform child in skillUIContent)
+        {
+            Destroy(child.gameObject);
+        }
+    }
+
+    public void RefreshToNextTypeList(Type type)
+    {
+        StopAllCoroutines();
+        listOptionIndex = 0;
+        uIImages = new List<UIImage>();
+        foreach (Transform child in skillUIContent)
+        {
+            Destroy(child.gameObject);
+        }
+
+        if (skillDatas == null) { Debug.LogWarning("Issue in skillData input"); }
+
+        if (type == Type.Skill)
+        {
+            InitializeSkillList(skillDatas);
+        }
+        else if (type == Type.Inventory)
+        {
+        }
+        else
+        {
+            InitializeAbilityList(skillDatas, type);
+        }
+        FocusCurrentSkillUI(0);
+    }
+
+    #region Initialize Type UI
+    private void BuildDictionary()
+    {
+        typeMapDictionary = new Dictionary<Type, Sprite>();
+        foreach (TypeRespository respository in respositories)
+        {
+            if (!typeMapDictionary.ContainsKey(respository.type))
+            {
+                typeMapDictionary.Add(respository.type, respository.sprite);
+            }
+        }
+    }
+
+    public void InitializeTypeIcon(List<SkillData> skillDatas)
+    {
+        BuildDictionary();
+        HashSet<Type> containTypeSet = new HashSet<Type>();
+
+        typeMapDictionary.TryGetValue(Type.Skill, out Sprite spriteSkill);
+        if (spriteSkill != null) 
+        {
+            TypeUIImage typeUIImageSkill = new TypeUIImage(typeUIContent, Type.Skill, spriteSkill);
+            typeUIImages.Add(typeUIImageSkill);
+        }
+
+        foreach (SkillData skillData in skillDatas)
+        {
+            Type type = skillData.type;
+            if (type == Type.Skill || type == Type.Inventory) { continue; }
+            if (typeMapDictionary.ContainsKey(type))
+            {
+                if (!containTypeSet.Contains(type))
+                {
+                    typeMapDictionary.TryGetValue(type, out Sprite sprite);
+                    TypeUIImage typeUIImage = new TypeUIImage(typeUIContent, type, sprite);
+                    typeUIImages.Add(typeUIImage);
+                    containTypeSet.Add(type);
+                }
+            }
+        }
+
+        typeMapDictionary.TryGetValue(Type.Inventory, out Sprite spriteInventory);
+        if (spriteInventory != null)
+        {
+            TypeUIImage typeUIInventory = new TypeUIImage(typeUIContent, Type.Inventory, spriteInventory);
+            typeUIImages.Add(typeUIInventory);
+        }
+
+        FocusCurrentTypeUI(0);
+    }
+    #endregion
+
+    #region Initialize UI List
     public void InitializeSkillList(List<SkillData> skillDatas)
     {
         this.skillDatas = skillDatas;
 
+        BuildSkillUI(skillDatas);
+    }
+    public void InitializeAbilityList(List<SkillData> skillDatas, Type type)
+    {
+        List<SkillData> typeSkillList = new List<SkillData>();
+        foreach (SkillData skillData in skillDatas)
+        {
+            if (skillData.type == type)
+            {
+                typeSkillList.Add(skillData);
+            }
+        }
+        spellDatas = typeSkillList;
+
+        BuildSkillUI(spellDatas);
+    }
+
+    private void BuildSkillUI(List<SkillData> skillDatas)
+    {
         for (int i = 0; i < skillDatas.Count; i++)
         {
-            SkillUIImage skillUIImage = new SkillUIImage(skillUIContent.transform, fontAsset, 
+            UIImage skillUIImage = new UIImage(skillUIContent, fontAsset,
                 skillDatas[i].mainIcon, skillDatas[i].skillName, skillDatas[i].requiredSP, skillDatas[i].spIcon);
-            skillUIImages.Add(skillUIImage);
+            uIImages.Add(skillUIImage);
         }
 
         if (skillDatas.Count < 4)
@@ -173,99 +371,127 @@ public class SkillUIManager : MonoBehaviour
             int release = 4 - skillDatas.Count;
             for (int i = 0; i < release; i++)
             {
-                SkillUIImage skillUIImage = new SkillUIImage(skillUIContent.transform);
+                UIImage skillUIImage = new UIImage(skillUIContent);
             }
         }
 
         if (skillDatas.Count >= 1)
         {
-            selectedIndex = 0;
-            FocusCurrentSkillList(0);
+            listOptionIndex = 0;
+            FocusCurrentSkillUI(0);
             currentCharacter.SetSkill(GetCurrentSelectedSkill());
+            UpdateSkillDescription(0);
         }
     }
+    #endregion
 
-    public void ResetAll()
+    private void UpdateSkillDescription(int index)
     {
-        currentCharacter = null;
-        selectedIndex = -1;
-        skillDatas = new List<SkillData>();
-        skillUIImages = new List<SkillUIImage>();
-        foreach (Transform child in skillUIContent.transform)
-        {
-            Destroy(child.gameObject);
-        }
+        int power = skillDatas[index].power;
+        powerTextUI.text = power.ToString();
+        string description = skillDatas[index].description;
+        descriptionTextUI.text = description;
     }
 
-    private void RecoveryAllSkillUI()
+    private void RecoveryAllTypeUI()
     {
-        for (int i = 0; i < skillUIImages.Count; i++)
+        for (int i = 0; i < typeUIImages.Count; i++)
         {
-            RectTransform imageRect = skillUIImages[i].leftConerImage.rectTransform;
-            imageRect.anchoredPosition = new Vector2(-218, 0);
-            imageRect.sizeDelta = new Vector2(10, 90);
-
-            Image backgroundImage = skillUIImages[i].backgroundImage;
+            Image backgroundImage = typeUIImages[i].backgroundImage;
             float alpha = 200f / 255f;
             Color color = new Color(0, 0, 0, alpha);
             backgroundImage.color = color;
 
-            Image leftConerImage = skillUIImages[i].leftConerImage;
-            leftConerImage.color = Color.white;
-
-            Image skillImage = skillUIImages[i].skillImage;
-            skillImage.color = Color.white;
-
-            Image lineImage = skillUIImages[i].lineImage;
-            lineImage.color = Color.white;
-
-            Image conditionImage = skillUIImages[i].conditionImage;
-            conditionImage.color = Color.white;
-
-            Image conditionIcon = skillUIImages[i].conditionIcon;
-            conditionIcon.color = Color.white;
-
-            TextMeshProUGUI skillText = skillUIImages[i].skillText;
-            skillText.color = Color.white;
-
-            TextMeshProUGUI spText = skillUIImages[i].spText;
-            spText.color = Color.black;
+            Image contentImage = typeUIImages[i].contentImage;
+            contentImage.color = Color.white;
         }
     }
 
-    #region External Methods
-    public void FocusCurrentSkillList(int index)
+    private void FocusCurrentTypeUI(int index)
+    {
+        RecoveryAllTypeUI();
+
+        if (index < 0 || index >= typeUIImages.Count) { return; }
+
+        Image backgroundImage = typeUIImages[index].backgroundImage;
+        StartCoroutine(Utils.UIColorInverseCorroutine(backgroundImage, 0.2f));
+        Image contentImage = typeUIImages[index].contentImage;
+        StartCoroutine(Utils.UIColorInverseCorroutine(contentImage, 0.2f));
+    }
+
+    private void RecoveryAllSkillUI()
+    {
+        for (int i = 0; i < uIImages.Count; i++)
+        {
+            RectTransform imageRect = uIImages[i].leftConerImage.rectTransform;
+            imageRect.anchoredPosition = new Vector2(-218, 0);
+            imageRect.sizeDelta = new Vector2(10, 90);
+
+            Image backgroundImage = uIImages[i].backgroundImage;
+            float alpha = 200f / 255f;
+            Color color = new Color(0, 0, 0, alpha);
+            backgroundImage.color = color;
+
+            Image leftConerImage = uIImages[i].leftConerImage;
+            leftConerImage.color = Color.white;
+
+            Image skillImage = uIImages[i].skillImage;
+            skillImage.color = Color.white;
+
+            Image lineImage = uIImages[i].lineImage;
+            lineImage.color = Color.white;
+
+            Image conditionImage = uIImages[i].conditionImage;
+            conditionImage.color = Color.white;
+
+            Image conditionIcon = uIImages[i].conditionIcon;
+            conditionIcon.color = Color.white;
+
+            TextMeshProUGUI skillText = uIImages[i].skillText;
+            skillText.color = Color.white;
+
+            TextMeshProUGUI spText = uIImages[i].spText;
+            spText.color = Color.black;
+        }
+    }
+    private void FocusCurrentSkillUI(int index)
     {
         RecoveryAllSkillUI();
 
-        if (index < 0 || index >= skillUIImages.Count) { return; }
+        if (index < 0 || index >= uIImages.Count) { return; }
 
-        RectTransform imageRect = skillUIImages[index].leftConerImage.rectTransform;
+        RectTransform imageRect = uIImages[index].leftConerImage.rectTransform;
         StartCoroutine(Utils.UIExtraMoveCoroutine(imageRect, new Vector2(5, 0), 0.2f));
         StartCoroutine(Utils.UIExtraScaleCoroutine(imageRect, new Vector2(10, 0), 0.2f));
 
-        Image backgroundImage = skillUIImages[index].backgroundImage;
+        Image backgroundImage = uIImages[index].backgroundImage;
         StartCoroutine(Utils.UIColorInverseCorroutine(backgroundImage, 0.2f));
-        Image leftConerImage = skillUIImages[index].leftConerImage;
+        Image leftConerImage = uIImages[index].leftConerImage;
         StartCoroutine(Utils.UIColorInverseCorroutine(leftConerImage, 0.2f));
-        Image skillImage = skillUIImages[index].skillImage;
+        Image skillImage = uIImages[index].skillImage;
         StartCoroutine(Utils.UIColorInverseCorroutine(skillImage, 0.2f));
-        Image lineImage = skillUIImages[index].lineImage;
+        Image lineImage = uIImages[index].lineImage;
         StartCoroutine(Utils.UIColorInverseCorroutine(lineImage, 0.2f));
-        Image conditionImage = skillUIImages[index].conditionImage;
+        Image conditionImage = uIImages[index].conditionImage;
         StartCoroutine(Utils.UIColorInverseCorroutine(conditionImage, 0.2f));
-        Image conditionIcon = skillUIImages[index].conditionIcon;
+        Image conditionIcon = uIImages[index].conditionIcon;
         StartCoroutine(Utils.UIColorInverseCorroutine(conditionIcon, 0.2f));
-        TextMeshProUGUI skillText = skillUIImages[index].skillText;
+        TextMeshProUGUI skillText = uIImages[index].skillText;
         StartCoroutine(Utils.TextColorInverseCorroutine(skillText, 0.2f));
-        TextMeshProUGUI spText = skillUIImages[index].spText;
+        TextMeshProUGUI spText = uIImages[index].spText;
         StartCoroutine(Utils.TextColorInverseCorroutine(spText, 0.2f));
     }
 
     public SkillData GetCurrentSelectedSkill()
     {
-        return skillDatas[selectedIndex];
+        if (currentSelectedType == Type.Skill)
+        {
+            return skillDatas[listOptionIndex];
+        }
+        if (currentSelectedType == Type.Spell)
+        {
+            return spellDatas[listOptionIndex];
+        }
+        return null;
     }
-
-    #endregion
 }

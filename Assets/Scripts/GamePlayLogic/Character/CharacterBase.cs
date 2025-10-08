@@ -2,16 +2,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
 using UnityEngine;
+public enum Orientation
+{
+    right, left, forward, back
+}
 
 public abstract class CharacterBase : Entity
 {
     public GameObject characterModel;
-    public enum Orientation
-    {
-        right, left, forward, back
-    }
 
     public float moveSpeed = 5f;
 
@@ -173,7 +172,7 @@ public abstract class CharacterBase : Entity
     public void SkillCalculate()
     {
         CharacterBase character = currentSkillTargetNode.GetUnitGridCharacter();
-        int damage = currentSkill.baseDamage;
+        int damage = currentSkill.power;
         if (character != null)
         {
             character.currenthealth -= damage;
@@ -293,7 +292,6 @@ public abstract class CharacterBase : Entity
     {
         return skill.GetInflueneNode(world, gameNode);
     }
-
     private List<GameNode> GetSkillRangeFromNode(SkillData skill)
     {
         return skill.GetInflueneNode(world, world.GetNode(GetCharacterNodePosition()));
@@ -348,7 +346,6 @@ public abstract class CharacterBase : Entity
             GridTilemapVisual.instance.SetTilemapSprite(rangeNodePos, GameNode.TilemapSprite.Purple);
         }
     }
-
     public void ShowDangerAndMovableTile()
     {
         ResetVisualTilemap();
@@ -418,6 +415,16 @@ public abstract class CharacterBase : Entity
         Vector3Int position = currentSkillTargetNode.GetVectorInt();
         GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
     }
+    public void ShowSkillTargetTilemap(GameNode originNode, GameNode targetNode)
+    {
+        ShowSkillTilemap(originNode);
+        List<GameNode> skillRangeNodes = GetSkillRangeFromNode(currentSkill, originNode);
+        if (skillRangeNodes.Contains(targetNode))
+        {
+            Vector3Int position = targetNode.GetVectorInt();
+            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
+        }
+    }
 
     public void ShowSkillTilemap()
     {
@@ -430,7 +437,6 @@ public abstract class CharacterBase : Entity
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.TinyBlue);
         }
     }
-
     public void ShowSkillTilemap(GameNode gameNode)
     {
         if (currentSkill == null) return;

@@ -8,13 +8,20 @@ public class BattleManager : Entity
     public List<TeamDeployment> battleTeams = new List<TeamDeployment>();
     public List<CharacterBase> joinedBattleUnits = new List<CharacterBase>();
     public bool isBattleStarted = false;
+
+    [Header("Cursor")]
     public BattleCursor battleCursor;
     private GameNode lastSelectedNode;
+
+    [Header("Orientation")]
+    public BattleOrientationArrow orientationArrow;
+    private Orientation lastOrientation;
 
     [Header("Preview")]
     public Material previewMaterial;
     private GameObject previewCharacter;
 
+    public event Action onLoadNextTurn;
 
     public static BattleManager instance { get; private set; }
 
@@ -114,7 +121,6 @@ public class BattleManager : Entity
         BattleUIManager.instance.PrepareBattleUI();
         CTTimeline.instance.SetJoinedBattleUnit(joinedBattleUnits);
         CTTimeline.instance.SetupTimeline();
-        
         BattleUIManager.instance.OnBattleUIFinish += StartBattle;
     }
 
@@ -164,6 +170,11 @@ public class BattleManager : Entity
         }
     }
 
+    public void OnLoadNextTurn()
+    {
+        onLoadNextTurn?.Invoke();
+    }
+
     public GameNode GetSelectedGameNode()
     {
         return battleCursor.currentGameNode;
@@ -177,10 +188,22 @@ public class BattleManager : Entity
         }
         return false;
     }
-    public void ActivateMoveCursor(bool active)
+    public void ActivateMoveCursorAndHide(bool active, bool hide)
     {
-        battleCursor.ActivateMoveCursor(active);
+        battleCursor.ActivateMoveCursor(active, hide);
     }
+
+    public void SetupOrientationArrow(CharacterBase character, GameNode targetNode)
+    {
+        Orientation orientation = character.orientation;
+        orientationArrow.ShowArrows(orientation, targetNode);
+    }
+
+    public void HideOrientationArrow()
+    {
+        orientationArrow.HideAll();
+    }
+
     public List<TeamDeployment> GetBattleTeam() => battleTeams;
     public List<CharacterBase> GetBattleUnit() => joinedBattleUnits;
 

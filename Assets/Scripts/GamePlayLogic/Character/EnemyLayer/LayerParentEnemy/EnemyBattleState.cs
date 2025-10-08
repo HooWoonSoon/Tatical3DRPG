@@ -33,7 +33,7 @@ public class EnemyBattleState : EnemyBaseState
         base.Update();
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            CTTimeline.instance.NextCharacter();
+            BattleManager.instance.OnLoadNextTurn();
         }
         if (!character.IsYourTurn(character))
         {

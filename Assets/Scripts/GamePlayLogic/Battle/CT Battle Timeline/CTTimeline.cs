@@ -45,7 +45,7 @@ public class CTTimeline : MonoBehaviour
 
     public Dictionary<CharacterBase, CharacterTacticsTime> battleCharacter = new Dictionary<CharacterBase, CharacterTacticsTime>();
     private HashSet<CharacterBase> lastBattleCharacter = new HashSet<CharacterBase>();
-    private List<CTTurn> cTTurn = new List<CTTurn>();
+    private List<CTTurn> cTTurns = new List<CTTurn>();
     private const int MAX_TURNS = 3;
 
     private CTTurn currentCTTurn;
@@ -85,13 +85,13 @@ public class CTTimeline : MonoBehaviour
         if (lastBattleCharacter.SetEquals(characters)) { return; }
 
         lastBattleCharacter = characters;
-        cTTurn.Clear();
+        cTTurns.Clear();
 
         for (int i = 0; i < MAX_TURNS; i++)
         {
             List<CharacterBase> completeQueue = GetCalculateCTQueue();
             CTTurn turnHistory = new CTTurn(completeQueue, i);
-            cTTurn.Add(turnHistory);
+            cTTurns.Add(turnHistory);
 
             //  Reset all battle character last turn accumulated value
             foreach (var tactics in battleCharacter.Values)
@@ -99,9 +99,10 @@ public class CTTimeline : MonoBehaviour
                 tactics.Reset();
             }
         }
-        currentCTTurn = cTTurn[0];
+        currentCTTurn = cTTurns[0];
         currentCharacter = currentCTTurn.cTTimelineQueue[0];
         confirmCTTimeline?.Invoke();
+        BattleManager.instance.onLoadNextTurn += NextCharacter;
     }
     private bool IsAllCharacterQueue(List<CharacterTacticsTime> tacticsList)
     {
@@ -147,10 +148,10 @@ public class CTTimeline : MonoBehaviour
         }
         else
         {
-            if (currentTurn < cTTurn.Count - 1)
+            if (currentTurn < cTTurns.Count - 1)
             {
                 currentTurn++;
-                currentCTTurn = cTTurn[currentTurn];
+                currentCTTurn = cTTurns[currentTurn];
                 currentTurnIndex = 0;
                 //Debug.Log($"currentTurn: {currentTurnIndex}, currentNumber: {currentNumberIndex}");
             }
@@ -160,7 +161,7 @@ public class CTTimeline : MonoBehaviour
     {
         uITransitionToolkit.ResetUIFormToTargetPos(1);
     }
-    public List<CTTurn> GetAllTurnHistory() => cTTurn;
+    public List<CTTurn> GetAllTurnHistory() => cTTurns;
     public CTTurn GetCurrentCTTurn() => currentCTTurn;
     public int GetCurrentTurnIndex() => currentTurnIndex;
     public int GetCurrentTurn() => currentTurn;

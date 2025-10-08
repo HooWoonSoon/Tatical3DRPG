@@ -16,7 +16,10 @@ MonoBehaviour:
   mainIcon: {fileID: 21300000, guid: 49c9206e2a50e8944a4b8e5608ab5a9d, type: 3}
   range: 2
   aoeRadius: 1
-  baseDamage: 50
+  power: 20
+  type: 1
   requiredSP: 10
   spIcon: {fileID: 0}
+  description: Consumes a portion of SP to deal magic damage to enemy within 2-tile
+    radius
   skillCastTime: 1

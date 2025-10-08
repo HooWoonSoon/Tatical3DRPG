@@ -80,9 +80,10 @@ public class BattleCursor : Entity
         activateCursor = true;
     }
 
-    public void ActivateMoveCursor(bool active)
+    public void ActivateMoveCursor(bool active, bool hide)
     {
         activateCursor = active;
+        cursor.SetActive(!hide);
     }
 }
 
