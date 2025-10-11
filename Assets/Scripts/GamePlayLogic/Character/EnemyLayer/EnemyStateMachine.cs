@@ -1,31 +1,20 @@
 ﻿
 public class EnemyStateMachine
 {
-    public EnemyBaseState roofState { get; private set; }
-    public EnemyBaseState subState { get; private set; }
+    public EnemyBaseState currentState { get; private set; }
 
-    public void Initialize(EnemyBaseState roofState, EnemyBaseState subState)
+    public void Initialize(EnemyBaseState roofState)
     {
-        this.roofState = roofState;
-        this.subState = subState;
-        this.roofState.Enter();
-        this.subState.Enter();
+        this.currentState = roofState;
+        this.currentState.Enter();
     }
 
-    public void ChangeRoofState(EnemyBaseState newState)
+    public void ChangeState(EnemyBaseState newState)
     {
-        if (roofState == newState || roofState == null) { return; }
-        roofState.Exit();
-        roofState = newState;
-        roofState.Enter();
-    }
-
-    public void ChangeSubState(EnemyBaseState newState)
-    {
-        if (subState == newState || subState == null) { return; }
-        subState.Exit();
-        subState = newState;
-        subState.Enter();
+        if (currentState == newState || currentState == null) { return; }
+        currentState.Exit();
+        currentState = newState;
+        currentState.Enter();
     }
 }
 

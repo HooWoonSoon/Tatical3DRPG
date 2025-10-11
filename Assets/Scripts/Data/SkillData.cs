@@ -1,6 +1,11 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+public enum SkillTargetType
+{
+    Our, Opposite, Both
+}
+
 [CreateAssetMenu(fileName = "SkillData", menuName = "Tactics/Skill")]
 public class SkillData : ScriptableObject
 {
@@ -11,6 +16,7 @@ public class SkillData : ScriptableObject
     public int aoeRadius = 1; // If not aoe skill, set to 1
     public int power;
     public Type type;
+    public SkillTargetType targetType;
 
     public int requiredSP;
     public Sprite spIcon;

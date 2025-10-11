@@ -188,6 +188,7 @@ public class SkillUIManager : MonoBehaviour
                 currentSelectedType = type;
                 FocusCurrentTypeUI(typeIndex);
                 RefreshToNextTypeList(type);
+                onListOptionChanged?.Invoke();
             }
         }
         else if (Input.GetKeyDown(KeyCode.D))
