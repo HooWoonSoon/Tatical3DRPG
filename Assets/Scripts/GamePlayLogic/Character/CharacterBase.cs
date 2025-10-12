@@ -20,7 +20,7 @@ public abstract class CharacterBase : Entity
 
     [Header("Character Information")]
     public CharacterData data;
-    public int currenthealth;
+    public int currentHealth;
     public List<SkillData> skillData;
     
     public SkillData currentSkill { get; private set;}
@@ -36,7 +36,7 @@ public abstract class CharacterBase : Entity
         base.Start();
         detectable = GetComponent<UnitDetectable>();
 
-        currenthealth = data.healthPoint;
+        currentHealth = data.healthPoint;
     }
     public void UpdateOrientation(Vector3 direction)
     {
@@ -173,12 +173,24 @@ public abstract class CharacterBase : Entity
     public void SkillCalculate()
     {
         CharacterBase character = currentSkillTargetNode.GetUnitGridCharacter();
-        int damage = currentSkill.power;
-        if (character != null)
+        if (currentSkill.skillType == SkillType.Acttack)
         {
-            character.currenthealth -= damage;
-            //Debug.Log($"{this.gameObject.name} damage {character.gameObject.name} for {damage} points. Remaining health: {character.currenthealth}");
-            BattleUIManager.instance.CreateCountText(character, damage);
+            int damage = currentSkill.damageAmount;
+            if (character != null)
+            {
+                character.currentHealth -= damage;
+                //Debug.Log($"{this.gameObject.name} damage {character.gameObject.name} for {damage} points. Remaining health: {character.currenthealth}");
+                BattleUIManager.instance.CreateCountText(character, damage);
+            }
+        }
+        else if (currentSkill.skillType == SkillType.Heal)
+        {
+            int heal = currentSkill.healAmount;
+            if (character != null)
+            {
+                character.currentHealth += heal;
+                BattleUIManager.instance.CreateCountText(character, heal);
+            }
         }
         currentSkill = null;
     }

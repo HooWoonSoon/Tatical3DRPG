@@ -65,7 +65,7 @@ public class EnemyBattleState : EnemyBaseState
                 }
                 break;
             case BattlePhase.SkillCast:
-                if (phaseStartTime > character.currentSkill.SkillCastTime)
+                if (phaseStartTime > character.currentSkill.skillCastTime)
                 {
                     character.SkillCalculate();
                     ChangePhase(BattlePhase.End);

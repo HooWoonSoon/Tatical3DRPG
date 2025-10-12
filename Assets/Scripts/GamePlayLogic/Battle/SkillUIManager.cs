@@ -243,6 +243,7 @@ public class SkillUIManager : MonoBehaviour
         currentCharacter = null;
         typeIndex = -1;
         listOptionIndex = -1;
+        currentSelectedType = Type.Skill;
         typeUIImages = new List<TypeUIImage>();
         skillDatas = new List<SkillData>();
         spellDatas = new List<SkillData>();
@@ -363,7 +364,7 @@ public class SkillUIManager : MonoBehaviour
         for (int i = 0; i < skillDatas.Count; i++)
         {
             UIImage skillUIImage = new UIImage(skillUIContent, fontAsset,
-                skillDatas[i].mainIcon, skillDatas[i].skillName, skillDatas[i].requiredSP, skillDatas[i].spIcon);
+                skillDatas[i].skillIcon, skillDatas[i].skillName, skillDatas[i].requiredSP, skillDatas[i].spIcon);
             uIImages.Add(skillUIImage);
         }
 
@@ -388,7 +389,7 @@ public class SkillUIManager : MonoBehaviour
 
     private void UpdateSkillDescription(int index)
     {
-        int power = skillDatas[index].power;
+        int power = skillDatas[index].damageAmount;
         powerTextUI.text = power.ToString();
         string description = skillDatas[index].description;
         descriptionTextUI.text = description;
