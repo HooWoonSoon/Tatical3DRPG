@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public enum Orientation
 {
@@ -92,6 +93,14 @@ public abstract class CharacterBase : Entity
         else if (direction.x < 0)
             transform.localScale = new Vector3(-1, 1, 1);
     }
+   
+    public void SetSelfToNode(GameNode targetNode, Vector3 offset)
+    {
+        Vector3 targetPos = targetNode.GetVector();
+        transform.position = targetPos + offset;
+        targetNode.SetUnitGridCharacter(this);
+    }
+
 
     public void SetPathRoute(PathRoute pathRoute)
     {
@@ -437,6 +446,19 @@ public abstract class CharacterBase : Entity
             Vector3Int position = targetNode.GetVectorInt();
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
         }
+    }
+
+    public GameNode GetSkillTargetShowTilemap(GameNode originNode, GameNode targetNode)
+    {
+        ShowSkillTilemap(originNode);
+        List<GameNode> skillRangeNodes = GetSkillRangeFromNode(currentSkill, originNode);
+        if (skillRangeNodes.Contains(targetNode))
+        {
+            Vector3Int position = targetNode.GetVectorInt();
+            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
+            return targetNode;
+        }
+        return null;
     }
 
     public void ShowSkillTilemap()

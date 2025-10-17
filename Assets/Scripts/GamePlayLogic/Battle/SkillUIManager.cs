@@ -1,7 +1,6 @@
 ﻿using UnityEngine.UI;
 using UnityEngine;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
@@ -163,6 +162,7 @@ public class SkillUIManager : MonoBehaviour
     private List<UIImage> uIImages = new List<UIImage>();
     private List<SkillData> skillDatas;
     private List<SkillData> spellDatas;
+    private List<InventoryData> inventoryDatas;
     private int listOptionIndex = -1;
 
     private CharacterBase currentCharacter;
@@ -211,7 +211,7 @@ public class SkillUIManager : MonoBehaviour
             if (listOptionIndex > 0)
             {
                 listOptionIndex -= 1;
-                FocusCurrentSkillUI(listOptionIndex);
+                FocusCurrentListUI(listOptionIndex);
                 UpdateSkillDescription(listOptionIndex);
                 onListOptionChanged?.Invoke();
             }
@@ -221,14 +221,15 @@ public class SkillUIManager : MonoBehaviour
             if (listOptionIndex < uIImages.Count - 1)
             {
                 listOptionIndex += 1;
-                FocusCurrentSkillUI(listOptionIndex);
+                FocusCurrentListUI(listOptionIndex);
                 UpdateSkillDescription(listOptionIndex);
                 onListOptionChanged?.Invoke();
             }
         }
     }
 
-    public void Initialize(List<SkillData> skillDatas, CharacterBase character)
+    public void Initialize(List<SkillData> skillDatas, 
+        List<InventoryData> inventoryDatas, CharacterBase character)
     {
         ResetAll();
         typeIndex = 0;
@@ -247,6 +248,7 @@ public class SkillUIManager : MonoBehaviour
         typeUIImages = new List<TypeUIImage>();
         skillDatas = new List<SkillData>();
         spellDatas = new List<SkillData>();
+        inventoryDatas = new List<InventoryData>();
         uIImages = new List<UIImage>();
 
         foreach (Transform child in typeUIContent)
@@ -277,12 +279,13 @@ public class SkillUIManager : MonoBehaviour
         }
         else if (type == Type.Inventory)
         {
+            InitializeInventoryList(inventoryDatas);
         }
         else
         {
             InitializeAbilityList(skillDatas, type);
         }
-        FocusCurrentSkillUI(0);
+        FocusCurrentListUI(0);
     }
 
     #region Initialize Type UI
@@ -359,6 +362,13 @@ public class SkillUIManager : MonoBehaviour
         BuildSkillUI(spellDatas);
     }
 
+    public void InitializeInventoryList(List<InventoryData> inventoryDatas)
+    {
+        this.inventoryDatas = inventoryDatas;
+
+        BuildInventoryUI(inventoryDatas);
+    }
+
     private void BuildSkillUI(List<SkillData> skillDatas)
     {
         for (int i = 0; i < skillDatas.Count; i++)
@@ -380,11 +390,40 @@ public class SkillUIManager : MonoBehaviour
         if (skillDatas.Count >= 1)
         {
             listOptionIndex = 0;
-            FocusCurrentSkillUI(0);
+            FocusCurrentListUI(0);
             currentCharacter.SetSkill(GetCurrentSelectedSkill());
             UpdateSkillDescription(0);
         }
     }
+
+
+    private void BuildInventoryUI(List<InventoryData> inventoryDatas)
+    {
+        for (int i = 0; i < inventoryDatas.Count; i++)
+        {
+            UIImage skillUIImage = new UIImage(skillUIContent, fontAsset,
+                inventoryDatas[i].icon, inventoryDatas[i].itemName);
+            uIImages.Add(skillUIImage);
+        }
+
+
+        if (inventoryDatas.Count < 4)
+        {
+            int release = 4 - inventoryDatas.Count;
+            for (int i = 0; i < release; i++)
+            {
+                UIImage skillUIImage = new UIImage(skillUIContent);
+            }
+        }
+
+        if (inventoryDatas.Count >= 1)
+        {
+            listOptionIndex = 0;
+            FocusCurrentListUI(0);
+            UpdateInventoryDescription(0);
+        }
+    }
+
     #endregion
 
     private void UpdateSkillDescription(int index)
@@ -392,6 +431,23 @@ public class SkillUIManager : MonoBehaviour
         int power = skillDatas[index].damageAmount;
         powerTextUI.text = power.ToString();
         string description = skillDatas[index].description;
+        descriptionTextUI.text = description;
+    }
+
+    private void UpdateInventoryDescription(int index)
+    {
+        InventoryData inventoryData = inventoryDatas[index];
+        if (inventoryData.consumableType == ConsumableType.Damage)
+        {
+            int power = inventoryDatas[index].damageAmount;
+            powerTextUI.text = power.ToString();
+        }
+        else if (inventoryData.consumableType == ConsumableType.Health)
+        {
+            int power = inventoryDatas[index].healthAmount;
+            powerTextUI.text = power.ToString();
+        }
+        string description = inventoryData.description;
         descriptionTextUI.text = description;
     }
 
@@ -456,7 +512,7 @@ public class SkillUIManager : MonoBehaviour
             spText.color = Color.black;
         }
     }
-    private void FocusCurrentSkillUI(int index)
+    private void FocusCurrentListUI(int index)
     {
         RecoveryAllSkillUI();
 
@@ -486,6 +542,7 @@ public class SkillUIManager : MonoBehaviour
 
     public SkillData GetCurrentSelectedSkill()
     {
+        if (listOptionIndex < 0) return null;
         if (currentSelectedType == Type.Skill)
         {
             return skillDatas[listOptionIndex];

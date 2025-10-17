@@ -13,15 +13,17 @@ public class GameNodeData
 {
     public int x, y, z;
     public bool isWalkable;
-    public bool hasNode;
+    public bool hasCube;
+    public bool isDeployable;
 
-    public GameNodeData(int x, int y, int z, bool isWalkable, bool hasNode)
+    public GameNodeData(int x, int y, int z, bool isWalkable, bool hasCube, bool isDeployable)
     {
         this.x = x;
         this.y = y;
         this.z = z;
         this.isWalkable = isWalkable;
-        this.hasNode = hasNode;
+        this.hasCube = hasCube;
+        this.isDeployable = isDeployable;
     }
 }
 public class Heatmap
@@ -47,7 +49,7 @@ public class VoxelMapEditor : EditorWindow
 
     private string filePath = "VoxelMap.json";
     private string fbxExportPath = "MapModel.fbx";
-    private string loadMapDataPath = "VoxelMap.json";
+    private string loadMapDataPath;
     private GameObject heatMapObject;
     private List<TextMeshPro> textMeshPros = new List<TextMeshPro>();
     private CharacterBase character;
@@ -86,7 +88,9 @@ public class VoxelMapEditor : EditorWindow
         {
             if (Selection.activeGameObject != null) { ReactiveHidedBlocks(Selection.activeGameObject); }
         }
+
         filePath = EditorGUILayout.TextField("Save JSON File Path", filePath);
+
         if (GUILayout.Button("Save JSON Map"))
         {
             if (Selection.activeGameObject != null) { SaveJSONData(Selection.activeGameObject); }
@@ -95,8 +99,12 @@ public class VoxelMapEditor : EditorWindow
         {
             if (Selection.activeGameObject != null) { ExportGameObjectToFbx(Selection.activeGameObject); }
         }
-        loadMapDataPath = EditorGUILayout.TextField("Map Data File Path", "VoxelMap.json");
+
+        loadMapDataPath = EditorGUILayout.TextField($"Map Data File Path", loadMapDataPath);
+
         heatMaterial = (Material)EditorGUILayout.ObjectField("Heat Map Material", heatMaterial, typeof(Material), false);
+        heatMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Black_Red_Yellow_Green.mat");
+
         character = (CharacterBase)EditorGUILayout.ObjectField("Character", character, typeof(CharacterBase), true);
         if (GUILayout.Button("Show Movable Cost Map"))
         {
@@ -108,6 +116,20 @@ public class VoxelMapEditor : EditorWindow
             RemoveVisibleMapCost();
         }
         EditorGUILayout.EndScrollView();
+    }
+
+    public void OnInspectorUpdate()
+    {
+        if (Selection.activeGameObject != null)
+        {
+            GameObject selectedObject = Selection.activeGameObject;
+            if (selectedObject.GetComponent<TilemapList3D>() != null)
+            {
+                string objectName = selectedObject.name;
+                filePath = $"{objectName}_VoxelMap.json";
+                Repaint();
+            }
+        }
     }
 
     #region Function For Editor
@@ -204,7 +226,8 @@ public class VoxelMapEditor : EditorWindow
                 Mathf.RoundToInt(blocks[i].transform.position.y),
                 Mathf.RoundToInt(blocks[i].transform.position.z),
                 properites.isWalkable,
-                properites.hasCube
+                properites.hasCube,
+                properites.isDeployable
                 );
             gameNodesData.Add(gameNodeData);
         }

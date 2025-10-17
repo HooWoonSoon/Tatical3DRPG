@@ -63,10 +63,10 @@ public class PlayerTeamSystem : TeamSystem
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            stateMachine.ChangeState(teamSortPathFindingState);
-        }
+        //if (Input.GetKeyDown(KeyCode.C))
+        //{
+        //    stateMachine.ChangeState(teamSortPathFindingState);
+        //}   
 
         if (Input.GetMouseButtonDown(0))
         {

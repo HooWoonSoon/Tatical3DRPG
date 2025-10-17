@@ -2,7 +2,7 @@
 using UnityEngine;
 public enum SkillTargetType
 {
-    Our, Opposite, Both
+    None, Our, Opposite, Both
 }
 public enum SkillType
 {

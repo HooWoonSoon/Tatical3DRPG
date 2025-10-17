@@ -16,6 +16,7 @@ public class GameNode
 
     public bool isWalkable;
     public bool hasCube;
+    public bool isDeployable;
 
     #region Dijkstra Pathfinding Data
     public int dijkstraCost;
@@ -29,13 +30,14 @@ public class GameNode
 
     public GameNode cameFromNode;
 
-    public GameNode(int x, int y, int z, bool isWalkable, bool hasCube)
+    public GameNode(int x, int y, int z, bool isWalkable, bool hasCube, bool isDeployable)
     {
         this.x = x;
         this.y = y;
         this.z = z;
         this.isWalkable = isWalkable;
         this.hasCube = hasCube;
+        this.isDeployable = isDeployable;
     }
 
     //  Summary

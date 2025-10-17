@@ -10,7 +10,7 @@ public class BattleManager : Entity
     public bool isBattleStarted = false;
 
     [Header("Cursor")]
-    public BattleCursor battleCursor;
+    public GridCursor gridCursor;
     private GameNode lastSelectedNode;
 
     [Header("Orientation")]
@@ -130,9 +130,9 @@ public class BattleManager : Entity
         isBattleStarted = true;
     }
 
-    public void SetBattleCursorAt(GameNode target)
+    public void SetGridCursorAt(GameNode target)
     {
-        battleCursor.HandleBattleCursor(target);
+        gridCursor.HandleGridCursor(target);
     }
 
     public void GeneratePreviewCharacterInMovableRange(CharacterBase character)
@@ -177,20 +177,20 @@ public class BattleManager : Entity
 
     public GameNode GetSelectedGameNode()
     {
-        return battleCursor.currentGameNode;
+        return gridCursor.currentGameNode;
     }
     public bool IsSelectedNodeChange()
     {
-        if (battleCursor.currentGameNode != lastSelectedNode)
+        if (gridCursor.currentGameNode != lastSelectedNode)
         {
-            lastSelectedNode = battleCursor.currentGameNode;
+            lastSelectedNode = gridCursor.currentGameNode;
             return true;
         }
         return false;
     }
     public void ActivateMoveCursorAndHide(bool active, bool hide)
     {
-        battleCursor.ActivateMoveCursor(active, hide);
+        gridCursor.ActivateMoveCursor(active, hide);
     }
 
     public void SetupOrientationArrow(CharacterBase character, GameNode targetNode)

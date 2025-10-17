@@ -19,7 +19,6 @@ public class PlayerCharacter : CharacterBase
     public bool isLink;
     public bool isBusy;
     public bool isMoving;
-    public bool isComanding;
     #endregion
 
     public Vector3? targetPosition = null;
@@ -27,6 +26,7 @@ public class PlayerCharacter : CharacterBase
     public PlayerStateMachine stateMechine;
     private Animator anim;
     public PlayerExploreState exploreState { get; private set; }
+    public PlayerDeploymentState deploymentState { get; private set; }
     public PlayerBattleState battleState { get; private set; }
 
     public PlayerIdleStateExplore idleStateExplore { get; private set; }
@@ -44,6 +44,7 @@ public class PlayerCharacter : CharacterBase
         stateMechine = new PlayerStateMachine();
 
         exploreState = new PlayerExploreState(stateMechine, this);
+        deploymentState = new PlayerDeploymentState(stateMechine, this);
         battleState = new PlayerBattleState(stateMechine, this);
 
         idleStateExplore = new PlayerIdleStateExplore(stateMechine, this);
@@ -56,6 +57,11 @@ public class PlayerCharacter : CharacterBase
         base.Start();
         anim = GetComponent<Animator>();
         stateMechine.Initialize(exploreState);
+
+        MapDeploymentManager.instance.onDeploymentTrigger += () =>
+        {
+            stateMechine.ChangeState(deploymentState);
+        };
     }
 
     private void Update()
@@ -84,6 +90,26 @@ public class PlayerCharacter : CharacterBase
     {
         this.xInput = xInput;
         this.zInput = zInput;
+    }
+
+    public void TeleportToNode(GameNode targetNode)
+    {
+        if (targetNode != null)
+        {
+            SetSelfToNode(targetNode, new Vector3(0, 0.5f, 0));
+            stateMechine.ChangeState(idleStateExplore);
+        }
+    }
+
+    public void TeleportToPos(Vector3 position)
+    {
+        GameNode targetNode = world.GetNode(position);
+        if (targetNode != null)
+        {
+            transform.position = position;
+            targetNode.SetUnitGridCharacter(this);
+            stateMechine.ChangeState(idleStateExplore);
+        }
     }
 
     //  Summary

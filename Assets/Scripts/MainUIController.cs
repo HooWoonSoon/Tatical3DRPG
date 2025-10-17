@@ -4,7 +4,6 @@ using UnityEngine;
 public class MainUIController : MonoBehaviour
 {
     public GameObject exploreStatePanel;
-    public GameObject deploymentPanel;
 
     public static MainUIController instance { get; private set; }
 
@@ -16,16 +15,8 @@ public class MainUIController : MonoBehaviour
     private void Start()
     {
         BattleUIManager.instance.OnBattleUIFinish += ()=> exploreStatePanel.SetActive(false);
+        MapDeploymentManager.instance.onDeploymentTrigger += ()=> exploreStatePanel.SetActive(false);
         exploreStatePanel.SetActive(true);
-        deploymentPanel.SetActive(false);
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Tab))
-        {
-            deploymentPanel.SetActive(!deploymentPanel.activeSelf);
-        }
     }
 }
 

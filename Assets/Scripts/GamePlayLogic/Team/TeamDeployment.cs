@@ -4,6 +4,7 @@ using UnityEngine;
 public class TeamDeployment : MonoBehaviour
 {
     public List<CharacterBase> teamCharacter = new List<CharacterBase>();
+    public List<InventoryData> inventoryDatas = new List<InventoryData>();
 
     private void Start()
     {

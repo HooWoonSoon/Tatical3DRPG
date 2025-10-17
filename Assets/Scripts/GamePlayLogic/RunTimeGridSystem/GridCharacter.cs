@@ -30,7 +30,7 @@ public class GridCharacter : Entity
             updateCharacter = false;
         }
     }
-    private void SubscribeAllNodes()
+    public void SubscribeAllNodes()
     {
         foreach (var kvp in world.loadedNodes)
         {

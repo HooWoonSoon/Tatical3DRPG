@@ -49,8 +49,8 @@ public class GridTilemapVisual : Entity
     {
         base.Start();
         SubscribeAllNodes();
-
     }
+
     private void LateUpdate()
     {
         if (updateMesh)
@@ -59,7 +59,18 @@ public class GridTilemapVisual : Entity
             UpdateTilemapVisual();
         }
     }
-    private void SubscribeAllNodes()
+
+    public void DeSubcribeAllNodes()
+    {
+        foreach (var kvp in world.loadedNodes)
+        {
+            GameNode node = kvp.Value;
+            if (node != null)
+                node.onWorldNodesChange -= OnWorldTileChanged;
+        }
+    }
+
+    public void SubscribeAllNodes()
     {
         foreach (var kvp in world.loadedNodes)
         {
@@ -68,6 +79,7 @@ public class GridTilemapVisual : Entity
                 node.onWorldNodesChange += OnWorldTileChanged;
         }
     }
+
     private void OnWorldTileChanged(object sender, GameNode.OnWorldNodesChange e)
     {
         updateMesh = true;
@@ -101,12 +113,20 @@ public class GridTilemapVisual : Entity
             Utils.AddToMeshArrays(vertices, uvs, triangles, index, pos, 0, cubeSize, gridValueUV00, gridValueUV11);
             index++;
         }
+        mesh.Clear();
         mesh.vertices = vertices;
         mesh.uv = uvs;
         mesh.triangles = triangles;
     }
 
     #region External Method
+    public void SetAllTileSprite(World world, GameNode.TilemapSprite tilemapSprite)
+    {
+        foreach (GameNode gameNode in world.loadedNodes.Values)
+        {
+            SetTilemapSprite(gameNode, tilemapSprite);
+        }
+    }
     public void SetAllTileSprite(GameNode.TilemapSprite tilemapSprite)
     {
         foreach (GameNode gameNode in world.loadedNodes.Values)
@@ -127,6 +147,13 @@ public class GridTilemapVisual : Entity
         if (gameNode != null)
         {
             gameNode.SetTilemapSprite(tilemapSprite);
+        }
+    }
+    public void SetTilemapSprites(List<GameNode> gameNodes, GameNode.TilemapSprite tilemapSprite)
+    {
+        foreach (GameNode gameNode in gameNodes)
+        {
+            SetTilemapSprite(gameNode, tilemapSprite);
         }
     }
     #endregion

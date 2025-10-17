@@ -26,6 +26,35 @@ public class UnitDetectable : Entity
         Vector3 min = worldcenter - halfSize;
     }
 
+    public UnitDetectable[] OverlapSelfRange()
+    {
+        List<UnitDetectable> hits = new List<UnitDetectable>();
+
+        Vector3 selfCenter = transform.position + center;
+        Vector3 selfHalfSize = size * 0.5f;
+        Vector3 selfMin = selfCenter - selfHalfSize;
+        Vector3 selfMax = selfCenter + selfHalfSize;
+
+        foreach (UnitDetectable unit in all)
+        {
+            if (unit == this) { continue; }
+
+            Vector3 otherCenter = unit.transform.position + unit.center;
+            Vector3 otherHalfSize = unit.size * 0.5f;
+            Vector3 otherMin = otherCenter - otherHalfSize;
+            Vector3 otherMax = otherCenter + otherHalfSize;
+
+            bool isOverlapping = (selfMin.x <= otherMax.x && selfMax.x >= otherMin.x) &&
+                             (selfMin.y <= otherMax.y && selfMax.y >= otherMin.y) &&
+                             (selfMin.z <= otherMax.z && selfMax.z >= otherMin.z);
+            if (isOverlapping)
+            {
+                hits.Add(unit);
+            }
+        }
+        return hits.ToArray();
+    }
+
     public UnitDetectable[] OverlapMahhatassRange(int mahhatassRange)
     {
         this.mahhatassRange = mahhatassRange;

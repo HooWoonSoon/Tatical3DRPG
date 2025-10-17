@@ -12,8 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cc9b4c4c391cc6e4b9a94961d4246dd5, type: 3}
   m_Name: InventoryData
   m_EditorClassIdentifier: 
-  itemName: 
+  itemName: Health Posion
   icon: {fileID: 0}
   description: 
-  itemType: 0
+  type: 2
   consumableType: 0
+  range: 1
+  healthAmount: 25
+  damageAmount: 0

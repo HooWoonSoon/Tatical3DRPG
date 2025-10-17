@@ -14,7 +14,24 @@ public class World
 
     public GameObject combinedMesh;
 
-    public void InitializeMapNode(List<GameNodeData> nodeDataList)
+    public void UpdateAndReleaseMapNode(List<GameNodeData> nodeDataList)
+    {
+        ResetMapNode();
+        UpdateMapNode(nodeDataList);
+    }
+
+    public void ResetMapNode()
+    {
+        loadedNodes.Clear();
+
+        worldMaxX = int.MinValue;
+        worldMaxZ = int.MinValue;
+        worldMinX = int.MaxValue;
+        worldMinZ = int.MaxValue;
+        worldHeight = 0;
+    }
+
+    public void UpdateMapNode(List<GameNodeData> nodeDataList)
     {
         for (int i = 0; i < nodeDataList.Count; i++)
         {
@@ -22,10 +39,11 @@ public class World
             int y = nodeDataList[i].y;
             int z = nodeDataList[i].z;
             bool isWalkable = nodeDataList[i].isWalkable;
-            bool hasNode = nodeDataList[i].hasNode;
+            bool hasCube = nodeDataList[i].hasCube;
+            bool isDeployable = nodeDataList[i].isDeployable;
             if (!loadedNodes.ContainsKey(new Vector3Int(x, y, z)))
             {
-                GameNode gameNode = new GameNode(x, y, z, isWalkable, hasNode);
+                GameNode gameNode = new GameNode(x, y, z, isWalkable, hasCube, isDeployable);
                 loadedNodes.Add(new Vector3Int(x, y, z), gameNode);
                 UpdateWorldSize(x, y, z);
             }
@@ -44,7 +62,7 @@ public class World
     {
         if (!loadedNodes.ContainsKey(new Vector3Int(x, y, z)))
         {
-            GameNode gameNode = new GameNode(x, y, z, true, true);
+            GameNode gameNode = new GameNode(x, y, z, true, true, true);
             loadedNodes.Add(new Vector3Int(x, y, z), gameNode);
             UpdateWorldSize(x, y, z);
             return true;

@@ -6,7 +6,7 @@ public class Entity : MonoBehaviour
     protected PathFinding pathFinding;
     protected virtual void Start()
     {
-        world = WorldGeneration.instance.world;
+        world = MapManager.instance.world;
         pathFinding = new PathFinding(world);
     }
 }

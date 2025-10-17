@@ -11,6 +11,7 @@ public class EnemyBattleState : EnemyBaseState
 
     private BattlePhase currentPhase;
     private float phaseStartTime;
+    private GameNode confrimMoveNode;
 
     public EnemyBattleState(EnemyStateMachine stateMachine, EnemyCharacter character) : base(stateMachine, character)
     {
@@ -102,14 +103,15 @@ public class EnemyBattleState : EnemyBaseState
                 DecisionMaker decisionMaker = new DecisionMaker(character);
                 decisionMaker.GetResult(out SkillData skill, out GameNode movaToNode, out GameNode skillTargetNode);
                 Debug.Log($"Decision Time: {Time.realtimeSinceStartup - startTime}");
-                if (movaToNode != null)
+                confrimMoveNode = movaToNode;
+                if (confrimMoveNode != null)
                 {
                     character.SetPathRoute(movaToNode);
-                    character.ShowDangerMovableAndTargetTilemap(movaToNode);
                 }
                 character.SetSkillAndTarget(skill, skillTargetNode);
                 break;
             case BattlePhase.Move:
+                character.ShowDangerMovableAndTargetTilemap(confrimMoveNode);
                 CameraMovement.instance.ChangeFollowTarget(character.transform);
                 break;
             case BattlePhase.SkillCast:
