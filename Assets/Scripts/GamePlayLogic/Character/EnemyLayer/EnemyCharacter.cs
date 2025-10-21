@@ -33,6 +33,16 @@ public class EnemyCharacter : CharacterBase
     {
         stateMechine.currentState.Update();
     }
+
+    public override void TeleportToNode(GameNode targetNode)
+    {
+        if (targetNode != null)
+        {
+            SetSelfToNode(targetNode, 0.5f);
+            stateMechine.ChangeState(idleStateExplore);
+        }
+    }
+
     public override void ReadyBattle()
     {
         stateMechine.ChangeState(battleState);

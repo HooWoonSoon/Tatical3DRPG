@@ -8,13 +8,14 @@ public class MapDeploymentUIManager : Entity
     public class UIImage
     {
         public GameObject tagObject;
+        public Image image;
         public UIImage(Transform parent, CharacterData data, Sprite tagSprite)
         {
             RectTransform imageRect = new GameObject($"{data.characterName} Deployment Image").AddComponent<RectTransform>();
             imageRect.SetParent(parent, false);
             imageRect.sizeDelta = new Vector2(230, 120);
 
-            Image image = imageRect.AddComponent<Image>();
+            image = imageRect.AddComponent<Image>();
             image.sprite = data.characterTurnUISprite;
 
             tagObject = new GameObject("Arrow");
@@ -31,15 +32,21 @@ public class MapDeploymentUIManager : Entity
     public GameObject characterDeploymentPanel;
     public GameObject deploymentScrollView;
     public GameObject characterDeploymentInformation;
+    public GameObject leaveBattlefIeldNotifaction;
     public Transform deploymentContent;
+    private bool allowToggleDeploymentUI = false;
+    private bool enableDeployment = false;
 
     public List<UIImage> uIImages = new List<UIImage>();
+    private List<UIImage> activatedUIImange = new List<UIImage>();
+    private UIImage currentSelectedUIImage;
+
     [SerializeField] private Sprite tagSprite;
     [SerializeField] private int columns;
 
     private CharacterBase[] characters;
-    private CharacterBase currentCharacter;
-    [SerializeField] private int deployableCount; // Debug
+    private List<CharacterBase> allCharactersInMap = new List<CharacterBase>();
+    private CharacterBase currentSelectedCharacter;
 
     public int selectedIndex { get; private set; } = -1;
     public static MapDeploymentUIManager instance { get; private set; }
@@ -53,6 +60,7 @@ public class MapDeploymentUIManager : Entity
     {
         base.Start();
         characterDeploymentPanel.SetActive(false);
+        leaveBattlefIeldNotifaction.SetActive(false);
         MapDeploymentManager.instance.onDeploymentTrigger += ShowDeploymentUI;
         GridLayoutGroup layoutGroup = deploymentContent.GetComponent<GridLayoutGroup>();
         if (layoutGroup != null)
@@ -63,24 +71,56 @@ public class MapDeploymentUIManager : Entity
 
     public void Update()
     {
+        if (!allowToggleDeploymentUI) { return; }
+
         if (Input.GetKeyDown(KeyCode.Tab))
         {
+            leaveBattlefIeldNotifaction.SetActive(false);
+
             if (characterDeploymentPanel.activeSelf)
             {
                 characterDeploymentPanel.SetActive(false);
                 MapDeploymentManager.instance.ActivateMoveCursorAndHide(true, false);
+                MapDeploymentManager.instance.EnableEditingMode(true);
+                enableDeployment = false;
+
+                PreviewBattleUI();
             }
             else
             {
                 characterDeploymentPanel.SetActive(true);
                 MapDeploymentManager.instance.ActivateMoveCursorAndHide(false, true);
+                MapDeploymentManager.instance.EnableEditingMode(false);
+                enableDeployment = true;
+
+                CloseBattleUI();
             }
         }
+
+        if (!enableDeployment) { return; }
         HandleSelectionInput();
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            leaveBattlefIeldNotifaction.SetActive(!leaveBattlefIeldNotifaction.activeSelf);
+            if (leaveBattlefIeldNotifaction.activeSelf)
+            { 
+                MapTransitionManger.instance.RequestReturnPreviousMap(() => 
+                {
+                    ResetModified();
+                    CloseBattleUI();
+                    leaveBattlefIeldNotifaction.SetActive(false);
+                    characterDeploymentPanel.SetActive(false);
+                });
+            }
+
+        }
     }
 
     private void HandleSelectionInput()
     {
+        if (leaveBattlefIeldNotifaction.activeSelf) { return; }
+
         if (Input.GetKeyDown(KeyCode.D))
             selectedIndex++;
         else if (Input.GetKeyDown(KeyCode.A))
@@ -96,11 +136,31 @@ public class MapDeploymentUIManager : Entity
 
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            MapDeploymentManager.instance.RandomDeploymentCharacter(currentCharacter);
+            ActivatedCharacterUI();
         }
     }
 
-    public void FocusOnCurrentCharacterUI()
+    private void ActivatedCharacterUI()
+    {
+        if (activatedUIImange.Contains(currentSelectedUIImage))
+        {
+            Debug.Log("Remove " + currentSelectedCharacter.data.characterName);
+            MapDeploymentManager.instance.RemoveCharacterDeployment(currentSelectedCharacter);
+            allCharactersInMap.Remove(currentSelectedCharacter);
+            activatedUIImange.Remove(currentSelectedUIImage);
+            currentSelectedUIImage.image.color = new Color(1, 1, 1, 1f);
+        }
+        else
+        {
+            Debug.Log("Deploy " + currentSelectedCharacter.data.characterName);
+            MapDeploymentManager.instance.RandomDeploymentCharacter(currentSelectedCharacter);
+            allCharactersInMap.Add(currentSelectedCharacter);
+            activatedUIImange.Add(currentSelectedUIImage);
+            currentSelectedUIImage.image.color = new Color(1, 1, 1, 0.5f);
+        }
+    }
+
+    private void FocusOnCurrentCharacterUI()
     {
         if (selectedIndex == -1 || uIImages.Count == 0) { return; }
 
@@ -109,30 +169,67 @@ public class MapDeploymentUIManager : Entity
             image.tagObject.SetActive(false);
         }
         uIImages[selectedIndex].tagObject.SetActive(true);
-        currentCharacter = characters[selectedIndex];
+        currentSelectedUIImage = uIImages[selectedIndex];
+        currentSelectedCharacter = characters[selectedIndex];
     }
 
-    public void ShowDeploymentUI()
+    private void ShowDeploymentUI()
     {
-        ResetAll();
+        ResetModified();
+        allowToggleDeploymentUI = true;
+        enableDeployment = true;
         characterDeploymentPanel.SetActive(true);
         characters = AvailableCharacterManager.instance.allCharacter;
-        for (int i = 0; i < characters.Length; i++)
+        foreach (CharacterBase character in characters)
         {
-            CharacterData data = characters[i].data;
-            UIImage characterUI = new UIImage(deploymentContent, data, tagSprite);
-            uIImages.Add(characterUI);
+            CreateCharacterUI(character);
         }
         FocusOnCurrentCharacterUI();
     }
 
-    private void ResetAll()
+    private void CreateCharacterUI(CharacterBase character)
     {
+        CharacterData data = character.data;
+        UIImage characterUI = new UIImage(deploymentContent, data, tagSprite);
+        uIImages.Add(characterUI);
+    }
+
+    private void ResetModified()
+    {
+        allowToggleDeploymentUI = false;
+        enableDeployment = false;
         uIImages = new List<UIImage>();
         foreach (Transform child in deploymentContent)
         {
             Destroy(child.gameObject);
         }
     }
+
+    #region BattleUI Method
+    private void PreviewBattleUI()
+    {
+        BattleUIManager.instance.battleStatePanel.SetActive(true);
+        BattleUIManager.instance.cTTimelineUI.SetActive(true);
+        CTTimeline.instance.SetJoinedBattleUnit(allCharactersInMap);
+        CTTimeline.instance.SetupTimeline();
+    }
+
+    private void CloseBattleUI()
+    {
+        BattleUIManager.instance.battleStatePanel.SetActive(false);
+        BattleUIManager.instance.cTTimelineUI.SetActive(false);
+    }
+    #endregion
+
+    #region External Methods
+    public void InsertCharactersInMap(List<CharacterBase> characters)
+    {
+        for (int i = 0; i < characters.Count; i++)
+        {
+            if (!allCharactersInMap.Contains(characters[i]))
+                allCharactersInMap.Add(characters[i]);
+        }
+    }
+    #endregion
 }
 

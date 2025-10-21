@@ -10,7 +10,7 @@ public class GridCursor : Entity
     private float keyPressTimer;
     private float intervalPressTimer;
     public bool hasMoved = false;
-    public GameNode currentGameNode { get; private set; }
+    public GameNode currentNode { get; private set; }
 
     protected override void Start()
     {
@@ -42,7 +42,7 @@ public class GridCursor : Entity
             {
                 CTTurnUIManager.instance.TargetCursorCharacterUI(character);
             }
-            currentGameNode = gameNode;
+            currentNode = gameNode;
             hasMoved = true;
         }
     }
@@ -75,7 +75,7 @@ public class GridCursor : Entity
         cursor.SetActive(true);
         CameraMovement.instance.ChangeFollowTarget(cursor.transform);
         Vector3Int position = targetNode.GetVectorInt();
-        currentGameNode = targetNode;
+        currentNode = targetNode;
         cursor.transform.position = position + new Vector3(0, heightOffset);
         activateCursor = true;
     }

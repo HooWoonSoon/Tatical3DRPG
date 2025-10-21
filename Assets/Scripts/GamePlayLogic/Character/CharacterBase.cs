@@ -23,14 +23,13 @@ public abstract class CharacterBase : Entity
     public CharacterData data;
     public int currentHealth;
     public List<SkillData> skillData;
-    
+
     public SkillData currentSkill { get; private set;}
     public GameNode currentSkillTargetNode { get; private set; }
     public PathRoute pathRoute { get; private set; }
 
     public Orientation orientation = Orientation.right;
     public UnitType unitType = UnitType.Melee;
-
 
     protected override void Start()
     {
@@ -94,10 +93,10 @@ public abstract class CharacterBase : Entity
             transform.localScale = new Vector3(-1, 1, 1);
     }
    
-    public void SetSelfToNode(GameNode targetNode, Vector3 offset)
+    public void SetSelfToNode(GameNode targetNode, float offsetY = 0.5f)
     {
         Vector3 targetPos = targetNode.GetVector();
-        transform.position = targetPos + offset;
+        transform.position = targetPos + new Vector3(0, offsetY, 0);
         targetNode.SetUnitGridCharacter(this);
     }
 
@@ -494,5 +493,6 @@ public abstract class CharacterBase : Entity
         return false;
     }
 
+    public abstract void TeleportToNode(GameNode targetNode);
     public abstract void ReadyBattle();
 }

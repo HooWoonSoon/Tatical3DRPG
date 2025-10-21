@@ -6,6 +6,7 @@ public class MapSwitchTrigger : Entity
 {
     public MapData mapData;
     public Transform teleportPoint;
+    public Transform returnPoint;
     private UnitDetectable selfDetectable;
 
     public static MapSwitchTrigger currentTrigger;
@@ -26,6 +27,7 @@ public class MapSwitchTrigger : Entity
                 if (teleportPoint != null)
                 {
                     currentTrigger = this;
+                    MapTransitionManger.instance.SaveSnapShot(MapManager.instance.currentActivatedMap, returnPoint, playerCharacter);
                     MapTransitionManger.instance.RequestMapTransition(mapData, 
                         teleportPoint.position, playerCharacter,
                         () => { currentTrigger = null; });
@@ -41,6 +43,11 @@ public class MapSwitchTrigger : Entity
         {
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(teleportPoint.position, 0.5f);
+        }
+        if (returnPoint != null)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawWireSphere(returnPoint.position, 0.4f);
         }
     }
 }

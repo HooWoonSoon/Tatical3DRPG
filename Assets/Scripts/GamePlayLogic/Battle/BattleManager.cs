@@ -146,7 +146,7 @@ public class BattleManager : Entity
 
     public void GeneratePreviewCharacter(CharacterBase character)
     {
-        DestoryPreviewModel();
+        DestroyPreviewModel();
         if (lastSelectedNode.character != null) { return; }
         Vector3 offset = character.transform.position - character.GetCharacterNodePosition();
         previewCharacter = Instantiate(character.characterModel);
@@ -161,7 +161,7 @@ public class BattleManager : Entity
         }
     }
 
-    public void DestoryPreviewModel()
+    public void DestroyPreviewModel()
     {
         if (previewCharacter != null)
         {
@@ -177,13 +177,13 @@ public class BattleManager : Entity
 
     public GameNode GetSelectedGameNode()
     {
-        return gridCursor.currentGameNode;
+        return gridCursor.currentNode;
     }
     public bool IsSelectedNodeChange()
     {
-        if (gridCursor.currentGameNode != lastSelectedNode)
+        if (gridCursor.currentNode != lastSelectedNode)
         {
-            lastSelectedNode = gridCursor.currentGameNode;
+            lastSelectedNode = gridCursor.currentNode;
             return true;
         }
         return false;

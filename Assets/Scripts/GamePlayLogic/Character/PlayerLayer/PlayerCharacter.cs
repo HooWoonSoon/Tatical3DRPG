@@ -91,26 +91,16 @@ public class PlayerCharacter : CharacterBase
         this.xInput = xInput;
         this.zInput = zInput;
     }
-
-    public void TeleportToNode(GameNode targetNode)
-    {
-        if (targetNode != null)
-        {
-            SetSelfToNode(targetNode, new Vector3(0, 0.5f, 0));
-            stateMechine.ChangeState(idleStateExplore);
-        }
-    }
-
-    public void TeleportToPos(Vector3 position)
-    {
-        GameNode targetNode = world.GetNode(position);
-        if (targetNode != null)
-        {
-            transform.position = position;
-            targetNode.SetUnitGridCharacter(this);
-            stateMechine.ChangeState(idleStateExplore);
-        }
-    }
+    //public void TeleportToPos(Vector3 position)
+    //{
+    //    GameNode targetNode = world.GetNode(position);
+    //    if (targetNode != null)
+    //    {
+    //        transform.position = position;
+    //        targetNode.SetUnitGridCharacter(this);
+    //        stateMechine.ChangeState(idleStateExplore);
+    //    }
+    //}
 
     //  Summary
     //      Move the unit character with the frequence input
@@ -250,6 +240,15 @@ public class PlayerCharacter : CharacterBase
             };
             character.SetPathRoute(pathRoute);
             stateMechine.ChangeState(movePathStateExplore);
+        }
+    }
+
+    public override void TeleportToNode(GameNode targetNode)
+    {
+        if (targetNode != null)
+        {
+            SetSelfToNode(targetNode, 0.5f);
+            stateMechine.ChangeState(idleStateExplore);
         }
     }
 

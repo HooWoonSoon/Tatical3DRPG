@@ -46,11 +46,17 @@ public class GridCharacter : Entity
     }
     private void UpdateGridCharacter(CharacterBase character)
     {
+        if (character == null || !character.gameObject.activeSelf)
+            return;
+
         Vector3Int position = Utils.RoundXZFloorYInt(character.transform.position);
         SetGridCharacter(position, character);
     }
     public void SetGridCharacter(Vector3Int characterPos, CharacterBase character)
     {
+        if (character == null || !character.gameObject.activeSelf)
+            return;
+
         GameNode gameNode = world.GetNode(characterPos);
         if (gameNode != null)
         {

@@ -219,7 +219,7 @@ public class PlayerBattleState : PlayerBaseState
                 BattleManager.instance.SetGridCursorAt(character.GetCharacterOriginNode());
 
                 //  If get return to move command phase
-                BattleManager.instance.DestoryPreviewModel();
+                BattleManager.instance.DestroyPreviewModel();
                 BattleUIManager.instance.ActivateActionPanel(true);
                 BattleUIManager.instance.CloseSkillUI();
                 break;
@@ -257,13 +257,13 @@ public class PlayerBattleState : PlayerBaseState
                 character.ShowDangerMovableAndTargetTilemap(confirmMoveNode);
                 break;
             case BattlePhase.SkillCast:
-                BattleManager.instance.DestoryPreviewModel();
+                BattleManager.instance.DestroyPreviewModel();
                 break;
             case BattlePhase.End:
                 character.ResetVisualTilemap();
                 BattleManager.instance.ActivateMoveCursorAndHide(false, true);
                 BattleManager.instance.SetupOrientationArrow(character, confirmMoveNode);
-                BattleManager.instance.DestoryPreviewModel();
+                BattleManager.instance.DestroyPreviewModel();
                 break;
         }
     }

@@ -15,8 +15,8 @@ MonoBehaviour:
   characterName: DV
   characterProfile: {fileID: 0}
   characterTurnUISprite: {fileID: 0}
-  ID: 2
-  type: 1
+  ID: 3
+  type: 0
   healthPoint: 100
   mentalPoint: 0
   magicAttackPoint: 0

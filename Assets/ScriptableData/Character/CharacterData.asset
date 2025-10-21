@@ -15,8 +15,8 @@ MonoBehaviour:
   characterName: FA
   characterProfile: {fileID: 0}
   characterTurnUISprite: {fileID: 21300000, guid: ffdd2be38c24ee9469bb4e2fef60fe7e, type: 3}
-  ID: 0
-  type: 1
+  ID: 1
+  type: 0
   healthPoint: 100
   mentalPoint: 0
   magicAttackPoint: 0

@@ -64,6 +64,7 @@ public class CTTimeline : MonoBehaviour
 
     public void SetJoinedBattleUnit(List<CharacterBase> characters)
     {
+        battleCharacter.Clear();
         for (int i = 0; i < characters.Count; i++)
         {
             InsertCharacter(characters[i]);

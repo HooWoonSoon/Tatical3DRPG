@@ -6,7 +6,6 @@ using UnityEngine;
 
 public class BattleUIManager : MonoBehaviour
 {
-    public Canvas canvas;
     public GameObject battleStatePanel;
 
     [Header("Battle Event Display UI")]
@@ -76,7 +75,7 @@ public class BattleUIManager : MonoBehaviour
     public void CreateCountText(CharacterBase character, int value)
     {
         string damageText = value.ToString();
-        TextMeshProUGUI damangeTextUI = Utils.CreateCanvasText(damageText, canvas.transform, character.transform.position, Quaternion.identity, 25, Color.white, TextAlignmentOptions.Center);
+        TextMeshProUGUI damangeTextUI = Utils.CreateCanvasText(damageText, battleStatePanel.transform, character.transform.position, Quaternion.identity, 25, Color.white, TextAlignmentOptions.Center);
         StartCoroutine(UIFadeCoroutine(damangeTextUI, 0f, 1f, 0.2f, false));
         StartCoroutine(UIFadeCoroutine(damangeTextUI, 1f, 0f, 1.5f, true));
     }
