@@ -75,7 +75,7 @@ public class PlayerTeamSystem : TeamSystem
             Vector3Int targetPosition = hitNode.GetVectorInt();
             if (targetPosition == new Vector3Int(-1, -1, -1)) return;
 
-            currentLeader.SetMovePosition(currentLeader, targetPosition);
+            currentLeader.SetMovePosition(targetPosition);
         }
     }
 

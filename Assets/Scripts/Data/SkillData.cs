@@ -18,7 +18,7 @@ public class SkillData : ScriptableObject
     public int range;
     public int aoeRadius = 1; // If not aoe skill, set to 1
     public string description;
-    public Type type;
+    public AbilityType type;
     public SkillType skillType;
     public SkillTargetType targetType;
 

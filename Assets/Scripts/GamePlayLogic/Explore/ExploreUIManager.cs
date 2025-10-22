@@ -15,7 +15,7 @@ public class ExploreUIManager : MonoBehaviour
     private void Start()
     {
         BattleUIManager.instance.OnBattleUIFinish += ()=> exploreStatePanel.SetActive(false);
-        MapDeploymentManager.instance.onDeploymentTrigger += ()=> exploreStatePanel.SetActive(false);
+        MapDeploymentManager.instance.onStartDeployment += ()=> exploreStatePanel.SetActive(false);
         exploreStatePanel.SetActive(true);
     }
 }

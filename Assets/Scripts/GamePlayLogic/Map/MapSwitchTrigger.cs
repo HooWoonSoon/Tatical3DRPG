@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
+using System;
 
 [RequireComponent(typeof(UnitDetectable))]
 public class MapSwitchTrigger : Entity
 {
-    public MapData mapData;
+    public string switchMapID;
     public Transform teleportPoint;
     public Transform returnPoint;
     private UnitDetectable selfDetectable;
@@ -28,13 +30,25 @@ public class MapSwitchTrigger : Entity
                 {
                     currentTrigger = this;
                     MapTransitionManger.instance.SaveSnapShot(MapManager.instance.currentActivatedMap, returnPoint, playerCharacter);
-                    MapTransitionManger.instance.RequestMapTransition(mapData, 
-                        teleportPoint.position, playerCharacter,
-                        () => { currentTrigger = null; });
+                    MapTransitionManger.instance.RequestMapTransition(switchMapID, 
+                        teleportPoint.position, returnPoint.position, playerCharacter,
+                        () => { currentTrigger = null; },
+                        () => {currentTrigger = null;});
                 }
                 return;
             }
         }
+    }
+
+    private IEnumerator DelayTrigger(float time, Action action = null)
+    {
+        float timer = time;
+        while (timer > 0)
+        {
+            timer -= Time.deltaTime;
+            yield return null;
+        }
+        action?.Invoke();
     }
 
     private void OnDrawGizmos()

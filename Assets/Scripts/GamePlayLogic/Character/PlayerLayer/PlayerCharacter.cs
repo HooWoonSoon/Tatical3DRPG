@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-
+using System.Collections;
+using System;
 public class PlayerCharacter : CharacterBase
 {
     public GameObject imageObject;
@@ -58,7 +59,7 @@ public class PlayerCharacter : CharacterBase
         anim = GetComponent<Animator>();
         stateMechine.Initialize(exploreState);
 
-        MapDeploymentManager.instance.onDeploymentTrigger += () =>
+        MapDeploymentManager.instance.onStartDeployment += () =>
         {
             stateMechine.ChangeState(deploymentState);
         };
@@ -119,27 +120,11 @@ public class PlayerCharacter : CharacterBase
         FacingDirection(direction);
         UpdateOrientation(direction);
 
-        //  Check diagonol movement and return
+        //  Check movement and return
         Vector3 targetPosition = characterPosition + direction * moveSpeed * Time.deltaTime;
         if (world.IsValidWorldRange(targetPosition))
         {
             transform.position = targetPosition;
-            return;
-        }
-
-        //  Check X axis movement and return
-        Vector3 targetPositionX = characterPosition + new Vector3(direction.x, 0, 0) * moveSpeed * Time.deltaTime;
-        if (world.IsValidWorldRange(targetPositionX))
-        {
-            transform.position = targetPositionX;
-            return;
-        }
-
-        //  Check Z axis movement and return
-        Vector3 targetPositionZ = characterPosition + new Vector3(0, 0, direction.z) * moveSpeed * Time.deltaTime;
-        if (world.IsValidWorldRange(targetPositionZ))
-        {
-            transform.position = targetPositionZ;
             return;
         }
     }
@@ -226,21 +211,39 @@ public class PlayerCharacter : CharacterBase
         }
     }
 
-    public void SetMovePosition(PlayerCharacter character, Vector3Int targetPosition)
+    public void SetMovePosition(Vector3 targetPosition)
     {
-        List<Vector3> pathVectorList = pathFinding.GetPathRoute(character.transform.position, targetPosition, 1, 1).pathRouteList;
+        Vector3Int targetPos = Utils.RoundXZFloorYInt(targetPosition);
+        SetMovePosition(targetPos);
+    }
+
+    public void SetMovePosition(Vector3Int targetPosition)
+    {
+        List<Vector3> pathVectorList = pathFinding.GetPathRoute(transform.position, targetPosition, 1, 1).pathRouteList;
         if (pathVectorList.Count != 0)
         {
             PathRoute pathRoute = new PathRoute
             {
-                character = character,
+                character = this,
                 targetPosition = targetPosition,
                 pathRouteList = pathVectorList,
                 pathIndex = 0
             };
-            character.SetPathRoute(pathRoute);
+            SetPathRoute(pathRoute);
             stateMechine.ChangeState(movePathStateExplore);
         }
+    }
+
+    public IEnumerator MoveToPositionCoroutine(Vector3 targetPosition, Action onArrived = null)
+    {
+        SetMovePosition(targetPosition);
+
+        while (pathRoute != null && pathRoute.pathIndex < pathRoute.pathRouteList.Count)
+        {
+            yield return null;
+        }
+
+        onArrived?.Invoke();
     }
 
     public override void TeleportToNode(GameNode targetNode)

@@ -21,7 +21,10 @@ public class BattleManager : Entity
     public Material previewMaterial;
     private GameObject previewCharacter;
 
+    public event Action onStartBattle;
     public event Action onLoadNextTurn;
+    public event Action onConfrimCallback;
+    public event Action onCancelCallback;
 
     public static BattleManager instance { get; private set; }
 
@@ -34,6 +37,31 @@ public class BattleManager : Entity
         base.Start();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            OnEnter();
+        }
+        else if (Input.GetKeyDown(KeyCode.Backspace))
+        {
+            OnCancel();
+        }
+    }
+
+    private void OnEnter()
+    {
+        onConfrimCallback?.Invoke();
+        onConfrimCallback = null;
+    }
+
+    private void OnCancel()
+    {
+        onConfrimCallback = null;
+        onCancelCallback?.Invoke();
+        onCancelCallback = null;
+    }
+
     public void SetJoinedBattleUnit(HashSet<CharacterBase> joinedBattleUnits)
     {
         this.joinedBattleUnits = joinedBattleUnits.ToList();
@@ -44,18 +72,7 @@ public class BattleManager : Entity
         this.joinedBattleUnits = joinedBattleUnits;
     }
 
-    private void FindJoinedTeam()
-    {
-        foreach (CharacterBase character in joinedBattleUnits)
-        {
-            TeamDeployment team = character.currentTeam;
-            if (!battleTeams.Contains(team))
-            {
-                battleTeams.Add(team);
-            }
-        }
-    }
-
+    #region Battle Unit Refine Path
     private void EnterBattleUnitRefinePath()
     {
         List<PathRoute> pathRoutes = GetBattleUnitRefinePath();
@@ -111,23 +128,59 @@ public class BattleManager : Entity
         }
         return pathRoutes;
     }
+    #endregion
 
+    #region Direct Battle
     public void PreapreBattleContent()
     {
         if (isBattleStarted) { return; }
-        Debug.Log("PreapareBattleContent");
         FindJoinedTeam();
         EnterBattleUnitRefinePath();
         BattleUIManager.instance.PrepareBattleUI();
         CTTimeline.instance.SetJoinedBattleUnit(joinedBattleUnits);
         CTTimeline.instance.SetupTimeline();
-        BattleUIManager.instance.OnBattleUIFinish += StartBattle;
+        BattleUIManager.instance.OnBattleUIFinish += () =>
+        {
+            Debug.Log("StartBattle");
+            onStartBattle?.Invoke();
+            isBattleStarted = true;
+        };
+    }
+    private void FindJoinedTeam()
+    {
+        foreach (CharacterBase character in joinedBattleUnits)
+        {
+            TeamDeployment team = character.currentTeam;
+            if (!battleTeams.Contains(team))
+            {
+                battleTeams.Add(team);
+            }
+        }
+    }
+    #endregion
+
+    public void RequestBattle(List<CharacterBase> allBattleCharacter, 
+        Action confirmAction = null, Action cancelAction = null)
+    {
+        SetJoinedBattleUnit(allBattleCharacter);
+
+        onConfrimCallback = () =>
+        {
+            PreapreBattleContent();
+            confirmAction?.Invoke();
+        };
+
+        onCancelCallback = () =>
+        {
+            cancelAction?.Invoke();
+        };
     }
 
-    public void StartBattle()
+    public void ClearEventCallback(Action action = null)
     {
-        Debug.Log("StartBattle");
-        isBattleStarted = true;
+        onConfrimCallback = null;
+        onCancelCallback = null;
+        action?.Invoke();
     }
 
     public void SetGridCursorAt(GameNode target)
@@ -188,6 +241,8 @@ public class BattleManager : Entity
         }
         return false;
     }
+
+    #region Visual Handle
     public void ActivateMoveCursorAndHide(bool active, bool hide)
     {
         gridCursor.ActivateMoveCursor(active, hide);
@@ -203,6 +258,7 @@ public class BattleManager : Entity
     {
         orientationArrow.HideAll();
     }
+    #endregion
 
     public List<TeamDeployment> GetBattleTeam() => battleTeams;
     public List<CharacterBase> GetBattleUnit() => joinedBattleUnits;

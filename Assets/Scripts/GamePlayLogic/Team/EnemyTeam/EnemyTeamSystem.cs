@@ -7,12 +7,14 @@ public class EnemyTeamSystem : TeamSystem
 {
     public TeamDeployment teamDeployment;
     public TeamStateMachine stateMechine;
+
+    public TeamIdleState teamIdleState { get; private set; }    // Debug Use Now
     public TeamScoutingState teamScoutingState { get; private set; }
 
     public HashSet<TeamDeployment> detectedTeam = new HashSet<TeamDeployment>();
     public List<CharacterBase> detectedCharacters = new List<CharacterBase>();
     public HashSet<CharacterBase> lastUnit = new HashSet<CharacterBase>();
-
+     
     private Vector3 lastPosition;
     private float eslapseTime = 0;
 
@@ -20,6 +22,7 @@ public class EnemyTeamSystem : TeamSystem
     {
         stateMechine = new TeamStateMachine();
         teamScoutingState = new TeamScoutingState(stateMechine, this);
+        teamIdleState = new TeamIdleState(stateMechine, this);
     }
     protected override void Start()
     {
@@ -111,5 +114,13 @@ public class EnemyTeamSystem : TeamSystem
         return false;
     }
     #endregion
+
+    public void SwitchScoutingMode(bool active)
+    {
+        if (active)
+            stateMechine.ChangeState(teamScoutingState);
+        else
+            stateMechine.ChangeState(teamIdleState);
+    }
 }
 

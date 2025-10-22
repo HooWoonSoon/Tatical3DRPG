@@ -15,14 +15,14 @@ public class CTTurnUIManager : MonoBehaviour
         public TextMeshProUGUI turnUIText;
 
         public CharacterBase character;
+        public int roundCount;
         public int turnCount;
-        public int turnQueue;
 
-        public TurnUIImage(Transform parent, CharacterBase character, TMP_FontAsset fontAsset, int turnCount, int turnQueue)
+        public TurnUIImage(Transform parent, CharacterBase character, TMP_FontAsset fontAsset, int roundCount, int turnQueue)
         {
             this.character = character;
-            this.turnCount = turnCount;
-            this.turnQueue = turnQueue;
+            this.roundCount = roundCount;
+            this.turnCount = turnQueue;
 
             CreateBackgroundPanel(parent);
             CreateCharacterImage(backgroundImage.transform);
@@ -56,7 +56,7 @@ public class CTTurnUIManager : MonoBehaviour
             turnUIText.fontStyle = FontStyles.Italic | FontStyles.SmallCaps;
             turnUIText.font = fontAsset;
             turnUIText.color = new Color(165, 165, 165);
-            turnUIText.text = $"Turn {turnCount}";
+            turnUIText.text = $"Turn {roundCount}";
         }
 
     }
@@ -65,12 +65,16 @@ public class CTTurnUIManager : MonoBehaviour
     [SerializeField] private GameObject targetUnitImage;
     [SerializeField] private GameObject turnUIContent;
     [SerializeField] private GameObject turnPhaseUI;
-    private List<TurnUIImage> turnUIImages = new List<TurnUIImage>();
     [SerializeField] private TMP_FontAsset fontAsset;
-    private List<CTTurn> allCTTurn;
-    private CTTurn currentCTTurn;
-    private int currentTurnIndex = 0;
+    private List<TurnUIImage> turnUIImages = new List<TurnUIImage>();
+    private List<TurnUIImage> pastTurnUIImages = new List<TurnUIImage>();
 
+    private List<CTRound> allCTRound;
+    private CTRound currentCTTurn;
+    private int currentTurnIndex = 0;
+    private int generatedRoundIndex = -1;
+    private int generatedTurnIndex = -1;
+    
     [Header("UI Smooth Move")]
     [SerializeField] private float smoothTime = 0.2f;
     private Vector2 targetAnchoredPos;
@@ -81,10 +85,6 @@ public class CTTurnUIManager : MonoBehaviour
     private void Awake()
     {
         instance = this;
-    }
-    private void Start()
-    {
-        CTTimeline.instance.confirmCTTimeline += GenerateTimelineUI;
     }
 
     private void Update()
@@ -102,67 +102,115 @@ public class CTTurnUIManager : MonoBehaviour
         }
     }
 
-    private void GenerateTimelineUI()
+    public void GenerateTimelineUI()
     {
-        allCTTurn = CTTimeline.instance.GetAllTurnHistory();
-        if (allCTTurn.Count == 0) { return; }
         ResetTurnUI();
-        GenerateTurnImages();
+        GenerateTurnUI();
         //  Wait 1 frame to let LayoutGroup/Canvas finish
         StartCoroutine(DelayTargetFocus());
     }
     private IEnumerator DelayTargetFocus()
     {
         yield return null;
-        TargetCurrentCTTurnUI(CTTimeline.instance.GetCurrentCTTurn(), CTTimeline.instance.GetCurrentTurnIndex());
+        TargetCurrentCTTurnUI(CTTimeline.instance.GetCurrentCTTurn(), CTTimeline.instance.GetCurrentTurn());
     }
 
-    private void GenerateTurnImages()
+    private void GenerateTurnUI()
     {
-        for (int i = 0; i < allCTTurn.Count; i++)
+        for (int i = 0; i < allCTRound.Count; i++)
         {
             GameObject turnPhaseGameObject = Instantiate(turnPhaseUI);
-            turnPhaseGameObject.transform.SetParent(turnUIContent.transform);
+            turnPhaseGameObject.transform.SetParent(turnUIContent.transform, false);
 
-            List<CharacterBase> characterQueues = allCTTurn[i].GetCharacterQueue();
+            List<CharacterBase> characterQueues = allCTRound[i].GetCharacterQueue();
+
             for (int j = 0; j < characterQueues.Count; j++)
             {
-                TurnUIImage turnUIImage = new TurnUIImage(turnUIContent.transform, allCTTurn[i].GetCharacterQueue()[j], fontAsset, allCTTurn[i].turnCount, j);
+                TurnUIImage turnUIImage = new TurnUIImage(turnUIContent.transform, allCTRound[i].GetCharacterQueue()[j], fontAsset, allCTRound[i].roundCount, j);
                 turnUIImages.Add(turnUIImage);
+                generatedTurnIndex++;
             }
+            generatedRoundIndex++;
         }
     }
 
-    private void ResetTurnUI()
+    public void AppendTurnUI()
     {
-        for (int i = 0; i < turnUIImages.Count; i++)
+        allCTRound = CTTimeline.instance.GetAllTurnHistory();
+
+        //  Check release round
+        if (generatedRoundIndex >= allCTRound.Count) { return; }
+
+        CTRound cTRound = allCTRound[generatedRoundIndex];
+        List<CharacterBase> queue = cTRound.GetCharacterQueue();
+
+        generatedTurnIndex++;   //  Next generate
+        if (generatedTurnIndex >= queue.Count)
         {
-            if (turnUIImages[i] != null)
-            {
-                if (turnUIImages[i].backgroundImage != null && turnUIImages[i].backgroundImage.gameObject != null)
-                {
-                    Destroy(turnUIImages[i].backgroundImage.gameObject);
-                }
-                if (turnUIImages[i].characterImage != null && turnUIImages[i].characterImage.gameObject != null)
-                {
-                    Destroy(turnUIImages[i].characterImage.gameObject);
-                }
-            }
+            generatedRoundIndex++;
+            generatedTurnIndex = 0;
+
+            GameObject turnPhaseGameObject = Instantiate(turnPhaseUI);
+            turnPhaseGameObject.transform.SetParent(turnUIContent.transform, false);
+
+            if (generatedRoundIndex >= allCTRound.Count) { return; }
+
+            cTRound = allCTRound[generatedRoundIndex];
+            queue = cTRound.GetCharacterQueue();
+        }
+
+        CharacterBase character = cTRound.GetCharacterAt(generatedTurnIndex);
+        if (character != null)
+        {
+            TurnUIImage turnUIImage = new TurnUIImage(turnUIContent.transform, character, 
+                fontAsset, generatedRoundIndex, generatedTurnIndex);
+            turnUIImages.Add(turnUIImage);
+        }
+    }
+
+    public void ResetTurnUI()
+    {
+        generatedRoundIndex = -1;
+        generatedTurnIndex = -1;
+        allCTRound = CTTimeline.instance.GetAllTurnHistory();
+        if (allCTRound.Count == 0)
+        {
+            Debug.LogWarning("CTTurnUIManager: No CTRound in history!");
+            return;
+        }
+
+        foreach (Transform child in turnUIContent.transform)
+        {
+            Destroy(child.gameObject);
         }
         turnUIImages.Clear();
     }
 
     #region External Called
-    public void TargetCurrentCTTurnUI(CTTurn turn, int currentTurnIndex)
+    public void RecourdPastTurnUI(CTRound cTRound, int currentTurnIndex)
     {
-        currentCTTurn = turn;
-        this.currentTurnIndex = currentTurnIndex;
+        for (int i = turnUIImages.Count - 1; i >= 0 ; i--)
+        {
+            if (turnUIImages[i].roundCount == cTRound.roundCount)
+            {
+                if (turnUIImages[i].turnCount == currentTurnIndex)
+                {
+                    pastTurnUIImages.Add(turnUIImages[i]);
+                    break;
+                }
+            }
+        }
+    }
+    public void TargetCurrentCTTurnUI(CTRound cTRound, int currentTurn)
+    {
+        currentCTTurn = cTRound;
+        this.currentTurnIndex = currentTurn;
 
         for (int i = 0; i < turnUIImages.Count; i++)
         {
-            if (turnUIImages[i].turnCount == turn.turnCount)
+            if (turnUIImages[i].roundCount == cTRound.roundCount)
             {
-                if (turnUIImages[i].turnQueue == currentTurnIndex)
+                if (turnUIImages[i].turnCount == currentTurn)
                 {
                     UpdateTargetCharacterUI(turnUIImages[i].character);
                     RectTransform target = turnUIImages[i].backgroundImage.rectTransform;
@@ -177,7 +225,7 @@ public class CTTurnUIManager : MonoBehaviour
     {
         for (int i = 0; i < turnUIImages.Count; i++)
         {
-            if (turnUIImages[i].turnCount != currentCTTurn.turnCount) { continue; }
+            if (turnUIImages[i].roundCount != currentCTTurn.roundCount) { continue; }
             else
             {
                 if (turnUIImages[i].character == character)

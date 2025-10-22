@@ -32,7 +32,8 @@ public class MapDeploymentUIManager : Entity
     public GameObject characterDeploymentPanel;
     public GameObject deploymentScrollView;
     public GameObject characterDeploymentInformation;
-    public GameObject leaveBattlefIeldNotifaction;
+    public GameObject startBattleNotificationPanel;
+    public GameObject leaveBattlefieldNotifactionPanel;
     public Transform deploymentContent;
     private bool allowToggleDeploymentUI = false;
     private bool enableDeployment = false;
@@ -60,8 +61,9 @@ public class MapDeploymentUIManager : Entity
     {
         base.Start();
         characterDeploymentPanel.SetActive(false);
-        leaveBattlefIeldNotifaction.SetActive(false);
-        MapDeploymentManager.instance.onDeploymentTrigger += ShowDeploymentUI;
+        startBattleNotificationPanel.SetActive(false);
+        leaveBattlefieldNotifactionPanel.SetActive(false);
+        MapDeploymentManager.instance.onStartDeployment += ShowDeploymentUI;
         GridLayoutGroup layoutGroup = deploymentContent.GetComponent<GridLayoutGroup>();
         if (layoutGroup != null)
         {
@@ -75,7 +77,14 @@ public class MapDeploymentUIManager : Entity
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            leaveBattlefIeldNotifaction.SetActive(false);
+            MapTransitionManger.instance.ClearEventCallback(() =>
+            {
+                leaveBattlefieldNotifactionPanel.SetActive(false);
+            });
+            BattleManager.instance.ClearEventCallback(() =>
+            {
+                startBattleNotificationPanel.SetActive(false);
+            });
 
             if (characterDeploymentPanel.activeSelf)
             {
@@ -97,29 +106,60 @@ public class MapDeploymentUIManager : Entity
             }
         }
 
+        HandleRequestBattle();
+        HandleRequestReturnPreviousMap();
+
         if (!enableDeployment) { return; }
         HandleSelectionInput();
+    }
+
+    private void HandleRequestReturnPreviousMap()
+    {
+        if (leaveBattlefieldNotifactionPanel.activeSelf ||
+            startBattleNotificationPanel.activeSelf) { return; }
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            leaveBattlefIeldNotifaction.SetActive(!leaveBattlefIeldNotifaction.activeSelf);
-            if (leaveBattlefIeldNotifaction.activeSelf)
-            { 
-                MapTransitionManger.instance.RequestReturnPreviousMap(() => 
-                {
-                    ResetModified();
-                    CloseBattleUI();
-                    leaveBattlefIeldNotifaction.SetActive(false);
-                    characterDeploymentPanel.SetActive(false);
-                });
-            }
+            leaveBattlefieldNotifactionPanel.SetActive(true);
 
+            MapTransitionManger.instance.RequestReturnPreviousMap(() =>
+            {
+                ResetModified();
+                CloseBattleUI();
+                leaveBattlefieldNotifactionPanel.SetActive(false);
+                characterDeploymentPanel.SetActive(false);
+            }, () =>
+            {
+                leaveBattlefieldNotifactionPanel.SetActive(false);
+            });
+        }
+    }
+
+    private void HandleRequestBattle()
+    {
+        if (leaveBattlefieldNotifactionPanel.activeSelf ||
+            startBattleNotificationPanel.activeSelf) { return; }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            startBattleNotificationPanel.SetActive(true);
+
+            BattleManager.instance.RequestBattle(allCharactersInMap, () =>
+            {
+                startBattleNotificationPanel.SetActive(false);
+                ResetModified();
+                characterDeploymentPanel.SetActive(false);
+                MapDeploymentManager.instance.EndDeployment();
+            }, () =>
+            {
+                startBattleNotificationPanel.SetActive(false);
+            });
         }
     }
 
     private void HandleSelectionInput()
     {
-        if (leaveBattlefIeldNotifaction.activeSelf) { return; }
+        if (leaveBattlefieldNotifactionPanel.activeSelf) { return; }
 
         if (Input.GetKeyDown(KeyCode.D))
             selectedIndex++;
@@ -210,6 +250,7 @@ public class MapDeploymentUIManager : Entity
     {
         BattleUIManager.instance.battleStatePanel.SetActive(true);
         BattleUIManager.instance.cTTimelineUI.SetActive(true);
+
         CTTimeline.instance.SetJoinedBattleUnit(allCharactersInMap);
         CTTimeline.instance.SetupTimeline();
     }

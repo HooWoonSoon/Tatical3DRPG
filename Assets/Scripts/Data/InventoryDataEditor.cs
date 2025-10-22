@@ -12,7 +12,7 @@ public class InventoryDataEditor : Editor
         data.itemName = EditorGUILayout.TextField("Item Name", data.itemName);
         data.icon = (Sprite)EditorGUILayout.ObjectField("Icon", data.icon, typeof(Sprite), false);
         data.description = EditorGUILayout.TextField("Description", data.description);
-        Type[] allowedTypes = { Type.Inventory };
+        AbilityType[] allowedTypes = { AbilityType.Inventory };
         int newIndex = EditorGUILayout.Popup("Type", 0, Array.ConvertAll(allowedTypes, t => t.ToString()));
         data.type = allowedTypes[newIndex];
 

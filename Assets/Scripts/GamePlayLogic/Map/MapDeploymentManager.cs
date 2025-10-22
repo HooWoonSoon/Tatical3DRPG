@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
+using System.Linq;
 
 public class MapDeploymentManager : Entity
 {
@@ -10,7 +11,7 @@ public class MapDeploymentManager : Entity
     private List<GameNode> deployableNodes = new List<GameNode>();
     private Dictionary<CharacterBase, GameNode> occupiedNodes = new Dictionary<CharacterBase, GameNode>();
 
-    public GridCursor gridCursor;
+    [SerializeField] private GridCursor gridCursor;
     private GameNode lastNode;
 
     private CharacterBase lasSelectedCharacter;
@@ -18,7 +19,9 @@ public class MapDeploymentManager : Entity
     public Material previewMaterial;
     private GameObject previewCharacter;
 
-    public Action onDeploymentTrigger;
+    public event Action onStartDeployment;
+    public event Action onEndDeployment;
+
     private bool enableEditing = false;
     public static MapDeploymentManager instance { get; private set;}
 
@@ -80,25 +83,32 @@ public class MapDeploymentManager : Entity
 
         CasualPutGridCursorAtLoadedMap();
 
-        onDeploymentTrigger?.Invoke();
+        onStartDeployment?.Invoke();
 
-        if (mapData.presetUnits == null) { return; }
+        if (mapData.presetTeams == null || mapData.presetTeams.Length == 0) { return; }
 
-        PresetUnit[] presetUnits = mapData.presetUnits;
-        List<CharacterBase> characters = new List<CharacterBase>();
-        foreach (PresetUnit presetUnit in presetUnits)
+        PresetTeam[] presetTeams = mapData.presetTeams;
+
+        for (int i = 0; i < presetTeams.Length; i++)
         {
-            GameNode gameNode = world.GetNode(presetUnit.deployPos);
-            if (gameNode != null)
-            {
-                characters.Add(presetUnit.character);
-                presetUnit.character.gameObject.SetActive(true);
-                presetUnit.character.TeleportToNode(gameNode);
-            }
-        }
-        MapDeploymentUIManager.instance.InsertCharactersInMap(characters);
-    }
+            PresetUnit[] presetUnits = presetTeams[i].presetUnits;
+            List<CharacterBase> teamCharacters = new List<CharacterBase>();
 
+            for (int j = 0; j < presetUnits.Length; j++)
+            {
+                CharacterBase character = presetUnits[j].character;
+                GameNode deploymentNode = world.GetNode(presetUnits[j].deployPos);
+                if (deployableNode != null)
+                {
+                    character.gameObject.SetActive(true);
+                    character.TeleportToNode(deploymentNode);
+                    teamCharacters.Add(character);
+                }
+            }
+            MapDeploymentUIManager.instance.InsertCharactersInMap(teamCharacters);
+            TeamManager.instance.GenerateTeam(teamCharacters, presetTeams[i].teamType);
+        }
+    }
 
     //  Summary
     //      Find all deployable nodes from original map data
@@ -292,6 +302,18 @@ public class MapDeploymentManager : Entity
         ActivateMoveCursorAndHide(false, true);
     }
 
+    public void EndDeployment()
+    {
+        deployableNodes.Clear();
+        occupiedNodes.Clear();
+        lastNode = null;
+        lasSelectedCharacter = null;
+        EnableEditingMode(false);
+        DestroyPreviewModel();
+        ActivateMoveCursorAndHide(false, true);
+        onEndDeployment?.Invoke();
+    }
+
     public void SetGridCursorAt(GameNode target)
     {
         gridCursor.HandleGridCursor(target);
@@ -308,11 +330,6 @@ public class MapDeploymentManager : Entity
             enableEditing = true;
         else
             enableEditing = false;
-    }
-
-    public List<GameNode> GetSelectableNodes()
-    {
-        return deployableNodes;
     }
 }
 

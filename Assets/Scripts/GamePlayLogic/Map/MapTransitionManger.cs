@@ -14,7 +14,9 @@ public class MapTransitionManger : Entity
 {
     public GameObject deploymentNotificationPanel;
 
-    public Action onConfrimCallback;
+    public event Action onConfrimCallback;
+    public event Action onCancelCallback;
+
     public Action<MapData> onRequireDeployment;
     private TransitionSnapShot transitionSnapShot;
 
@@ -37,7 +39,7 @@ public class MapTransitionManger : Entity
         {
             OnEnter();
         }
-        else if (Input.GetKeyDown(KeyCode.Escape))
+        else if (Input.GetKeyDown(KeyCode.Backspace))
         {
             OnCancel();
         }
@@ -53,16 +55,18 @@ public class MapTransitionManger : Entity
         };
     }
 
-    public void RequestMapTransition(MapData mapData, Vector3 teleportPos, 
-        PlayerCharacter player, Action action = null)
+    public void RequestMapTransition(string mapID, Vector3 teleportPos, Vector3 returnPos, 
+        PlayerCharacter player, Action confirmAction = null, Action cancelAction = null)
     {
         List<PlayerCharacter> playerCharacters = FindAllTeamMembers(player);
+
+        MapData mapData = MapManager.instance.GetMapData(mapID);
 
         if (!mapData.requireDeployment)
         {
             deploymentNotificationPanel.SetActive(false);
             ExecuteSwitchMapAndTeleport(mapData, teleportPos, playerCharacters);
-            action?.Invoke();
+            confirmAction?.Invoke();
         }
         if (mapData.requireDeployment)
         {
@@ -73,8 +77,18 @@ public class MapTransitionManger : Entity
         {
             deploymentNotificationPanel.SetActive(false);
             MapManager.instance.SwitchMap(mapData);
-            action?.Invoke();
+            confirmAction?.Invoke();
             onRequireDeployment?.Invoke(mapData);
+        };
+
+        onCancelCallback = () =>
+        {
+            transitionSnapShot = null;
+            deploymentNotificationPanel.SetActive(false);
+            StartCoroutine(player.MoveToPositionCoroutine(returnPos, () =>
+            { 
+                cancelAction?.Invoke();
+            }));
         };
     }
 
@@ -88,7 +102,7 @@ public class MapTransitionManger : Entity
         }
     }
 
-    public void RequestReturnPreviousMap(Action action = null)
+    public void RequestReturnPreviousMap(Action confrimAction = null, Action cancelAction = null)
     {
         if (transitionSnapShot == null || transitionSnapShot.mapData == null || transitionSnapShot.lastRememberNode == null)
             return;
@@ -105,8 +119,20 @@ public class MapTransitionManger : Entity
                 playerCharacters[i].gameObject.SetActive(true);
             }
             CameraMovement.instance.ChangeFollowTarget(player.transform);
-            action?.Invoke();
+            confrimAction?.Invoke();
         };
+
+        onCancelCallback = () =>
+        {
+            cancelAction?.Invoke();
+        };
+    }
+
+    public void ClearEventCallback(Action action = null)
+    {
+        onConfrimCallback = null;
+        onCancelCallback = null;
+        action?.Invoke();
     }
 
     private void OnEnter()
@@ -117,8 +143,9 @@ public class MapTransitionManger : Entity
 
     private void OnCancel()
     {
-        deploymentNotificationPanel.SetActive(false);
         onConfrimCallback = null;
+        onCancelCallback?.Invoke();
+        onCancelCallback = null;
     }
 
     private List<PlayerCharacter> FindAllTeamMembers(PlayerCharacter player)

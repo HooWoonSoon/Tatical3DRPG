@@ -9,18 +9,27 @@ public class PresetUnit
 }
 
 [Serializable]
+public class PresetTeam
+{
+    public PresetUnit[] presetUnits;
+    public TeamType teamType;
+}
+
+[Serializable]
 public class MapData
 {
+    public string ID;
     public string mapDataPath;
     public GameObject mapModel;
     public bool requireDeployment;
-    public PresetUnit[] presetUnits;
+    public PresetTeam[] presetTeams;
 }
 public class MapManager : MonoBehaviour
 {
     public World world;
     public MapData[] mapDatas;
     public MapData currentActivatedMap { get; private set; }
+    public event Action onMapSwitchedTrigger;
     public static MapManager instance { get; private set;}
 
     private void Awake()
@@ -61,6 +70,7 @@ public class MapManager : MonoBehaviour
         {
             GridTilemapVisual.instance.SubscribeAllNodes();
             GridCharacter.instance.SubscribeAllNodes();
+            onMapSwitchedTrigger?.Invoke();
         });
 
         foreach (MapData mapData in mapDatas)
@@ -71,5 +81,15 @@ public class MapManager : MonoBehaviour
 
         if (mapModel != null)
             mapModel.SetActive(true);
+    }
+
+    public MapData GetMapData(string ID)
+    {
+        foreach (MapData mapData in mapDatas)
+        {
+            if (mapData.ID == ID)
+                return mapData;
+        }
+        return null;
     }
 }

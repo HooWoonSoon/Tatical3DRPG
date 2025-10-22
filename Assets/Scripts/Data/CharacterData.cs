@@ -2,20 +2,26 @@
 using UnityEngine;
 using System.Linq;
 
+public enum TeamType
+{
+    Player, Opposite, Allay, Neutral
+}
+
+public enum UnitType
+{
+    Melee, Ranged
+}
+
 [CreateAssetMenu(fileName = "CharacterData", menuName = "Tactics/Character")]
 public class CharacterData : ScriptableObject
 {
-    public enum Type
-    {
-        Player, Opposite, Allay, Neutral
-    }
-
     [Header("Character Information")]
     public string characterName;
     public Sprite characterProfile;
     public Sprite characterTurnUISprite;
     public int ID;
-    public Type type;
+    public TeamType type;
+    public UnitType unitType;
 
     [Header("Properties")]
     public int healthPoint;

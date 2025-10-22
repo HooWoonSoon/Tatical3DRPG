@@ -1,9 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
-public enum UnitType
-{
-    Melee, Ranged
-}
 public class DecisionMaker
 {
     public CharacterBase character;

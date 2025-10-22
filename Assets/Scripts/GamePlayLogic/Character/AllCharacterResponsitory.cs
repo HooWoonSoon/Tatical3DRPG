@@ -6,7 +6,7 @@ public class AllCharacterResponsitory : MonoBehaviour
 
     public void Start()
     {
-        MapDeploymentManager.instance.onDeploymentTrigger += HideAllCharacter;
+        MapManager.instance.onMapSwitchedTrigger += HideAllCharacter;
     }
 
     private void HideAllCharacter()

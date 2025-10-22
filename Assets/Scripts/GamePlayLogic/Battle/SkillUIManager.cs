@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using TMPro;
 
-public enum Type
+public enum AbilityType
 {
     Skill, Spell, Inventory
 }
@@ -117,17 +117,17 @@ public class SkillUIManager : MonoBehaviour
     public class TypeRespository
     {
         public Sprite sprite;
-        public Type type;
+        public AbilityType type;
     }
 
     [Serializable]
     public class TypeUIImage
     {
-        public Type type;
+        public AbilityType type;
         public Image backgroundImage;
         public Image contentImage;
 
-        public TypeUIImage(Transform parent, Type type, Sprite sprite)
+        public TypeUIImage(Transform parent, AbilityType type, Sprite sprite)
         {
             RectTransform imageRect = new GameObject($"{sprite.name} Icon").AddComponent<RectTransform>();
             imageRect.transform.SetParent(parent, false);
@@ -153,10 +153,10 @@ public class SkillUIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI descriptionTextUI;
 
     public TypeRespository[] respositories;
-    private Dictionary<Type, Sprite> typeMapDictionary;
+    private Dictionary<AbilityType, Sprite> typeMapDictionary;
     private List<TypeUIImage> typeUIImages = new List<TypeUIImage>();
     private int typeIndex = -1;
-    private Type currentSelectedType;
+    private AbilityType currentSelectedType;
 
     [SerializeField] private Transform skillUIContent;
     private List<UIImage> uIImages = new List<UIImage>();
@@ -184,7 +184,7 @@ public class SkillUIManager : MonoBehaviour
             if (typeIndex > 0)
             {
                 typeIndex -= 1;
-                Type type = typeUIImages[typeIndex].type;
+                AbilityType type = typeUIImages[typeIndex].type;
                 currentSelectedType = type;
                 FocusCurrentTypeUI(typeIndex);
                 RefreshToNextTypeList(type);
@@ -196,7 +196,7 @@ public class SkillUIManager : MonoBehaviour
             if (typeIndex < typeUIImages.Count - 1)
             {
                 typeIndex += 1;
-                Type type = typeUIImages[typeIndex].type;
+                AbilityType type = typeUIImages[typeIndex].type;
                 currentSelectedType = type;
                 FocusCurrentTypeUI(typeIndex);
                 RefreshToNextTypeList(type);
@@ -244,7 +244,7 @@ public class SkillUIManager : MonoBehaviour
         currentCharacter = null;
         typeIndex = -1;
         listOptionIndex = -1;
-        currentSelectedType = Type.Skill;
+        currentSelectedType = AbilityType.Skill;
         typeUIImages = new List<TypeUIImage>();
         skillDatas = new List<SkillData>();
         spellDatas = new List<SkillData>();
@@ -261,7 +261,7 @@ public class SkillUIManager : MonoBehaviour
         }
     }
 
-    public void RefreshToNextTypeList(Type type)
+    public void RefreshToNextTypeList(AbilityType type)
     {
         StopAllCoroutines();
         listOptionIndex = 0;
@@ -273,11 +273,11 @@ public class SkillUIManager : MonoBehaviour
 
         if (skillDatas == null) { Debug.LogWarning("Issue in skillData input"); }
 
-        if (type == Type.Skill)
+        if (type == AbilityType.Skill)
         {
             InitializeSkillList(skillDatas);
         }
-        else if (type == Type.Inventory)
+        else if (type == AbilityType.Inventory)
         {
             InitializeInventoryList(inventoryDatas);
         }
@@ -291,7 +291,7 @@ public class SkillUIManager : MonoBehaviour
     #region Initialize Type UI
     private void BuildDictionary()
     {
-        typeMapDictionary = new Dictionary<Type, Sprite>();
+        typeMapDictionary = new Dictionary<AbilityType, Sprite>();
         foreach (TypeRespository respository in respositories)
         {
             if (!typeMapDictionary.ContainsKey(respository.type))
@@ -304,19 +304,19 @@ public class SkillUIManager : MonoBehaviour
     public void InitializeTypeIcon(List<SkillData> skillDatas)
     {
         BuildDictionary();
-        HashSet<Type> containTypeSet = new HashSet<Type>();
+        HashSet<AbilityType> containTypeSet = new HashSet<AbilityType>();
 
-        typeMapDictionary.TryGetValue(Type.Skill, out Sprite spriteSkill);
+        typeMapDictionary.TryGetValue(AbilityType.Skill, out Sprite spriteSkill);
         if (spriteSkill != null) 
         {
-            TypeUIImage typeUIImageSkill = new TypeUIImage(typeUIContent, Type.Skill, spriteSkill);
+            TypeUIImage typeUIImageSkill = new TypeUIImage(typeUIContent, AbilityType.Skill, spriteSkill);
             typeUIImages.Add(typeUIImageSkill);
         }
 
         foreach (SkillData skillData in skillDatas)
         {
-            Type type = skillData.type;
-            if (type == Type.Skill || type == Type.Inventory) { continue; }
+            AbilityType type = skillData.type;
+            if (type == AbilityType.Skill || type == AbilityType.Inventory) { continue; }
             if (typeMapDictionary.ContainsKey(type))
             {
                 if (!containTypeSet.Contains(type))
@@ -329,10 +329,10 @@ public class SkillUIManager : MonoBehaviour
             }
         }
 
-        typeMapDictionary.TryGetValue(Type.Inventory, out Sprite spriteInventory);
+        typeMapDictionary.TryGetValue(AbilityType.Inventory, out Sprite spriteInventory);
         if (spriteInventory != null)
         {
-            TypeUIImage typeUIInventory = new TypeUIImage(typeUIContent, Type.Inventory, spriteInventory);
+            TypeUIImage typeUIInventory = new TypeUIImage(typeUIContent, AbilityType.Inventory, spriteInventory);
             typeUIImages.Add(typeUIInventory);
         }
 
@@ -347,7 +347,7 @@ public class SkillUIManager : MonoBehaviour
 
         BuildSkillUI(skillDatas);
     }
-    public void InitializeAbilityList(List<SkillData> skillDatas, Type type)
+    public void InitializeAbilityList(List<SkillData> skillDatas, AbilityType type)
     {
         List<SkillData> typeSkillList = new List<SkillData>();
         foreach (SkillData skillData in skillDatas)
@@ -543,11 +543,11 @@ public class SkillUIManager : MonoBehaviour
     public SkillData GetCurrentSelectedSkill()
     {
         if (listOptionIndex < 0) return null;
-        if (currentSelectedType == Type.Skill)
+        if (currentSelectedType == AbilityType.Skill)
         {
             return skillDatas[listOptionIndex];
         }
-        if (currentSelectedType == Type.Spell)
+        if (currentSelectedType == AbilityType.Spell)
         {
             return spellDatas[listOptionIndex];
         }

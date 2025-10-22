@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public enum Orientation
 {
@@ -29,7 +28,6 @@ public abstract class CharacterBase : Entity
     public PathRoute pathRoute { get; private set; }
 
     public Orientation orientation = Orientation.right;
-    public UnitType unitType = UnitType.Melee;
 
     protected override void Start()
     {

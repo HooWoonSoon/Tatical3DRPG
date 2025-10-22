@@ -24,7 +24,7 @@ public class EnemyCharacter : CharacterBase
         base.Start();
         stateMechine.Initialize(exploreState);
 
-        MapDeploymentManager.instance.onDeploymentTrigger += () =>
+        MapDeploymentManager.instance.onStartDeployment += () =>
         {
             stateMechine.ChangeState(deploymentState);
         };

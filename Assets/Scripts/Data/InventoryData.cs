@@ -11,7 +11,7 @@ public class InventoryData : ScriptableObject
     public string itemName;
     public Sprite icon;
     public string description;
-    public Type type;
+    public AbilityType type;
 
     #region Consumble
     //  Only used if itemType is Consumable

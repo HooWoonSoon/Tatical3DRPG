@@ -13,7 +13,7 @@ public class SkillDataEditor : Editor
         data.skillIcon = (Sprite)EditorGUILayout.ObjectField("Skill Icon", data.skillIcon, typeof(Sprite), false);
         data.description = EditorGUILayout.TextField("Description", data.description);
 
-        Type[] allowedTypes = { Type.Skill, Type.Spell };
+        AbilityType[] allowedTypes = { AbilityType.Skill, AbilityType.Spell };
         int currentIndex = Array.IndexOf(allowedTypes, data.type);
         if (currentIndex < 0) currentIndex = 0;
 
@@ -27,7 +27,7 @@ public class SkillDataEditor : Editor
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Skill Details", EditorStyles.boldLabel);
 
-        if (data.type == Type.Spell)
+        if (data.type == AbilityType.Spell)
         {
             data.requiredSP = EditorGUILayout.IntField("Required SP", data.requiredSP);
         }
