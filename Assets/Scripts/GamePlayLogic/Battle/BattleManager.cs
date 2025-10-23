@@ -162,10 +162,9 @@ public class BattleManager : Entity
     public void RequestBattle(List<CharacterBase> allBattleCharacter, 
         Action confirmAction = null, Action cancelAction = null)
     {
-        SetJoinedBattleUnit(allBattleCharacter);
-
         onConfrimCallback = () =>
         {
+            SetJoinedBattleUnit(allBattleCharacter);
             PreapreBattleContent();
             confirmAction?.Invoke();
         };
@@ -240,6 +239,21 @@ public class BattleManager : Entity
             return true;
         }
         return false;
+    }
+
+    public bool IsOrientationChanged()
+    {
+        if (orientationArrow.currentOrientation != lastOrientation)
+        {
+            lastOrientation = orientationArrow.currentOrientation;
+            return true;
+        }
+        return false;
+    }
+
+    public Orientation GetSelectedOrientation()
+    {
+        return orientationArrow.currentOrientation;
     }
 
     #region Visual Handle

@@ -1,5 +1,6 @@
 ﻿
 using UnityEngine;
+using UnityEngine.Windows;
 
 public class PlayerMoveStateExplore : PlayerBaseState
 {
@@ -20,9 +21,6 @@ public class PlayerMoveStateExplore : PlayerBaseState
     public override void Update()
     {
         base.Update();
-
-        character.Move(character.xInput, character.zInput);
-        character.UpDownHill(character.xInput, character.zInput);
 
         if (character.xInput == 0 && character.zInput == 0)
         {

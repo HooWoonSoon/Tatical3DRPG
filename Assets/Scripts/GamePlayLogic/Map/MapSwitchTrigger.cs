@@ -33,7 +33,7 @@ public class MapSwitchTrigger : Entity
                     MapTransitionManger.instance.RequestMapTransition(switchMapID, 
                         teleportPoint.position, returnPoint.position, playerCharacter,
                         () => { currentTrigger = null; },
-                        () => {currentTrigger = null;});
+                        () => { currentTrigger = null;});
                 }
                 return;
             }

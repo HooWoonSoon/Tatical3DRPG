@@ -10,7 +10,7 @@ public class World
     public int worldMaxX, worldMaxZ;
     public int worldMinX, worldMinZ;
     public int worldHeight;
-    private float cellSize = 1f;
+    public float cellSize = 1f;
 
     public GameObject combinedMesh;
 
@@ -152,10 +152,60 @@ public class World
         return false;
     }
 
-    public bool IsValidNode(float x, float y, float z)
+    public bool IsValidNode(int x, int y, int z)
     {
-        return worldMinX <= x && 0 <= y && worldMinZ <= z
-            && worldMaxX >= x && worldHeight >= y && worldMaxZ >= z;
+        return loadedNodes.ContainsKey(new Vector3Int(x, y, z));
+    }
+
+    public bool CheckSolidNode(float x, float y, float z)
+    {
+        int bx = Mathf.FloorToInt((x + cellSize * 0.5f) / cellSize);
+        int by = Mathf.FloorToInt((y + cellSize * 0.5f) / cellSize);
+        int bz = Mathf.FloorToInt((z + cellSize * 0.5f) / cellSize);
+
+        Vector3Int position = new Vector3Int(bx, by, bz);
+        if (loadedNodes.TryGetValue(position, out GameNode gameNode))
+        {
+            return gameNode.hasCube;
+        }
+        return false;
+    }
+
+    public List<GameNode> GetAllSolidNode()
+    {
+        List<GameNode> solidNodes = new List<GameNode>();
+        foreach (var node in loadedNodes.Values)
+        {
+            if (node.hasCube)
+            {
+                solidNodes.Add(node);
+            }
+        }
+        return solidNodes;
+    }
+
+    public List<Vector3> GetAllSolidPos()
+    {
+        List<Vector3> solidPos = new List<Vector3>();
+
+        foreach (var kvp in loadedNodes)
+        {
+            GameNode node = kvp.Value;
+            if (node.hasCube)
+            {
+                Vector3Int gridPos = kvp.Key;
+
+                Vector3 worldCenter = new Vector3(
+                    gridPos.x * cellSize,
+                    gridPos.y * cellSize,
+                    gridPos.z * cellSize
+                );
+
+                solidPos.Add(worldCenter);
+            }
+        }
+
+        return solidPos;
     }
     #endregion
 

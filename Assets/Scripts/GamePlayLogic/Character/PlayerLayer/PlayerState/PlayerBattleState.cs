@@ -61,7 +61,12 @@ public class PlayerBattleState : PlayerBaseState
                     GameNode selectedNode = BattleManager.instance.GetSelectedGameNode();
                     character.ShowDangerMovableAndTargetTilemap(selectedNode);
                 }
-                if (Input.GetKeyDown(KeyCode.Return))
+
+                if (Input.GetKeyDown(KeyCode.Escape))
+                { 
+                    BattleManager.instance.SetGridCursorAt(character.GetCharacterOriginNode());
+                }
+                else if (Input.GetKeyDown(KeyCode.Return))
                 {
                     GameNode moveTargetNode = BattleManager.instance.GetSelectedGameNode();
                     if (!character.IsInMovableRange(moveTargetNode)) return;
@@ -177,7 +182,12 @@ public class PlayerBattleState : PlayerBaseState
                 }
                 break;
             case BattlePhase.End:
-                if (Input.GetKeyDown(KeyCode.Return))
+                if (BattleManager.instance.IsOrientationChanged())
+                {
+                    Orientation orientation = BattleManager.instance.GetSelectedOrientation();
+                    character.SetOrientation(orientation);
+                }
+                else if (Input.GetKeyDown(KeyCode.Return))
                 {
                     BattleManager.instance.HideOrientationArrow();
                     BattleManager.instance.OnLoadNextTurn();

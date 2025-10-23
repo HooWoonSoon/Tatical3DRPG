@@ -17,15 +17,6 @@ public class UnitDetectable : Entity
         base.Start();
     }
 
-    public void AABBRange()
-    {
-        Vector3 worldcenter = transform.position + center;
-        Vector3 halfSize = size / 2;
-
-        Vector3 max = worldcenter + halfSize;
-        Vector3 min = worldcenter - halfSize;
-    }
-
     public UnitDetectable[] OverlapSelfRange()
     {
         List<UnitDetectable> hits = new List<UnitDetectable>();
@@ -91,15 +82,14 @@ public class UnitDetectable : Entity
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(transform.position + center, size);
 
-        if (world != null)
+        if (world != null && mahhatassRange > 0)
         {
-            Gizmos.color = Color.yellow;
             List<Vector3Int> coverage = world.GetManhattas3DRangePosition(Utils.RoundXZFloorYInt(transform.position), mahhatassRange, false);
 
-            if (coverage.Count == 0 || mahhatassRange == 0) { return; }
+            Gizmos.color = new Color(1f, 1f, 0f, 0.5f);
             for (int i = 0; i < coverage.Count; i++)
             {
-                Gizmos.DrawWireCube(coverage[i], Vector3.one);
+                Gizmos.DrawCube(coverage[i], Vector3.one);
             }
         }
     }

@@ -139,6 +139,7 @@ public class MapTransitionManger : Entity
     {
         onConfrimCallback?.Invoke();
         onConfrimCallback = null;
+        onCancelCallback = null;
     }
 
     private void OnCancel()

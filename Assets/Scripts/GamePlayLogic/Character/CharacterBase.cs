@@ -36,7 +36,22 @@ public abstract class CharacterBase : Entity
 
         currentHealth = data.healthPoint;
     }
-    public void UpdateOrientation(Vector3 direction)
+
+    public void SetOrientation(Orientation orientation)
+    {
+        this.orientation = orientation;
+        switch (orientation)
+        {
+            case Orientation.left:
+                transform.localScale = new Vector3(-1, 1, 1);
+                break;
+            case Orientation.right:
+                transform.localScale = Vector3.one;
+                break;
+        }
+    }
+
+    public void SetOrientation(Vector3 direction)
     {
         direction = Vector3Int.RoundToInt(direction);
 
@@ -86,7 +101,7 @@ public abstract class CharacterBase : Entity
     public void FacingDirection(Vector3 direction)
     {
         if (direction.x > 0)
-            transform.localScale = new Vector3(1, 1, 1);
+            transform.localScale = Vector3.one;
         else if (direction.x < 0)
             transform.localScale = new Vector3(-1, 1, 1);
     }
@@ -145,6 +160,7 @@ public abstract class CharacterBase : Entity
             }
 
             FacingDirection(direction);
+            SetOrientation(direction);
             
             pathRoute.character.transform.position = Vector3.MoveTowards(currentPos, nextPathPosition, moveSpeed * Time.deltaTime);
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 [Serializable]
 public class PresetUnit
@@ -91,5 +92,19 @@ public class MapManager : MonoBehaviour
                 return mapData;
         }
         return null;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (world != null)
+        {
+            Gizmos.color = Color.green;
+            List<Vector3> solids = world.GetAllSolidPos();
+
+            foreach (Vector3 pos in solids)
+            {
+                Gizmos.DrawWireCube(pos, Vector3.one);
+            }
+        }
     }
 }

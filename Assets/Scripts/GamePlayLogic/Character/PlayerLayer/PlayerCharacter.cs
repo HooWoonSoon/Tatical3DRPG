@@ -2,6 +2,8 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using Unity.VisualScripting;
+using UnityEngine.TextCore.Text;
 public class PlayerCharacter : CharacterBase
 {
     public GameObject imageObject;
@@ -26,6 +28,8 @@ public class PlayerCharacter : CharacterBase
 
     public PlayerStateMachine stateMechine;
     private Animator anim;
+    private UnitDetectable unitDetectable;
+
     public PlayerExploreState exploreState { get; private set; }
     public PlayerDeploymentState deploymentState { get; private set; }
     public PlayerBattleState battleState { get; private set; }
@@ -35,8 +39,9 @@ public class PlayerCharacter : CharacterBase
     public PlayerMovePathStateExplore movePathStateExplore { get; private set; }
 
     [Header("Physic")]
-    [SerializeField] private float gravity = 9.8f;
-    private float velocity;
+    [SerializeField] private float gravity = -9.8f;
+    private bool isGrounded;
+    private Vector3 velocity;
     public float xInput { get; private set; }
     public float zInput { get; private set; }
 
@@ -58,6 +63,7 @@ public class PlayerCharacter : CharacterBase
         base.Start();
         anim = GetComponent<Animator>();
         stateMechine.Initialize(exploreState);
+        unitDetectable = GetComponent<UnitDetectable>();
 
         MapDeploymentManager.instance.onStartDeployment += () =>
         {
@@ -68,6 +74,12 @@ public class PlayerCharacter : CharacterBase
     private void Update()
     {
         stateMechine.currentState.Update();
+
+        velocity += Vector3.up * gravity * Time.deltaTime;
+        velocity.y = CheckGrounded(velocity.y);
+        Move(xInput, zInput);
+
+        transform.Translate(velocity, Space.World);
     }
 
     public void UpdateHistory()
@@ -118,96 +130,44 @@ public class PlayerCharacter : CharacterBase
         Vector3 characterPosition = transform.position;
         isMoving = true;
         FacingDirection(direction);
-        UpdateOrientation(direction);
+        SetOrientation(direction);
 
         //  Check movement and return
-        Vector3 targetPosition = characterPosition + direction * moveSpeed * Time.deltaTime;
-        if (world.IsValidWorldRange(targetPosition))
+        velocity = direction * moveSpeed * Time.deltaTime;
+        Vector3 targetPosition = characterPosition + velocity;
+
+        if (!world.IsValidWorldRange(targetPosition))
         {
-            transform.position = targetPosition;
-            return;
+            velocity = Vector3.zero;
         }
     }
-
-    #region UpDownHill
-    public void UpDownHill(float xInput, float zInput)
+    
+    private float CheckGrounded(float gravity)
     {
-        DownHill();
-        UpHill(xInput, zInput);
+        Vector3 half = unitDetectable.size * 0.5f;
+        Vector3 centerPos = transform.position + unitDetectable.center;
 
-        if (targetPosition != null)
+        Vector3 min = centerPos - half;
+        Vector3 max = centerPos + half;
+
+        float checkY = min.y + gravity; 
+        int minX = Mathf.FloorToInt(min.x);
+        int maxX = Mathf.FloorToInt(max.x);
+        int minZ = Mathf.FloorToInt(min.z);
+        int maxZ = Mathf.FloorToInt(max.z);
+
+        if (world.CheckSolidNode(minX, checkY, minZ) ||
+            world.CheckSolidNode(maxX, checkY, minZ) ||
+            world.CheckSolidNode(minX, checkY, maxZ) ||
+            world.CheckSolidNode(maxX, checkY, maxZ))
         {
-            float currentX = Mathf.Lerp(transform.position.x, targetPosition.Value.x, Time.deltaTime);
-            float currentY = Mathf.Lerp(transform.position.y, targetPosition.Value.y, Time.deltaTime * 10);
-            float currentZ = Mathf.Lerp(transform.position.z, targetPosition.Value.z, Time.deltaTime);
-            transform.position = new Vector3(currentX, currentY, currentZ);
-
-            if (Mathf.Abs(transform.position.y - targetPosition.Value.y) < 0.1f)
-            {
-                transform.position = new(transform.position.x, targetPosition.Value.y, transform.position.z);
-                targetPosition = null;
-                isBusy = false;
-            }
+            isGrounded = true;
+            return 0;
         }
-    }
-    private void DownHill()
-    {
-        if (DDADectector.DDARaycast(transform.position, Vector3.down, 16, world.loadedNodes,
-            out Vector3Int? cubePosition))
+        else
         {
-            int distance = Mathf.FloorToInt(transform.position.y - cubePosition.Value.y);
-            //Debug.Log(isBusy);
-            if (!isBusy)
-            {
-                if (distance == 1)
-                {
-                    if (cubePosition != null)
-                    {
-                        targetPosition = transform.position - new Vector3(0, 1, 0);
-                        isBusy = true;
-                    }
-                }
-            }
-        }
-    }
-    private void UpHill(float xInput, float zInput)
-    {
-        Vector3Int direction = Utils.GetInputDirection(xInput, zInput);
-        if (DDADectector.DDARaycast(transform.position, direction, 1, world.loadedNodes,
-            out Vector3Int? cubePosition))
-        {
-            if (!isBusy)
-            {
-                Debug.Log(cubePosition);
-                float distance1 = Vector3.Distance(transform.position, cubePosition.Value);
-                Debug.Log(distance1);
-                if (distance1 < 0.8f)
-                {
-                    targetPosition = transform.position + new Vector3(0, 1, 0) + direction;
-                    isBusy = true;
-                }
-            }
-        }
-    }
-    #endregion
-
-    private void Drop()
-    {
-        //Debug.Log(Utils.CheckCubeAtPosition(unitCharacter.transform.position, world.loadedNodes));
-
-        velocity += gravity * Time.deltaTime;
-        transform.position -= new Vector3(0, 1 * velocity * Time.deltaTime, 0);
-
-        if (DDADectector.CheckCubeAtPosition(transform.position, world.loadedNodes))
-        {
-            Vector3 alignedPosition = new Vector3(
-                transform.position.x,
-                Mathf.Floor(transform.position.y) + 0.5f,
-                transform.position.z
-            );
-            transform.position = alignedPosition;
-
-            velocity = 0;
+            isGrounded = false;
+            return gravity;
         }
     }
 
