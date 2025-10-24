@@ -145,10 +145,10 @@ public class World
         if (worldMinX <= localPosition.x && 0 <= localPosition.y && worldMinZ <= localPosition.z
         && worldMaxX >= localPosition.x && worldHeight >= localPosition.y && worldMaxZ >= localPosition.z)
         {
-            Debug.Log($"{localPosition} is valid");
+            //Debug.Log($"{localPosition} is valid");
             return true;
         }
-        Debug.Log($"{localPosition} is invalid");
+        //Debug.Log($"{localPosition} is invalid");
         return false;
     }
 

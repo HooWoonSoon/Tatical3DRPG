@@ -75,11 +75,26 @@ public class PlayerCharacter : CharacterBase
     {
         stateMechine.currentState.Update();
 
-        velocity += Vector3.up * gravity * Time.deltaTime;
-        velocity.y = CheckGrounded(velocity.y);
-        Move(xInput, zInput);
+        CalculateVelocity();
 
         transform.Translate(velocity, Space.World);
+    }
+
+    private void CalculateVelocity()
+    {
+        Move(xInput, zInput);
+        StepClimb(xInput, zInput, 1f);
+        velocity += Vector3.up * gravity * Time.deltaTime;
+
+        if (velocity.z > 0 && CheckForward() || velocity.z < 0 && CheckBackward())
+            velocity.z = 0;
+        if (velocity.x > 0 && CheckRight() || velocity.x < 0 && CheckLeft())
+            velocity.x = 0;
+
+        if (velocity.y < 0)
+            velocity.y = CheckGrounded(velocity.y);
+        else if (velocity.y > 0 && CheckUp())
+            velocity.y = CheckGrounded(velocity.y);
     }
 
     public void UpdateHistory()
@@ -104,16 +119,6 @@ public class PlayerCharacter : CharacterBase
         this.xInput = xInput;
         this.zInput = zInput;
     }
-    //public void TeleportToPos(Vector3 position)
-    //{
-    //    GameNode targetNode = world.GetNode(position);
-    //    if (targetNode != null)
-    //    {
-    //        transform.position = position;
-    //        targetNode.SetUnitGridCharacter(this);
-    //        stateMechine.ChangeState(idleStateExplore);
-    //    }
-    //}
 
     //  Summary
     //      Move the unit character with the frequence input
@@ -123,26 +128,84 @@ public class PlayerCharacter : CharacterBase
         {
             //  No movement input
             isMoving = false;
-            return;
         }
 
         Vector3 direction = new Vector3(x, 0, z).normalized;
-        Vector3 characterPosition = transform.position;
-        isMoving = true;
         FacingDirection(direction);
         SetOrientation(direction);
+        isMoving = true;
 
         //  Check movement and return
-        velocity = direction * moveSpeed * Time.deltaTime;
-        Vector3 targetPosition = characterPosition + velocity;
+        
+        velocity.x = direction.x * moveSpeed * Time.deltaTime;
+        velocity.z = direction.z * moveSpeed * Time.deltaTime;
+        Vector3 targetPosition = transform.position + velocity;
 
         if (!world.IsValidWorldRange(targetPosition))
         {
-            velocity = Vector3.zero;
+            velocity.x = 0;
+            velocity.z = 0;
         }
     }
-    
-    private float CheckGrounded(float gravity)
+
+    private void StepClimb(float x, float z, float height)
+    {
+        Vector3 half = unitDetectable.size * 0.5f;
+        Vector3 centerPos = transform.position + unitDetectable.center;
+        Vector3 direction = new Vector3(x, 0, z).normalized;
+
+        if (direction == Vector3.zero) { return; }
+        
+        float checkUp = centerPos.y - half.y;
+        float checkForward = centerPos.z + half.z;
+        float checkBackward = centerPos.z - half.z;
+        float checkRight = centerPos.x + half.x;
+        float checkLeft = centerPos.x - half.x;
+
+        if (CheckForward())
+        {
+            if (!CheckUp())
+            {
+                if (world.CheckSolidNode(centerPos.x, checkUp, checkForward))
+                {
+                    transform.position += new Vector3(0, height, 0);
+                }
+            }
+        }
+        else if (CheckLeft())
+        {
+            if (!CheckUp())
+            {
+                if (world.CheckSolidNode(checkLeft, checkUp, centerPos.z))
+                {
+                    transform.position += new Vector3(0, height, 0);
+                }
+            }
+        }
+        else if (CheckRight())
+        {
+            if (!CheckUp())
+            {
+                if (world.CheckSolidNode(checkRight, checkUp, centerPos.z))
+                {
+                    transform.position += new Vector3(0, height, 0);
+                }
+            }
+        }
+        else if (CheckBackward())
+        {
+            if (!CheckUp())
+            {
+                if (world.CheckSolidNode(centerPos.x, checkUp, checkBackward))
+                {
+                    transform.position += new Vector3(0, height, 0);
+                }
+            }
+        }
+    }
+
+    #region Check Collision
+    private float CheckGrounded(float downSpeed)
     {
         Vector3 half = unitDetectable.size * 0.5f;
         Vector3 centerPos = transform.position + unitDetectable.center;
@@ -150,16 +213,12 @@ public class PlayerCharacter : CharacterBase
         Vector3 min = centerPos - half;
         Vector3 max = centerPos + half;
 
-        float checkY = min.y + gravity; 
-        int minX = Mathf.FloorToInt(min.x);
-        int maxX = Mathf.FloorToInt(max.x);
-        int minZ = Mathf.FloorToInt(min.z);
-        int maxZ = Mathf.FloorToInt(max.z);
+        float checkY = min.y + downSpeed;
 
-        if (world.CheckSolidNode(minX, checkY, minZ) ||
-            world.CheckSolidNode(maxX, checkY, minZ) ||
-            world.CheckSolidNode(minX, checkY, maxZ) ||
-            world.CheckSolidNode(maxX, checkY, maxZ))
+        if (world.CheckSolidNode(min.x, checkY, min.z) ||
+            world.CheckSolidNode(max.x, checkY, min.z) ||
+            world.CheckSolidNode(min.x, checkY, max.z) ||
+            world.CheckSolidNode(max.x, checkY, max.z))
         {
             isGrounded = true;
             return 0;
@@ -167,9 +226,70 @@ public class PlayerCharacter : CharacterBase
         else
         {
             isGrounded = false;
-            return gravity;
+            return downSpeed;
         }
     }
+
+    public bool CheckForward()
+    {
+        Vector3 half = unitDetectable.size * 0.5f;
+        Vector3 centerPos = transform.position + unitDetectable.center;
+        float checkForward = centerPos.z + half.z;
+
+        if (world.CheckSolidNode(transform.position.x, transform.position.y, checkForward))
+            return true;
+        else
+            return false;
+    }
+
+    public bool CheckBackward()
+    {
+        Vector3 half = unitDetectable.size * 0.5f;
+        Vector3 centerPos = transform.position + unitDetectable.center;
+        float checkBackward = centerPos.z - half.z;
+
+        if (world.CheckSolidNode(transform.position.x, transform.position.y, checkBackward))
+            return true;
+        else
+            return false;
+    }
+
+    public bool CheckRight()
+    {
+        Vector3 half = unitDetectable.size * 0.5f;
+        Vector3 centerPos = transform.position + unitDetectable.center;
+        float checkRight = centerPos.x + half.x;
+
+        if (world.CheckSolidNode(checkRight, transform.position.y, transform.position.z))
+            return true;
+        else
+            return false;
+    }
+
+    public bool CheckLeft()
+    {
+        Vector3 half = unitDetectable.size * 0.5f;
+        Vector3 centerPos = transform.position + unitDetectable.center;
+        float checkLeft = centerPos.x - half.x;
+
+        if (world.CheckSolidNode(checkLeft, transform.position.y, transform.position.z))
+            return true;
+        else
+            return false;
+    }
+
+    private bool CheckUp()
+    {
+        Vector3 half = unitDetectable.size * 0.5f;
+        Vector3 centerPos = transform.position + unitDetectable.center;
+        float checkUp = centerPos.y + half.y;
+
+        if (world.CheckSolidNode(transform.position.x, checkUp, transform.position.z))
+            return true;
+        else
+            return false;
+    }
+    #endregion
 
     public void SetMovePosition(Vector3 targetPosition)
     {
@@ -218,5 +338,26 @@ public class PlayerCharacter : CharacterBase
     public override void ReadyBattle()
     {
         stateMechine.ChangeState(battleState);
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (unitDetectable == null) return;
+
+        Vector3 half = unitDetectable.size * 0.5f;
+        Vector3 centerPos = transform.position + unitDetectable.center;
+
+        Vector3 forwardPos = new Vector3(transform.position.x, transform.position.y, centerPos.z + half.z);
+        Vector3 backwardPos = new Vector3(transform.position.x, transform.position.y, centerPos.z - half.z);
+        Vector3 rightPos = new Vector3(centerPos.x + half.x, transform.position.y, transform.position.z);
+        Vector3 leftPos = new Vector3(centerPos.x - half.x, transform.position.y, transform.position.z);
+        Vector3 upPos = new Vector3(transform.position.x, centerPos.y + half.y, transform.position.z);
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(forwardPos, 0.1f);
+        Gizmos.DrawSphere(backwardPos, 0.1f);
+        Gizmos.DrawSphere(rightPos, 0.1f); 
+        Gizmos.DrawSphere(leftPos, 0.1f); 
+        Gizmos.DrawSphere(upPos, 0.1f);
     }
 }
