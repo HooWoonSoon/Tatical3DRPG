@@ -507,6 +507,7 @@ public abstract class CharacterBase : Entity
         return false;
     }
 
-    public abstract void TeleportToNode(GameNode targetNode);
+    public abstract void TeleportToNodeFree(GameNode targetNode);
+    public abstract void TeleportToNodeDeployble(GameNode targetNode);
     public abstract void ReadyBattle();
 }

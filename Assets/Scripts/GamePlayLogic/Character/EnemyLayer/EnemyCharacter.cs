@@ -34,12 +34,20 @@ public class EnemyCharacter : CharacterBase
         stateMechine.currentState.Update();
     }
 
-    public override void TeleportToNode(GameNode targetNode)
+    public override void TeleportToNodeFree(GameNode targetNode)
     {
         if (targetNode != null)
         {
             SetSelfToNode(targetNode, 0.5f);
             stateMechine.ChangeState(idleStateExplore);
+        }
+    }
+    public override void TeleportToNodeDeployble(GameNode targetNode)
+    {
+        if (targetNode != null)
+        {
+            SetSelfToNode(targetNode, 0.5f);
+            stateMechine.ChangeState(deploymentState);
         }
     }
 
