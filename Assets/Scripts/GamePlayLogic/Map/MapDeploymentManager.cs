@@ -101,7 +101,7 @@ public class MapDeploymentManager : Entity
                 if (deployableNode != null)
                 {
                     character.gameObject.SetActive(true);
-                    character.TeleportToNode(deploymentNode);
+                    character.TeleportToNodeDeployble(deploymentNode);
                     teamCharacters.Add(character);
                 }
             }

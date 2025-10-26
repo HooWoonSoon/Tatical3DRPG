@@ -51,7 +51,7 @@ public class PlayerTeamSystem : TeamSystem
     {
         stateMachine.currentPlayerTeamState.Update();
         
-        Utils.GetMovementInput(out float inputX, out float inputZ);
+        currentLeader.MovementInput(out float inputX, out float inputZ);
         currentLeader.SetVelocity(inputX, inputZ);
 
         for (int i = 0; i < linkMembers.Count; i++)
@@ -75,7 +75,7 @@ public class PlayerTeamSystem : TeamSystem
             Vector3Int targetPosition = hitNode.GetVectorInt();
             if (targetPosition == new Vector3Int(-1, -1, -1)) return;
 
-            currentLeader.SetMovePosition(targetPosition);
+            currentLeader.SetAStarMovePos(targetPosition);
         }
     }
 
