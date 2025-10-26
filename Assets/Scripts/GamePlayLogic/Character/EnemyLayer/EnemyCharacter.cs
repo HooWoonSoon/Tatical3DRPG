@@ -42,7 +42,6 @@ public class EnemyCharacter : CharacterBase
             stateMechine.ChangeState(deploymentState);
         }
     }
-
     public override void TeleportToNodeFree(GameNode targetNode)
     {
         if (targetNode != null)

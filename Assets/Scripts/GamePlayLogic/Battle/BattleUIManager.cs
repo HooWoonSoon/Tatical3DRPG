@@ -47,7 +47,6 @@ public class BattleUIManager : MonoBehaviour
         OnBattleUIFinish?.Invoke();
         battleEventDisplayUI.SetActive(false);
     }
-
     public void OpenUpdateSkillUI(CharacterBase character)
     {
         if (skillUI.activeSelf == true) { return; } 
@@ -60,7 +59,6 @@ public class BattleUIManager : MonoBehaviour
             SkillUIManager.instance.Initialize(characterSkillList, invetoryList, character);
         }
     }
-
     public void CloseSkillUI()
     {
         SkillUIManager.instance.ResetAll();
@@ -70,6 +68,29 @@ public class BattleUIManager : MonoBehaviour
     public void ActivateActionPanel(bool active)
     {
         actionOptionPanel.SetActive(active);
+    }
+
+    public void ActiveAllCharacterInfoTip(bool active)
+    {
+        foreach (var character in BattleManager.instance.joinedBattleUnits)
+        {
+            SelfCanvasController selfCanvasController = character.selfCanvasController;
+            if (selfCanvasController == null)
+                Debug.LogWarning($"{character} missing Self Canvas Controller");
+            else
+            {
+                int queue = CTTimeline.instance.GetCharacterCurrentQueue(character);
+                selfCanvasController.SetQueue(queue);
+                Canvas selfCanvas = selfCanvasController.selfCanvas;
+                if (selfCanvas == null)
+                    Debug.LogWarning($"{character} missing Self Canvas");
+                else
+                {
+                    selfCanvas.gameObject.SetActive(active);
+                }
+            }
+                
+        }
     }
 
     public void CreateCountText(CharacterBase character, int value)

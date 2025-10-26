@@ -13,16 +13,16 @@ public abstract class CharacterBase : Entity
 {
     public GameObject characterModel;
 
-    public float moveSpeed = 5f;
-
     public TeamDeployment currentTeam;
     public UnitDetectable detectable;
 
     [Header("Character Information")]
+    public SelfCanvasController selfCanvasController;
     public CharacterData data;
     public int currentHealth;
     public List<SkillData> skillData;
 
+    public float moveSpeed = 5f;
     public SkillData currentSkill { get; private set;}
     public GameNode currentSkillTargetNode { get; private set; }
     public PathRoute pathRoute { get; private set; }
@@ -37,6 +37,7 @@ public abstract class CharacterBase : Entity
         currentHealth = data.healthPoint;
     }
 
+    #region Orientation
     public void SetOrientation(Orientation orientation)
     {
         this.orientation = orientation;
@@ -50,7 +51,6 @@ public abstract class CharacterBase : Entity
                 break;
         }
     }
-
     public void SetOrientation(Vector3 direction)
     {
         direction = Vector3Int.RoundToInt(direction);
@@ -88,11 +88,12 @@ public abstract class CharacterBase : Entity
                 return Vector3Int.zero;
         }
     }
+    #endregion
+
     public Vector3Int GetCharacterNodePosition()
     {
         return Utils.RoundXZFloorYInt(transform.position);
     }
-
     public GameNode GetCharacterOriginNode()
     {
         return world.GetNode(GetCharacterNodePosition());
@@ -113,20 +114,17 @@ public abstract class CharacterBase : Entity
         targetNode.SetUnitGridCharacter(this);
     }
 
-
     public void SetPathRoute(PathRoute pathRoute)
     {
         this.pathRoute = pathRoute;
         //pathRoute.DebugPathRoute();
     }
-
     public void SetPathRoute(GameNode targetNode)
     {
         if (targetNode == null) return;
         pathRoute = GetPathRoute(targetNode);
         //pathRoute.DebugPathRoute();
     }
-
     public PathRoute GetPathRoute(GameNode targetNode)
     {
         Vector3 selfPos = GetCharacterNodePosition();
@@ -140,7 +138,6 @@ public abstract class CharacterBase : Entity
             pathIndex = 0
         };
     }
-
     public void PathToTarget()
     {
         if (pathRoute == null) return;
@@ -184,14 +181,12 @@ public abstract class CharacterBase : Entity
         if (skill == null) { return; }
         currentSkill = skill;
     }
-    
     public void SetSkillAndTarget(SkillData skill, GameNode targetNode)
     {
         if (skill == null) { return; }
         currentSkill = skill;
         currentSkillTargetNode = targetNode;
     }
-
     public void SkillCalculate()
     {
         CharacterBase character = currentSkillTargetNode.GetUnitGridCharacter();
@@ -240,7 +235,6 @@ public abstract class CharacterBase : Entity
         }
         return oppositeCharacter;
     }
-
     public List<Vector3Int> GetUnlimitedMovablePos(int size)
     {
         List<Vector3Int> result = new List<Vector3Int>();
@@ -255,7 +249,6 @@ public abstract class CharacterBase : Entity
         }
         return result;
     }
-
     public List<GameNode> GetMovableNode()
     {
         List<GameNode> result = new List<GameNode>();
@@ -271,7 +264,6 @@ public abstract class CharacterBase : Entity
         }
         return result;
     }
-
     public List<GameNode> GetConflictNode()
     {
         int selfRange = data.movableRange;
@@ -322,7 +314,6 @@ public abstract class CharacterBase : Entity
         }
         return result.ToList();
     }
-
     public List<GameNode> GetSkillRangeFromNode(SkillData skill, GameNode gameNode)
     {
         return skill.GetInflueneNode(world, gameNode);
@@ -331,7 +322,6 @@ public abstract class CharacterBase : Entity
     {
         return skill.GetInflueneNode(world, world.GetNode(GetCharacterNodePosition()));
     }
-
     public List<CharacterBase> GetSkillAttackableCharacter(SkillData skill, GameNode gameNode)
     {
         HashSet<CharacterBase> result = new HashSet<CharacterBase>();
@@ -348,11 +338,11 @@ public abstract class CharacterBase : Entity
         return result.ToList();
     }
 
+    #region Visual Tilemap
     public void ResetVisualTilemap()
     {
         GridTilemapVisual.instance.SetAllTileSprite(GameNode.TilemapSprite.None);
     }
-
     public void ShowMovableTilemap()
     {
         ResetVisualTilemap();
@@ -364,7 +354,6 @@ public abstract class CharacterBase : Entity
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
         }
     }
-
     public void ShowDangerAndMovableTileFromNode()
     {
         ResetVisualTilemap();
@@ -407,7 +396,6 @@ public abstract class CharacterBase : Entity
             }
         }
     }
-
     public void ShowMultipleCoverageTilemap(int selfRange, List<Vector3Int> coverage)
     {
         ResetVisualTilemap();
@@ -421,7 +409,6 @@ public abstract class CharacterBase : Entity
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Purple);
         }
     }
-
     public void ShowDangerMovableAndTargetTilemap(GameNode targetNode)
     {
         ResetVisualTilemap();
@@ -442,7 +429,6 @@ public abstract class CharacterBase : Entity
             GridTilemapVisual.instance.SetTilemapSprite(targetNode.GetVectorInt(), GameNode.TilemapSprite.TinyBlue);
         }
     }
-
     public void ShowSkillTargetTilemap()
     {
         if (currentSkillTargetNode == null) { return; }
@@ -460,7 +446,6 @@ public abstract class CharacterBase : Entity
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
         }
     }
-
     public GameNode GetSkillTargetShowTilemap(GameNode originNode, GameNode targetNode)
     {
         ShowSkillTilemap(originNode);
@@ -473,7 +458,6 @@ public abstract class CharacterBase : Entity
         }
         return null;
     }
-
     public void ShowSkillTilemap()
     {
         if (currentSkill == null) return;
@@ -496,6 +480,7 @@ public abstract class CharacterBase : Entity
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.TinyBlue);
         }
     }
+    #endregion
 
     public bool IsInMovableRange(GameNode gameNode)
     {

@@ -156,12 +156,11 @@ public class MapDeploymentManager : Entity
 
         GameNode randomNode = availableNodes[UnityEngine.Random.Range(0, availableNodes.Count)];
         character.gameObject.SetActive(true);
-        character.SetSelfToNode(randomNode, 0.5f);
+        character.TeleportToNodeDeployble(randomNode);
         occupiedNodes[character] = randomNode;
 
         Debug.Log($"Deployed {character.name} at {randomNode.x},{randomNode.y},{randomNode.z}");
     }
-
     public void RemoveCharacterDeployment(CharacterBase character)
     {
         if (!occupiedNodes.TryGetValue(character, out GameNode node)) return;
@@ -174,44 +173,6 @@ public class MapDeploymentManager : Entity
         {
             lasSelectedCharacter = null;
             DestroyPreviewModel();
-        }
-    }
-
-    public void DeploymentCharacterRandom()
-    {
-        List<CharacterBase> characters = new List<CharacterBase>();
-        if (teamDeployment != null)
-        {
-            characters = teamDeployment.teamCharacter;
-        }
-
-        if (characters == null || characters.Count == 0)
-        {
-            Debug.LogWarning("No characters available for deployment!");
-            return;
-        }
-
-        if (deployableNodes == null || deployableNodes.Count == 0)
-        {
-            Debug.LogWarning("No deployable nodes found!");
-            return;
-        }
-
-        foreach (CharacterBase character in characters)
-        {
-            List<GameNode> availableNodes = deployableNodes.FindAll(n => !occupiedNodes.ContainsValue(n) && n.isWalkable);
-            if (availableNodes.Count == 0)
-            {
-                Debug.LogWarning("No more available nodes for deployment!");
-                break;
-            }
-
-            GameNode randomNode = availableNodes[UnityEngine.Random.Range(0, availableNodes.Count)];
-            character.gameObject.SetActive(true);
-            character.SetSelfToNode(randomNode, 0.5f);
-            occupiedNodes.Add(character, randomNode);
-
-            Debug.Log($"Deployed {character.name} at {randomNode.x},{randomNode.y},{randomNode.z}");
         }
     }
 
@@ -234,7 +195,6 @@ public class MapDeploymentManager : Entity
             ExchangeNodeCharacter(selectedCharacter, targetNodeCharacter);
         }
     }
-
     //  Summary
     //      Move a character to target node and modified its occupied node
     private void ChangeCharacterNode(CharacterBase character, GameNode targetNode)
@@ -247,7 +207,6 @@ public class MapDeploymentManager : Entity
         currentNode.SetUnitGridCharacter(null);
         Debug.Log($"Moved {character.name} to {targetNode.x},{targetNode.y},{targetNode.z}");
     }
-
     //  Summary
     //      Swap two characters' positions on the grid and modified their occupied nodes
     private void ExchangeNodeCharacter(CharacterBase character, CharacterBase otherCharacter)
@@ -282,7 +241,6 @@ public class MapDeploymentManager : Entity
             }
         }
     }
-
     public void DestroyPreviewModel()
     {
         if (previewCharacter != null)
@@ -292,6 +250,14 @@ public class MapDeploymentManager : Entity
         }
     }
 
+    public void ActivateMoveCursorAndHide(bool active, bool hide)
+    {
+        gridCursor.ActivateMoveCursor(active, hide);
+    }
+    public void SetGridCursorAt(GameNode target)
+    {
+        gridCursor.HandleGridCursor(target);
+    }
     private void CasualPutGridCursorAtLoadedMap()
     {
         if (deployableNodes.Count > 0)
@@ -302,6 +268,13 @@ public class MapDeploymentManager : Entity
         ActivateMoveCursorAndHide(false, true);
     }
 
+    public void EnableEditingMode(bool active)
+    {
+        if (active) 
+            enableEditing = true;
+        else
+            enableEditing = false;
+    }
     public void EndDeployment()
     {
         deployableNodes.Clear();
@@ -314,22 +287,5 @@ public class MapDeploymentManager : Entity
         onEndDeployment?.Invoke();
     }
 
-    public void SetGridCursorAt(GameNode target)
-    {
-        gridCursor.HandleGridCursor(target);
-    }
-
-    public void ActivateMoveCursorAndHide(bool active, bool hide)
-    {
-        gridCursor.ActivateMoveCursor(active, hide);
-    }
-
-    public void EnableEditingMode(bool active)
-    {
-        if (active) 
-            enableEditing = true;
-        else
-            enableEditing = false;
-    }
 }
 

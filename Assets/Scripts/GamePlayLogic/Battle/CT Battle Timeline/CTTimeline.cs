@@ -45,12 +45,13 @@ public class CTTimeline : MonoBehaviour
 
     public Dictionary<CharacterBase, CharacterTacticsTime> battleCharacter = new Dictionary<CharacterBase, CharacterTacticsTime>();
     private HashSet<CharacterBase> lastBattleCharacter = new HashSet<CharacterBase>();
+
     private List<CTRound> cTRounds = new List<CTRound>();
     private const int INITIAL_ROUND = 4;
 
     private CTRound currentCTRound;
-    private int currentRound = 0;
-    private int currentTurn = 0;
+    private int currentRoundIndex = 0;
+    private int currentTurnIndex = 0;
     private CharacterBase currentCharacter;
 
     [SerializeField] private UITransitionToolkit uITransitionToolkit;
@@ -107,8 +108,8 @@ public class CTTimeline : MonoBehaviour
             }
         }
         currentCTRound = cTRounds[0];
-        currentRound = 0;
-        currentTurn = 0;
+        currentRoundIndex = 0;
+        currentTurnIndex = 0;
         currentCharacter = currentCTRound.cTTimelineQueue[0];
         CTTurnUIManager.instance.GenerateTimelineUI();;
     }
@@ -157,25 +158,25 @@ public class CTTimeline : MonoBehaviour
         if (currentCTRound == null) { return; }
         Debug.Log($"{currentCharacter} end this turn");
         NextNumber();
-        currentCharacter = currentCTRound.cTTimelineQueue[currentTurn];
-        CTTurnUIManager.instance.TargetCurrentCTTurnUI(currentCTRound, currentTurn);
+        currentCharacter = currentCTRound.cTTimelineQueue[currentTurnIndex];
+        CTTurnUIManager.instance.TargetCurrentCTTurnUI(currentCTRound, currentTurnIndex);
     }
     private void NextNumber()
     {
-        CTTurnUIManager.instance.RecourdPastTurnUI(currentCTRound, currentTurn);
+        CTTurnUIManager.instance.RecordPastTurnUI(currentCTRound, currentTurnIndex);
 
-        if (currentTurn < currentCTRound.cTTimelineQueue.Count - 1)
+        if (currentTurnIndex < currentCTRound.cTTimelineQueue.Count - 1)
         {
-            currentTurn++;
+            currentTurnIndex++;
             //Debug.Log($"currentNumber: {currentTurnIndex}");
         }
         else
         {
-            if (currentRound < cTRounds.Count - 1)
+            if (currentRoundIndex < cTRounds.Count - 1)
             {
-                currentRound++;
-                currentCTRound = cTRounds[currentRound];
-                currentTurn = 0;
+                currentRoundIndex++;
+                currentCTRound = cTRounds[currentRoundIndex];
+                currentTurnIndex = 0;
                 ExtentTimeline();
                 //Debug.Log($"currentTurn: {currentTurnIndex}, currentNumber: {currentNumberIndex}");
             }
@@ -186,10 +187,36 @@ public class CTTimeline : MonoBehaviour
     {
         uITransitionToolkit.ResetUIFormToTargetPos(1);
     }
+    public int GetCharacterCurrentQueue(CharacterBase character)
+    {
+        if (cTRounds.Count == 0) 
+        {
+            Debug.LogWarning("No Round implemented");
+            return -1; 
+        }
+
+        int index = 0;
+        for (int r = currentRoundIndex; r < cTRounds.Count; r++)
+        {
+            CTRound searchRound = cTRounds[r];
+            List<CharacterBase> allCharacterQueue = searchRound.cTTimelineQueue;
+
+            int startTurn = (r == currentRoundIndex) ? currentTurnIndex : 0;
+
+            for (int t = startTurn; t < allCharacterQueue.Count; t++)
+            {
+                if (character == allCharacterQueue[t])
+                    return index;
+                
+                index++;
+            }
+        }
+        return -1;
+    }
     public List<CTRound> GetAllTurnHistory() => cTRounds;
     public CTRound GetCurrentCTTurn() => currentCTRound;
-    public int GetCurrentTurn() => currentTurn;
-    public int GetCurrentRound() => currentRound;
+    public int GetCurrentTurn() => currentTurnIndex;
+    public int GetCurrentRound() => currentRoundIndex;
     public CharacterBase GetCurrentCharacter() => currentCharacter;
     public Dictionary<CharacterBase, CharacterTacticsTime> GetBattleCharacter() => battleCharacter;
 }

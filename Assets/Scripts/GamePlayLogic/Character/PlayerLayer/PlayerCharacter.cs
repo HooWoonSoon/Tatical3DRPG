@@ -44,8 +44,10 @@ public class PlayerCharacter : CharacterBase
     [SerializeField] private float gravity = -9.8f;
     public float stepHeight = 1f;
     private Vector3 velocity;
+    private const float DASH_MAGNIFICATION = 1.5f;
 
     #region Step Climb
+    private const float STEP_CLIMB_SPEED = 20f;
     private float stepProgress;
     private float targetStep;
     #endregion
@@ -81,11 +83,6 @@ public class PlayerCharacter : CharacterBase
     {
         stateMechine.currentState.Update();
 
-        Move(xInput, zInput);
-        StepClimb(xInput, zInput, stepHeight);
-        CalculateVelocity();
-        YCoordinateAllignment();
-
         transform.Translate(velocity, Space.World);
     }
 
@@ -108,6 +105,7 @@ public class PlayerCharacter : CharacterBase
         positionHistory.Clear();
     }
     #endregion
+
     public void SetVelocity(float xInput, float zInput)
     {
         this.xInput = xInput;
@@ -120,12 +118,12 @@ public class PlayerCharacter : CharacterBase
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
-            moveSpeed = moveSpeed * 2;
+            moveSpeed = moveSpeed * DASH_MAGNIFICATION;
             isDash = true;
         }
         else if (Input.GetKeyUp(KeyCode.LeftShift))
         {
-            moveSpeed = moveSpeed / 2;
+            moveSpeed = moveSpeed / DASH_MAGNIFICATION;
             isDash = false;
         }
     }
@@ -157,8 +155,7 @@ public class PlayerCharacter : CharacterBase
             velocity.z = 0;
         }
     }
-
-    private void CalculateVelocity()
+    public void CalculateVelocity()
     {
         if (!isStepClimb)
         {
@@ -266,12 +263,11 @@ public class PlayerCharacter : CharacterBase
             }
         }
     }
-
     private float CheckStepHeight()
     {
         if (!isStepClimb) return 0;
 
-        float speed = targetStep * 9f * Time.deltaTime;
+        float speed = targetStep * STEP_CLIMB_SPEED * Time.deltaTime;
         float remaining = targetStep - stepProgress;
         float delta = Mathf.Min(speed, remaining);
 
@@ -308,7 +304,6 @@ public class PlayerCharacter : CharacterBase
         else
             return false;
     }
-
     public bool CheckBottomBackward()
     {
         Vector3 half = unitDetectable.size * 0.5f;
@@ -321,7 +316,6 @@ public class PlayerCharacter : CharacterBase
         else
             return false;
     }
-
     public bool CheckBottomRight()
     {
         Vector3 half = unitDetectable.size * 0.5f;
@@ -334,7 +328,6 @@ public class PlayerCharacter : CharacterBase
         else
             return false;
     }
-
     public bool CheckBottomLeft()
     {
         Vector3 half = unitDetectable.size * 0.5f;
@@ -347,7 +340,6 @@ public class PlayerCharacter : CharacterBase
         else
             return false;
     }
-
     private bool CheckUp()
     {
         Vector3 half = unitDetectable.size * 0.5f;
@@ -359,7 +351,6 @@ public class PlayerCharacter : CharacterBase
         else
             return false;
     }
-
     private bool CheckUpForward()
     {
         Vector3 half = unitDetectable.size * 0.5f;
@@ -372,7 +363,6 @@ public class PlayerCharacter : CharacterBase
         else
             return false;
     }
-
     private bool CheckUpBackward()
     {
         Vector3 half = unitDetectable.size * 0.5f;
@@ -385,7 +375,6 @@ public class PlayerCharacter : CharacterBase
         else
             return false;
     }
-
     private bool CheckUpRight()
     {
         Vector3 half = unitDetectable.size * 0.5f;
@@ -398,7 +387,6 @@ public class PlayerCharacter : CharacterBase
         else
             return false;
     }
-
     private bool CheckUpLeft()
     {
         Vector3 half = unitDetectable.size * 0.5f;
@@ -419,7 +407,6 @@ public class PlayerCharacter : CharacterBase
         Vector3Int targetPos = Utils.RoundXZFloorYInt(targetPosition);
         SetAStarMovePos(targetPos);
     }
-
     public void SetAStarMovePos(Vector3Int targetPosition)
     {
         List<Vector3> pathVectorList = pathFinding.GetPathRoute(transform.position, targetPosition, 1, 1).pathRouteList;

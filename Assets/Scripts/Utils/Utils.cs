@@ -96,7 +96,6 @@ public static class Utils
 
         return textMeshPro;
     }
-
     public static TextMeshPro CreateWorldText(string text, Vector3 localPosition, Quaternion quaternion, int fontSize, Color color, TextAlignmentOptions textAlignment, int sortingOrder = 0)
     {
         GameObject parent = GameObject.Find("World_Text_Parent");
@@ -121,7 +120,6 @@ public static class Utils
 
         return textMeshPro;
     }
-
     public static TextMeshPro CreateWorldText(string text, Transform parent, Vector3 localPosition, Quaternion quaternion, int fontSize, Color color, TextAlignmentOptions textAlignment, int sortingOrder = 0)
     {
         GameObject gameObject = new GameObject("World_Text", typeof(TextMeshPro));
@@ -163,7 +161,6 @@ public static class Utils
         }
         return null;
     }
-    
     public static GameObject GetLayerMouseGameObject(LayerMask objectMask)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -174,7 +171,6 @@ public static class Utils
         }
         return null;
     }
-
     public static Vector3 GetLayerMouseWorldPosition(LayerMask gridMask)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -186,7 +182,6 @@ public static class Utils
         else
             return Vector3.zero;
     }
-
     public static Vector3Int GetRaycastHitNodePositionWithCollider(LayerMask layerMask, Dictionary<Vector3Int, GameNode> loadedNodes)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -204,7 +199,6 @@ public static class Utils
 
         return new Vector3Int(-1, -1, -1);
     }
-
     public static GameNode GetRaycastHitNode(Dictionary<Vector3Int, GameNode> loadedNodes)
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -224,7 +218,6 @@ public static class Utils
         }
         return null;
     }
-
     public static Vector3 GetMouseWorldPosition()
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);

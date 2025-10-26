@@ -22,6 +22,11 @@ public class PlayerMoveStateExplore : PlayerBaseState
     {
         base.Update();
 
+        character.Move(character.xInput, character.zInput);
+        character.StepClimb(character.xInput, character.zInput, character.stepHeight);
+        character.CalculateVelocity();
+        character.YCoordinateAllignment();
+
         if (character.xInput == 0 && character.zInput == 0)
         {
             stateMachine.ChangeState(character.idleStateExplore);

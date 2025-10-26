@@ -232,6 +232,7 @@ public class PlayerBattleState : PlayerBaseState
                 BattleManager.instance.DestroyPreviewModel();
                 BattleUIManager.instance.ActivateActionPanel(true);
                 BattleUIManager.instance.CloseSkillUI();
+                BattleUIManager.instance.ActiveAllCharacterInfoTip(false);
                 break;
             case BattlePhase.SkillComand:
                 skillChangedHandler = () =>
@@ -246,6 +247,7 @@ public class PlayerBattleState : PlayerBaseState
                 BattleManager.instance.ActivateMoveCursorAndHide(false, false);
                 BattleUIManager.instance.ActivateActionPanel(false);
                 BattleUIManager.instance.OpenUpdateSkillUI(character);
+                BattleUIManager.instance.ActiveAllCharacterInfoTip(true);
 
                 currentSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
                 character.ShowSkillTilemap(confirmMoveNode);
@@ -253,15 +255,18 @@ public class PlayerBattleState : PlayerBaseState
             case BattlePhase.SkillTarget:
                 BattleManager.instance.ActivateMoveCursorAndHide(true, false);
                 BattleUIManager.instance.CloseSkillUI();
+                BattleUIManager.instance.ActiveAllCharacterInfoTip(true);
                 break;
             case BattlePhase.ReleaseMoveComand:
                 character.ShowDangerAndMovableTileFromNode();
                 CameraMovement.instance.ChangeFollowTarget(character.transform);
                 BattleManager.instance.SetGridCursorAt(character.GetCharacterOriginNode());
+                BattleUIManager.instance.ActiveAllCharacterInfoTip(true);
                 break;
             case BattlePhase.Move:
                 BattleManager.instance.ActivateMoveCursorAndHide(false, true);
                 BattleUIManager.instance.CloseSkillUI();
+                BattleUIManager.instance.ActiveAllCharacterInfoTip(false);
                 CameraMovement.instance.ChangeFollowTarget(character.transform);
                 character.SetPathRoute(confirmMoveNode);
                 character.ShowDangerMovableAndTargetTilemap(confirmMoveNode);
@@ -274,6 +279,7 @@ public class PlayerBattleState : PlayerBaseState
                 BattleManager.instance.ActivateMoveCursorAndHide(false, true);
                 BattleManager.instance.SetupOrientationArrow(character, confirmMoveNode);
                 BattleManager.instance.DestroyPreviewModel();
+                BattleUIManager.instance.ActiveAllCharacterInfoTip(false);
                 break;
         }
     }

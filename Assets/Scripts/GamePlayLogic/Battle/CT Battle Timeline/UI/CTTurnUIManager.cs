@@ -187,7 +187,7 @@ public class CTTurnUIManager : MonoBehaviour
     }
 
     #region External Called
-    public void RecourdPastTurnUI(CTRound cTRound, int currentTurnIndex)
+    public void RecordPastTurnUI(CTRound cTRound, int currentTurnIndex)
     {
         for (int i = turnUIImages.Count - 1; i >= 0 ; i--)
         {

@@ -25,7 +25,6 @@ public class BattleManager : Entity
     public event Action onLoadNextTurn;
     public event Action onConfrimCallback;
     public event Action onCancelCallback;
-
     public static BattleManager instance { get; private set; }
 
     private void Awake()
@@ -49,29 +48,31 @@ public class BattleManager : Entity
         }
     }
 
+    #region Event Callback
     private void OnEnter()
     {
         onConfrimCallback?.Invoke();
         onConfrimCallback = null;
     }
-
     private void OnCancel()
     {
         onConfrimCallback = null;
         onCancelCallback?.Invoke();
         onCancelCallback = null;
     }
+    #endregion
 
+    #region Setup Battle
     public void SetJoinedBattleUnit(HashSet<CharacterBase> joinedBattleUnits)
     {
         this.joinedBattleUnits = joinedBattleUnits.ToList();
     }
-
     public void SetJoinedBattleUnit(List<CharacterBase> joinedBattleUnits)
     {
         this.joinedBattleUnits = joinedBattleUnits;
     }
-
+    #endregion
+    
     #region Battle Unit Refine Path
     private void EnterBattleUnitRefinePath()
     {
@@ -83,7 +84,6 @@ public class BattleManager : Entity
             joinedBattleUnits[i].ReadyBattle();
         }
     }
-
     private List<PathRoute> GetBattleUnitRefinePath()
     {
         List<PathRoute> pathRoutes = new List<PathRoute>();
@@ -129,7 +129,7 @@ public class BattleManager : Entity
         return pathRoutes;
     }
     #endregion
-
+    
     #region Direct Battle
     public void PreapreBattleContent()
     {
@@ -158,7 +158,8 @@ public class BattleManager : Entity
         }
     }
     #endregion
-
+    
+    #region Battle Request
     public void RequestBattle(List<CharacterBase> allBattleCharacter, 
         Action confirmAction = null, Action cancelAction = null)
     {
@@ -174,19 +175,39 @@ public class BattleManager : Entity
             cancelAction?.Invoke();
         };
     }
-
     public void ClearEventCallback(Action action = null)
     {
         onConfrimCallback = null;
         onCancelCallback = null;
         action?.Invoke();
     }
+    #endregion
 
+    #region Cursor Gizmos
+    public void ActivateMoveCursorAndHide(bool active, bool hide)
+    {
+        gridCursor.ActivateMoveCursor(active, hide);
+    }
     public void SetGridCursorAt(GameNode target)
     {
         gridCursor.HandleGridCursor(target);
     }
-
+    public GameNode GetSelectedGameNode()
+    {
+        return gridCursor.currentNode;
+    }
+    public bool IsSelectedNodeChange()
+    {
+        if (gridCursor.currentNode != lastSelectedNode)
+        {
+            lastSelectedNode = gridCursor.currentNode;
+            return true;
+        }
+        return false;
+    }
+    #endregion
+    
+    #region Preview Character
     public void GeneratePreviewCharacterInMovableRange(CharacterBase character)
     {
         List<GameNode> gameNodes = character.GetMovableNode();
@@ -195,7 +216,6 @@ public class BattleManager : Entity
             GeneratePreviewCharacter(character);
         }
     }
-
     public void GeneratePreviewCharacter(CharacterBase character)
     {
         DestroyPreviewModel();
@@ -212,7 +232,6 @@ public class BattleManager : Entity
             }
         }
     }
-
     public void DestroyPreviewModel()
     {
         if (previewCharacter != null)
@@ -221,26 +240,18 @@ public class BattleManager : Entity
             previewCharacter = null;
         }
     }
-
-    public void OnLoadNextTurn()
+    #endregion
+    
+    #region Orientation Arrow Gizmos
+    public void SetupOrientationArrow(CharacterBase character, GameNode targetNode)
     {
-        onLoadNextTurn?.Invoke();
+        Orientation orientation = character.orientation;
+        orientationArrow.ShowArrows(orientation, targetNode);
     }
-
-    public GameNode GetSelectedGameNode()
+    public void HideOrientationArrow()
     {
-        return gridCursor.currentNode;
+        orientationArrow.HideAll();
     }
-    public bool IsSelectedNodeChange()
-    {
-        if (gridCursor.currentNode != lastSelectedNode)
-        {
-            lastSelectedNode = gridCursor.currentNode;
-            return true;
-        }
-        return false;
-    }
-
     public bool IsOrientationChanged()
     {
         if (orientationArrow.currentOrientation != lastOrientation)
@@ -250,29 +261,16 @@ public class BattleManager : Entity
         }
         return false;
     }
-
     public Orientation GetSelectedOrientation()
     {
         return orientationArrow.currentOrientation;
     }
-
-    #region Visual Handle
-    public void ActivateMoveCursorAndHide(bool active, bool hide)
-    {
-        gridCursor.ActivateMoveCursor(active, hide);
-    }
-
-    public void SetupOrientationArrow(CharacterBase character, GameNode targetNode)
-    {
-        Orientation orientation = character.orientation;
-        orientationArrow.ShowArrows(orientation, targetNode);
-    }
-
-    public void HideOrientationArrow()
-    {
-        orientationArrow.HideAll();
-    }
     #endregion
+
+    public void OnLoadNextTurn()
+    {
+        onLoadNextTurn?.Invoke();
+    }
 
     public List<TeamDeployment> GetBattleTeam() => battleTeams;
     public List<CharacterBase> GetBattleUnit() => joinedBattleUnits;

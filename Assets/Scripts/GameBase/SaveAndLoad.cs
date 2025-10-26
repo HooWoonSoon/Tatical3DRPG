@@ -20,7 +20,6 @@ public static class SaveAndLoad
         world.UpdateAndReleaseMapNode(nodeDataList);
         Debug.Log("Map Loaded");
     }
-
     public static void LoadMap(World world, string mapDataPath, Action onLoad = null)
     {
         string fullPath = Path.Combine(Application.persistentDataPath, mapDataPath);

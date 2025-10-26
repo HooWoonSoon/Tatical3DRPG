@@ -49,6 +49,17 @@ public class World
             }
         }
     }
+    private void UpdateWorldSize(int x, int height, int z)
+    {
+        worldMaxX = Mathf.Max(worldMaxX, x);
+        worldMaxZ = Mathf.Max(worldMaxZ, z);
+
+        worldMinX = Mathf.Min(worldMinX, x);
+        worldMinZ = Mathf.Min(worldMinZ, z);
+
+        worldHeight = Mathf.Max(worldHeight, height);
+        //Debug.Log($"World size: {worldMaxX} {worldMaxZ}");
+    }
 
     public void GenerateNode(int x, int height, int z)
     {
@@ -80,33 +91,19 @@ public class World
         }
     }
 
-    private void UpdateWorldSize(int x, int height, int z)
-    {
-        worldMaxX = Mathf.Max(worldMaxX, x);
-        worldMaxZ = Mathf.Max(worldMaxZ, z);
-
-        worldMinX = Mathf.Min(worldMinX, x);
-        worldMinZ = Mathf.Min(worldMinZ, z);
-
-        worldHeight = Mathf.Max(worldHeight, height);
-        //Debug.Log($"World size: {worldMaxX} {worldMaxZ}");
-    }
-
     public void GetWorldPosition(Vector3 worldPosition, out int x, out int y, out int z)
     {
         x = Mathf.FloorToInt(worldPosition.x);
         y = Mathf.FloorToInt(worldPosition.y);
         z = Mathf.FloorToInt(worldPosition.z);
     }
-
     public GameNode GetNode(Vector3 position)
     {
         GameNode node;
         if (loadedNodes.TryGetValue(new Vector3Int((int)position.x, (int)position.y, (int)position.z), out node))
             return node;
         return null;
-    }
-    
+    } 
     public GameNode GetNode(int x, int y, int z)
     {
         GameNode node;
@@ -151,12 +148,10 @@ public class World
         //Debug.Log($"{localPosition} is invalid");
         return false;
     }
-
     public bool IsValidNode(int x, int y, int z)
     {
         return loadedNodes.ContainsKey(new Vector3Int(x, y, z));
     }
-
     public bool CheckSolidNode(float x, float y, float z)
     {
         int bx = Mathf.FloorToInt((x + cellSize * 0.5f) / cellSize);
@@ -183,7 +178,6 @@ public class World
         }
         return solidNodes;
     }
-
     public List<Vector3> GetAllSolidPos()
     {
         List<Vector3> solidPos = new List<Vector3>();

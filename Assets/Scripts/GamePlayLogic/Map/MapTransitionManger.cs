@@ -19,7 +19,6 @@ public class MapTransitionManger : Entity
 
     public Action<MapData> onRequireDeployment;
     private TransitionSnapShot transitionSnapShot;
-
     public static MapTransitionManger instance { get; private set; }
 
     private void Awake()
@@ -65,7 +64,7 @@ public class MapTransitionManger : Entity
         if (!mapData.requireDeployment)
         {
             deploymentNotificationPanel.SetActive(false);
-            ExecuteSwitchMapAndTeleport(mapData, teleportPos, playerCharacters);
+            ExecuteSwitchMapAndTeleport(mapData, teleportPos, playerCharacters, true);
             confirmAction?.Invoke();
         }
         if (mapData.requireDeployment)
@@ -91,18 +90,6 @@ public class MapTransitionManger : Entity
             }));
         };
     }
-
-    private void ExecuteSwitchMapAndTeleport(MapData mapData, Vector3 teleportPos, List<PlayerCharacter> playerCharacters)
-    {
-        MapManager.instance.SwitchMap(mapData);
-        GameNode targetNode = world.GetNode(teleportPos);
-        foreach (PlayerCharacter playerCharacter in playerCharacters)
-        {
-            playerCharacter.TeleportToNodeFree(targetNode);
-            playerCharacter.gameObject.SetActive(true);
-        }
-    }
-
     public void RequestReturnPreviousMap(Action confrimAction = null, Action cancelAction = null)
     {
         if (transitionSnapShot == null || transitionSnapShot.mapData == null || transitionSnapShot.lastRememberNode == null)
@@ -114,11 +101,8 @@ public class MapTransitionManger : Entity
 
         onConfrimCallback = () =>
         {
-            ExecuteSwitchMapAndTeleport(transitionSnapShot.mapData, transitionSnapShot.lastRememberNode.position, playerCharacters);
-            for (int i = 0; i < playerCharacters.Count; i++)
-            {
-                playerCharacters[i].gameObject.SetActive(true);
-            }
+            ExecuteSwitchMapAndTeleport(transitionSnapShot.mapData, 
+                transitionSnapShot.lastRememberNode.position, playerCharacters, true);
             CameraMovement.instance.ChangeFollowTarget(player.transform);
             confrimAction?.Invoke();
         };
@@ -129,20 +113,30 @@ public class MapTransitionManger : Entity
         };
     }
 
+    private void ExecuteSwitchMapAndTeleport(MapData mapData, Vector3 teleportPos, 
+        List<PlayerCharacter> playerCharacters, bool characterActive)
+    {
+        MapManager.instance.SwitchMap(mapData);
+        GameNode targetNode = world.GetNode(teleportPos);
+        foreach (PlayerCharacter playerCharacter in playerCharacters)
+        {
+            playerCharacter.TeleportToNodeFree(targetNode);
+            playerCharacter.gameObject.SetActive(characterActive);
+        }
+    }
+
     public void ClearEventCallback(Action action = null)
     {
         onConfrimCallback = null;
         onCancelCallback = null;
         action?.Invoke();
     }
-
     private void OnEnter()
     {
         onConfrimCallback?.Invoke();
         onConfrimCallback = null;
         onCancelCallback = null;
     }
-
     private void OnCancel()
     {
         onConfrimCallback = null;

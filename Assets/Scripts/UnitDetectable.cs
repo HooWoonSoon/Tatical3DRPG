@@ -45,7 +45,6 @@ public class UnitDetectable : Entity
         }
         return hits.ToArray();
     }
-
     public UnitDetectable[] OverlapMahhatassRange(int mahhatassRange)
     {
         this.mahhatassRange = mahhatassRange;
