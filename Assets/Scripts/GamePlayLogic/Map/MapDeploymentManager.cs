@@ -101,7 +101,7 @@ public class MapDeploymentManager : Entity
                 if (deployableNode != null)
                 {
                     character.gameObject.SetActive(true);
-                    character.TeleportToNodeDeployble(deploymentNode);
+                    character.TeleportToNode(deploymentNode);
                     teamCharacters.Add(character);
                 }
             }
@@ -156,7 +156,7 @@ public class MapDeploymentManager : Entity
 
         GameNode randomNode = availableNodes[UnityEngine.Random.Range(0, availableNodes.Count)];
         character.gameObject.SetActive(true);
-        character.TeleportToNodeDeployble(randomNode);
+        character.SetSelfToNode(randomNode, 0.5f);
         occupiedNodes[character] = randomNode;
 
         Debug.Log($"Deployed {character.name} at {randomNode.x},{randomNode.y},{randomNode.z}");

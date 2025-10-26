@@ -98,7 +98,7 @@ public class MapTransitionManger : Entity
         GameNode targetNode = world.GetNode(teleportPos);
         foreach (PlayerCharacter playerCharacter in playerCharacters)
         {
-            playerCharacter.TeleportToNodeFree(targetNode);
+            playerCharacter.TeleportToNode(targetNode);
         }
     }
 

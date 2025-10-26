@@ -50,8 +50,8 @@ public class PlayerTeamSystem : TeamSystem
     private void Update()
     {
         stateMachine.currentPlayerTeamState.Update();
-
-        currentLeader.MovementInput(out float inputX, out float inputZ);
+        
+        Utils.GetMovementInput(out float inputX, out float inputZ);
         currentLeader.SetVelocity(inputX, inputZ);
 
         for (int i = 0; i < linkMembers.Count; i++)

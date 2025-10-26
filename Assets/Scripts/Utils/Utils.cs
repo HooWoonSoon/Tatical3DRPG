@@ -250,6 +250,12 @@ public static class Utils
         else { return new(0, 0, 0); }
     }
 
+    public static void GetMovementInput(out float x, out float z)
+    {
+        x = Input.GetAxis("Horizontal");
+        z = Input.GetAxis("Vertical");
+    }
+
     public static Vector3Int RoundXZFloorYInt(Vector3 position)
     {
         return new Vector3Int(

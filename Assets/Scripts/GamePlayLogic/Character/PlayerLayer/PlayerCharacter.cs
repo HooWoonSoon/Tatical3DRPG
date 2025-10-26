@@ -2,6 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using Unity.VisualScripting;
 using UnityEngine.TextCore.Text;
 public class PlayerCharacter : CharacterBase
 {
@@ -19,11 +20,8 @@ public class PlayerCharacter : CharacterBase
     #region state
     public bool isLeader;
     public bool isLink;
-
+    public bool isBusy;
     public bool isMoving;
-    private bool isGrounded;
-    private bool isStepClimb;
-    private bool isDash;
     #endregion
 
     public Vector3? targetPosition = null;
@@ -32,22 +30,18 @@ public class PlayerCharacter : CharacterBase
     private Animator anim;
     private UnitDetectable unitDetectable;
 
+    public PlayerExploreState exploreState { get; private set; }
     public PlayerDeploymentState deploymentState { get; private set; }
     public PlayerBattleState battleState { get; private set; }
+
     public PlayerIdleStateExplore idleStateExplore { get; private set; }
     public PlayerMoveStateExplore moveStateExplore { get; private set; }
     public PlayerMovePathStateExplore movePathStateExplore { get; private set; }
 
     [Header("Physic")]
-    public float gravity = -9.8f;
-    public float stepHeight = 1f;
+    [SerializeField] private float gravity = -9.8f;
+    private bool isGrounded;
     private Vector3 velocity;
-
-    #region Step Climb
-    private float stepProgress;
-    private float targetStep;
-    #endregion
-
     public float xInput { get; private set; }
     public float zInput { get; private set; }
 
@@ -55,6 +49,7 @@ public class PlayerCharacter : CharacterBase
     {
         stateMechine = new PlayerStateMachine();
 
+        exploreState = new PlayerExploreState(stateMechine, this);
         deploymentState = new PlayerDeploymentState(stateMechine, this);
         battleState = new PlayerBattleState(stateMechine, this);
 
@@ -67,7 +62,7 @@ public class PlayerCharacter : CharacterBase
     {
         base.Start();
         anim = GetComponent<Animator>();
-        stateMechine.Initialize(idleStateExplore);
+        stateMechine.Initialize(exploreState);
         unitDetectable = GetComponent<UnitDetectable>();
 
         MapDeploymentManager.instance.onStartDeployment += () =>
@@ -79,10 +74,29 @@ public class PlayerCharacter : CharacterBase
     private void Update()
     {
         stateMechine.currentState.Update();
+
+        CalculateVelocity();
+
         transform.Translate(velocity, Space.World);
     }
 
-    #region History
+    private void CalculateVelocity()
+    {
+        Move(xInput, zInput);
+        StepClimb(xInput, zInput, 1f);
+        velocity += Vector3.up * gravity * Time.deltaTime;
+
+        if (velocity.z > 0 && CheckForward() || velocity.z < 0 && CheckBackward())
+            velocity.z = 0;
+        if (velocity.x > 0 && CheckRight() || velocity.x < 0 && CheckLeft())
+            velocity.x = 0;
+
+        if (velocity.y < 0)
+            velocity.y = CheckGrounded(velocity.y);
+        else if (velocity.y > 0 && CheckUp())
+            velocity.y = CheckGrounded(velocity.y);
+    }
+
     public void UpdateHistory()
     {
         recordTimer += Time.deltaTime;
@@ -93,57 +107,17 @@ public class PlayerCharacter : CharacterBase
             if (positionHistory.Count >= historyLimit)
                 positionHistory.RemoveAt(0);
 
-            positionHistory.Add(transform.position);
+            positionHistory.Add(this.transform.position);
         }
     }
     public void CleanAllHistory()
     {
         positionHistory.Clear();
     }
-    #endregion
-
     public void SetVelocity(float xInput, float zInput)
     {
         this.xInput = xInput;
         this.zInput = zInput;
-    }
-    public void MovementInput(out float x, out float z)
-    {
-        x = Input.GetAxis("Horizontal");
-        z = Input.GetAxis("Vertical");
-
-        if (Input.GetKeyDown(KeyCode.LeftShift))
-        {
-            moveSpeed = moveSpeed * 2;
-            isDash = true;
-        }
-        else if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            moveSpeed = moveSpeed / 2;
-            isDash = false;
-        }
-    }
-
-    public void CalculateVelocity()
-    {
-        if (!isStepClimb)
-        {
-            velocity += Vector3.up * gravity * Time.deltaTime;
-        
-        if (velocity.z > 0 && CheckBottomForward() || velocity.z < 0 && CheckBottomBackward())
-            velocity.z = 0;
-        if (velocity.x > 0 && CheckBottomRight() || velocity.x < 0 && CheckBottomLeft())
-            velocity.x = 0;
-        }
-
-        if (velocity.y < 0)
-        {
-            velocity.y = CheckGrounded(velocity.y);
-        }
-        else if (velocity.y > 0 || CheckUp())
-        { 
-            velocity.y = CheckGrounded(velocity.y);
-        }
     }
 
     //  Summary
@@ -174,103 +148,66 @@ public class PlayerCharacter : CharacterBase
         }
     }
 
-    public void YCoordinateAllignment()
+    private void StepClimb(float x, float z, float height)
     {
-        if (!isGrounded || isStepClimb) { return; }
-
-        float cellSize = world.cellSize;
-        float halfCell = cellSize / 2f;
-        float targetY = GetCharacterNodePosition().y + halfCell;
-        velocity.y = 0;
-        transform.position = new Vector3(transform.position.x, targetY, transform.position.z);
-    }
-
-    public void StepClimb(float x, float z, float height)
-    {
-        if (isStepClimb)
-        {
-            float stepDelta = CheckStepHeight();
-            transform.position += new Vector3(0, stepDelta, 0);
-        }
-
-        if (isStepClimb) return;
-        Vector3 direction = new Vector3(x, 0, z).normalized;
-        if (direction == Vector3.zero) { return; }
-        
         Vector3 half = unitDetectable.size * 0.5f;
         Vector3 centerPos = transform.position + unitDetectable.center;
-        //  The collision positions of the unit box
-        float bottom = centerPos.y - half.y;
-        float forward = centerPos.z + half.z;
-        float backward = centerPos.z - half.z;
-        float right = centerPos.x + half.x;
-        float left = centerPos.x - half.x;
+        Vector3 direction = new Vector3(x, 0, z).normalized;
 
-        float stepHeight = bottom + height;
-        float nodeHeightY = bottom + world.cellSize;
-        if (stepHeight < nodeHeightY) { return; }
+        if (direction == Vector3.zero) { return; }
+        
+        float checkUp = centerPos.y - half.y;
+        float checkForward = centerPos.z + half.z;
+        float checkBackward = centerPos.z - half.z;
+        float checkRight = centerPos.x + half.x;
+        float checkLeft = centerPos.x - half.x;
 
-        if (CheckUp() || CheckUpForward() || CheckUpBackward() 
-            || CheckUpRight() || CheckUpLeft()) { return; }
-
-        if (CheckBottomForward())
+        if (CheckForward())
         {
-            if (!world.CheckSolidNode(centerPos.x, nodeHeightY, forward))
+            if (!CheckUp())
             {
-                isStepClimb = true;
-                targetStep = world.cellSize;
-                stepProgress = 0;
+                if (world.CheckSolidNode(centerPos.x, checkUp, checkForward))
+                {
+                    transform.position += new Vector3(0, height, 0);
+                }
             }
         }
-        else if (CheckBottomLeft())
+        else if (CheckLeft())
         {
-            if (!world.CheckSolidNode(left, nodeHeightY, centerPos.z))
+            if (!CheckUp())
             {
-                isStepClimb = true;
-                targetStep = world.cellSize;
-                stepProgress = 0;
-            } 
-        }
-        else if (CheckBottomRight())
-        {
-            if (!world.CheckSolidNode(right, nodeHeightY, centerPos.z))
-            {
-                isStepClimb = true;
-                targetStep = world.cellSize;
-                stepProgress = 0;
+                if (world.CheckSolidNode(checkLeft, checkUp, centerPos.z))
+                {
+                    transform.position += new Vector3(0, height, 0);
+                }
             }
         }
-        else if (CheckBottomBackward())
+        else if (CheckRight())
         {
-            if (!world.CheckSolidNode(centerPos.x, nodeHeightY, backward))
+            if (!CheckUp())
             {
-                isStepClimb = true;
-                targetStep = world.cellSize;
-                stepProgress = 0;
+                if (world.CheckSolidNode(checkRight, checkUp, centerPos.z))
+                {
+                    transform.position += new Vector3(0, height, 0);
+                }
+            }
+        }
+        else if (CheckBackward())
+        {
+            if (!CheckUp())
+            {
+                if (world.CheckSolidNode(centerPos.x, checkUp, checkBackward))
+                {
+                    transform.position += new Vector3(0, height, 0);
+                }
             }
         }
     }
 
-    private float CheckStepHeight()
-    {
-        if (!isStepClimb) return 0;
-
-        float speed = targetStep * 9f * Time.deltaTime;
-        float remaining = targetStep - stepProgress;
-        float delta = Mathf.Min(speed, remaining);
-
-        stepProgress += delta;
-        if (stepProgress >= targetStep)
-        {
-            isStepClimb = false;
-        }
-        return delta;
-    }
-
+    #region Check Collision
     private float CheckGrounded(float downSpeed)
     {
-        Vector3 offset = new Vector3(0.1f, 0, 0.1f);
-        Vector3 half = unitDetectable.size * 0.5f - offset;
+        Vector3 half = unitDetectable.size * 0.5f;
         Vector3 centerPos = transform.position + unitDetectable.center;
 
         Vector3 min = centerPos - half;
@@ -293,54 +230,49 @@ public class PlayerCharacter : CharacterBase
         }
     }
 
-    #region Check Collision
-    public bool CheckBottomForward()
+    public bool CheckForward()
     {
         Vector3 half = unitDetectable.size * 0.5f;
         Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkBottom = centerPos.y - half.y;
         float checkForward = centerPos.z + half.z;
 
-        if (world.CheckSolidNode(transform.position.x, checkBottom, checkForward))
+        if (world.CheckSolidNode(transform.position.x, transform.position.y, checkForward))
             return true;
         else
             return false;
     }
 
-    public bool CheckBottomBackward()
+    public bool CheckBackward()
     {
         Vector3 half = unitDetectable.size * 0.5f;
         Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkBottom = centerPos.y - half.y;
         float checkBackward = centerPos.z - half.z;
 
-        if (world.CheckSolidNode(transform.position.x, checkBottom, checkBackward))
+        if (world.CheckSolidNode(transform.position.x, transform.position.y, checkBackward))
             return true;
         else
             return false;
     }
 
-    public bool CheckBottomRight()
+    public bool CheckRight()
     {
         Vector3 half = unitDetectable.size * 0.5f;
         Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkBottom = centerPos.y - half.y;
         float checkRight = centerPos.x + half.x;
 
-        if (world.CheckSolidNode(checkRight, checkBottom, transform.position.z))
+        if (world.CheckSolidNode(checkRight, transform.position.y, transform.position.z))
             return true;
         else
             return false;
     }
 
-    public bool CheckBottomLeft()
+    public bool CheckLeft()
     {
         Vector3 half = unitDetectable.size * 0.5f;
         Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkBottom = centerPos.y - half.y;
         float checkLeft = centerPos.x - half.x;
 
-        if (world.CheckSolidNode(checkLeft, checkBottom, transform.position.z))
+        if (world.CheckSolidNode(checkLeft, transform.position.y, transform.position.z))
             return true;
         else
             return false;
@@ -353,58 +285,6 @@ public class PlayerCharacter : CharacterBase
         float checkUp = centerPos.y + half.y;
 
         if (world.CheckSolidNode(transform.position.x, checkUp, transform.position.z))
-            return true;
-        else
-            return false;
-    }
-
-    private bool CheckUpForward()
-    {
-        Vector3 half = unitDetectable.size * 0.5f;
-        Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkUp = centerPos.y + half.y;
-        float checkForward = centerPos.z + half.z;
-
-        if (world.CheckSolidNode(transform.position.x, checkUp, checkForward))
-            return true;
-        else
-            return false;
-    }
-
-    private bool CheckUpBackward()
-    {
-        Vector3 half = unitDetectable.size * 0.5f;
-        Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkUp = centerPos.y + half.y;
-        float checkBackward = centerPos.z - half.z;
-
-        if (world.CheckSolidNode(transform.position.x, checkUp, checkBackward))
-            return true;
-        else
-            return false;
-    }
-
-    private bool CheckUpRight()
-    {
-        Vector3 half = unitDetectable.size * 0.5f;
-        Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkUp = centerPos.y + half.y;
-        float checkRight = centerPos.x + half.x;
-
-        if (world.CheckSolidNode(checkRight, checkUp, transform.position.z))
-            return true;
-        else
-            return false;
-    }
-
-    private bool CheckUpLeft()
-    {
-        Vector3 half = unitDetectable.size * 0.5f;
-        Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkUp = centerPos.y + half.y;
-        float checkLeft = centerPos.x - half.x;
-
-        if (world.CheckSolidNode(checkLeft, checkUp, transform.position.z))
             return true;
         else
             return false;
@@ -446,22 +326,12 @@ public class PlayerCharacter : CharacterBase
         onArrived?.Invoke();
     }
 
-    public override void TeleportToNodeFree(GameNode targetNode)
+    public override void TeleportToNode(GameNode targetNode)
     {
         if (targetNode != null)
         {
             SetSelfToNode(targetNode, 0.5f);
             stateMechine.ChangeState(idleStateExplore);
-        }
-    }
-
-    public override void TeleportToNodeDeployble(GameNode targetNode)
-    {
-        if (targetNode != null)
-        {
-            velocity = Vector3.zero;
-            SetSelfToNode(targetNode, 0.5f);
-            stateMechine.ChangeState(deploymentState);
         }
     }
 
@@ -477,38 +347,17 @@ public class PlayerCharacter : CharacterBase
         Vector3 half = unitDetectable.size * 0.5f;
         Vector3 centerPos = transform.position + unitDetectable.center;
 
-        Vector3 min = centerPos - half;
-        Vector3 max = centerPos + half;
-
-        Vector3 bottom1 = new Vector3(min.x, min.y, min.z);
-        Vector3 bottom2 = new Vector3(max.x, min.y, min.z);
-        Vector3 bottom3 = new Vector3(min.x, min.y, max.z);
-        Vector3 bottom4 = new Vector3(max.x, min.y, max.z);
+        Vector3 forwardPos = new Vector3(transform.position.x, transform.position.y, centerPos.z + half.z);
+        Vector3 backwardPos = new Vector3(transform.position.x, transform.position.y, centerPos.z - half.z);
+        Vector3 rightPos = new Vector3(centerPos.x + half.x, transform.position.y, transform.position.z);
+        Vector3 leftPos = new Vector3(centerPos.x - half.x, transform.position.y, transform.position.z);
+        Vector3 upPos = new Vector3(transform.position.x, centerPos.y + half.y, transform.position.z);
 
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(bottom1, 0.1f);
-        Gizmos.DrawSphere(bottom2, 0.1f);
-        Gizmos.DrawSphere(bottom3, 0.1f);
-        Gizmos.DrawSphere(bottom4, 0.1f);
-
-        Vector3 bottomForwardPos = new Vector3(transform.position.x, centerPos.y - half.y, centerPos.z + half.z);
-        Vector3 bottomBackwardPos = new Vector3(transform.position.x, centerPos.y - half.y, centerPos.z - half.z);
-        Vector3 bottomRightPos = new Vector3(centerPos.x + half.x, centerPos.y - half.y, transform.position.z);
-        Vector3 bottomLeftPos = new Vector3(centerPos.x - half.x, centerPos.y - half.y, transform.position.z);
-        Vector3 upPos = new Vector3(transform.position.x, centerPos.y + half.y, transform.position.z);
-        Vector3 upForwardPos = new Vector3(transform.position.x, centerPos.y + half.y, centerPos.z + half.z);
-        Vector3 upBackwardPos = new Vector3(transform.position.x, centerPos.y + half.y, centerPos.z - half.z);
-        Vector3 upRightPos = new Vector3(centerPos.x + half.x, centerPos.y + half.y, transform.position.z);
-        Vector3 upLeftPos = new Vector3(centerPos.x - half.x, centerPos.y + half.y, transform.position.z);
-
-        Gizmos.DrawSphere(bottomForwardPos, 0.1f);
-        Gizmos.DrawSphere(bottomBackwardPos, 0.1f);
-        Gizmos.DrawSphere(bottomRightPos, 0.1f); 
-        Gizmos.DrawSphere(bottomLeftPos, 0.1f); 
+        Gizmos.DrawSphere(forwardPos, 0.1f);
+        Gizmos.DrawSphere(backwardPos, 0.1f);
+        Gizmos.DrawSphere(rightPos, 0.1f); 
+        Gizmos.DrawSphere(leftPos, 0.1f); 
         Gizmos.DrawSphere(upPos, 0.1f);
-        Gizmos.DrawSphere(upForwardPos, 0.1f);
-        Gizmos.DrawSphere(upBackwardPos, 0.1f);
-        Gizmos.DrawSphere(upRightPos, 0.1f);
-        Gizmos.DrawSphere(upLeftPos, 0.1f);
     }
 }

@@ -19,9 +19,6 @@ public class PlayerIdleStateExplore : PlayerBaseState
     public override void Update()
     {
         base.Update();
-        character.CalculateVelocity();
-        character.YCoordinateAllignment();
-
         if (character.xInput != 0 || character.zInput != 0)
         {
             stateMachine.ChangeState(character.moveStateExplore);
