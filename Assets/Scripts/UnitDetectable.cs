@@ -79,7 +79,11 @@ public class UnitDetectable : Entity
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.green;
-        Gizmos.DrawWireCube(transform.position + center, size);
+        Matrix4x4 oldMatrix = Gizmos.matrix;
+        Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
+        Gizmos.DrawWireCube(center, size);
+        
+        Gizmos.matrix = oldMatrix;
 
         if (world != null && mahhatassRange > 0)
         {
@@ -88,7 +92,7 @@ public class UnitDetectable : Entity
             Gizmos.color = new Color(1f, 1f, 0f, 0.5f);
             for (int i = 0; i < coverage.Count; i++)
             {
-                Gizmos.DrawCube(coverage[i], Vector3.one);
+                Gizmos.DrawWireCube(coverage[i], Vector3.one);
             }
         }
     }

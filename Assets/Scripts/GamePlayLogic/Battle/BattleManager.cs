@@ -92,7 +92,7 @@ public class BattleManager : Entity
         {
             int iteration = 1;
             bool found = false;
-            Vector3Int unitPosition = character.GetCharacterNodePosition();
+            Vector3Int unitPosition = character.GetCharacterNodePos();
             while (iteration <= 16 && !found)
             {
                 List<Vector3Int> optionPos = character.GetUnlimitedMovablePos(iteration);
@@ -206,7 +206,97 @@ public class BattleManager : Entity
         return false;
     }
     #endregion
-    
+
+    #region Skill Target
+    public bool IsValidateSkillTarget(CharacterBase character,
+        SkillData currentSkill, GameNode targetNode)
+    {
+        if (targetNode == null) { return false; }
+
+        CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
+        if (targetCharacter == null) { return false; }
+
+        TeamDeployment team = character.currentTeam;
+        bool isAlly = team.teamCharacter.Contains(targetCharacter);
+
+        switch (currentSkill.targetType)
+        {
+            case SkillTargetType.Self:
+                return targetCharacter == character;
+
+            case SkillTargetType.Both:
+                return true;
+
+            case SkillTargetType.Opposite:
+                if (isAlly)
+                {
+                    Debug.Log("Invalid Target - Same team member");
+                    return false;
+                }
+                return true;
+
+            case SkillTargetType.Our:
+                if (!isAlly)
+                {
+                    Debug.Log("Invalid Target - Non team member");
+                    return false;
+                }
+                return true;
+
+            default:
+                Debug.LogWarning("Not define target");
+                return false;
+        }
+    }
+    #endregion
+
+    #region Preview Parabola
+    public void ShowProjectTileParabola(CharacterBase selfCharacter, GameNode originNode, GameNode targetNode)
+    {
+        if (targetNode == null) 
+        {
+            Debug.Log("No obtained node");
+            return; 
+        }
+        ParabolaRenderer parabola = selfCharacter.GetComponentInChildren<ParabolaRenderer>();
+        if (parabola == null) 
+        {
+            Debug.LogWarning("Missing Parabola Component in character");
+            return; 
+        }
+
+        Vector3 offset = new Vector3(0, 2f, 0);
+
+        if (originNode == null)
+            parabola.DrawProjectileVisual(selfCharacter.transform.position + offset, targetNode.GetVector());
+        else
+            parabola.DrawProjectileVisual(originNode.GetVector() + offset, targetNode.GetVector());
+    }
+    public void CloseProjectTileParabola(CharacterBase selfCharacter)
+    {
+        LineRenderer lineRenderer = selfCharacter.GetComponentInChildren<LineRenderer>();
+        lineRenderer.enabled = false;
+    }
+    #endregion
+
+    public void CastSkill(CharacterBase selfCharacter, SkillData currentSkill, GameNode originNode, GameNode targetNode)
+    {
+        if (currentSkill.isProjectile)
+        {
+            GameObject projectilePrefab = Instantiate(currentSkill.projectTilePrefab, originNode.GetVector(), Quaternion.identity);
+            Projectile projectile = projectilePrefab.GetComponent<Projectile>();
+            if (projectile != null)
+            {
+                if (originNode == null)
+                    projectile.LaunchToTarget(selfCharacter.detectable, 
+                        selfCharacter.transform.position + new Vector3(0, 2f, 0), targetNode.GetVector());
+                else
+                    projectile.LaunchToTarget(selfCharacter.detectable, 
+                        originNode.GetVector() + new Vector3(0, 2f, 0), targetNode.GetVector());
+            }
+        }
+    }
+
     #region Preview Character
     public void GeneratePreviewCharacterInMovableRange(CharacterBase character)
     {
@@ -220,7 +310,7 @@ public class BattleManager : Entity
     {
         DestroyPreviewModel();
         if (lastSelectedNode.character != null) { return; }
-        Vector3 offset = character.transform.position - character.GetCharacterNodePosition();
+        Vector3 offset = character.transform.position - character.GetCharacterNodePos();
         previewCharacter = Instantiate(character.characterModel);
         previewCharacter.transform.position = lastSelectedNode.GetVector() + offset;
         if (previewMaterial != null)

@@ -23,6 +23,7 @@ public class SkillDataEditor : Editor
         data.range = EditorGUILayout.IntField("Range", data.range);
         data.skillType = (SkillType)EditorGUILayout.EnumPopup("Skill Type", data.skillType);
         data.targetType = (SkillTargetType)EditorGUILayout.EnumPopup("Target Type", data.targetType);
+        data.skillDesignatedSelf = EditorGUILayout.Toggle("Allow Skill Designated Self", data.skillDesignatedSelf);
 
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Skill Details", EditorStyles.boldLabel);
@@ -34,10 +35,12 @@ public class SkillDataEditor : Editor
 
         if (data.skillType == SkillType.Acttack)
         {
+            DrawProjectileSection(data);
             data.damageAmount = EditorGUILayout.IntField("Damage Amount", data.damageAmount);
         }
         else if (data.skillType == SkillType.Heal)
         {
+            DrawProjectileSection(data);
             data.healAmount = EditorGUILayout.IntField("Heal Amount", data.healAmount);
         }
 
@@ -49,6 +52,20 @@ public class SkillDataEditor : Editor
         if (GUI.changed)
         {
             EditorUtility.SetDirty(data);
+        }
+    }
+
+    private void DrawProjectileSection(SkillData data)
+    {
+        if (data.targetType == SkillTargetType.Our ||
+            data.targetType == SkillTargetType.Both ||
+            data.targetType == SkillTargetType.Opposite)
+        {
+            data.isProjectile = EditorGUILayout.Toggle("Is Projectile", data.isProjectile);
+            if (data.isProjectile)
+            {
+                data.projectTilePrefab = (GameObject)EditorGUILayout.ObjectField("Projectile Prefab", data.projectTilePrefab, typeof(GameObject), false);
+            }
         }
     }
 }

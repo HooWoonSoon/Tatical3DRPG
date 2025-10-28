@@ -134,8 +134,9 @@ public class World
     }
 
     #region External
-    //  Summary
-    //      To check if the input position is valid in the world.
+    ///  <summary>
+    /// To check if the input position is valid in the world.
+    /// </summary>
     public bool IsValidWorldRange(Vector3 position)
     {
         Vector3 localPosition = GetCellOffsetPosition(position);
@@ -148,6 +149,9 @@ public class World
         //Debug.Log($"{localPosition} is invalid");
         return false;
     }
+    ///  <summary>
+    /// To check if the input x, y, z is valid in the world.
+    /// </summary>
     public bool IsValidNode(int x, int y, int z)
     {
         return loadedNodes.ContainsKey(new Vector3Int(x, y, z));
@@ -204,6 +208,9 @@ public class World
     #endregion
 
     #region Manhattan Distance Logic
+    /// <summary>
+    /// Get the Manhattan distance range walkable position in 3D space
+    /// </summary>
     public List<Vector3Int> GetManhattas3DGameNodePosition(
     Vector3Int position,
     int size,
@@ -224,6 +231,9 @@ public class World
         return coverage;
     }
 
+    /// <summary>
+    /// Get the Manhattan distance range node in 3D space
+    /// </summary>
     public List<GameNode> GetManhattas3DGameNode(
         Vector3Int unitPosition,
         int size,
@@ -243,8 +253,9 @@ public class World
         }
         return coverage;
     }
-    //  Summary
-    //      This function calculates the Manhattan distance range in 3D space
+    /// <summary>
+    /// Get the Manhattan distance range position in 3D space
+    /// </summary>
     public List<Vector3Int> GetManhattas3DRangePosition(
         Vector3Int unitPosition,
         int size,

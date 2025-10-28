@@ -51,7 +51,6 @@ public class GameNode
     {
         return new Vector3(x, y, z);
     }
-
     public Vector3Int GetVectorInt()
     {
         return new Vector3Int(x, y, z);
@@ -75,13 +74,12 @@ public class GameNode
     }
 
     public CharacterBase character;
-
     public void SetUnitGridCharacter(CharacterBase character)
     {
         this.character = character;
+        Debug.Log("Grid Character Changed");
         TriggerWorldNodeChanged(x, y, z);
     }
-    
     public CharacterBase GetUnitGridCharacter()
     {
         return character;
@@ -91,6 +89,5 @@ public class GameNode
     {
         if (onWorldNodesChange != null) onWorldNodesChange(this, new OnWorldNodesChange { x = x, y = y, z = z });
     }
-
     public Vector3 GetGameNodeVector() => new Vector3(x, y, z);
 }

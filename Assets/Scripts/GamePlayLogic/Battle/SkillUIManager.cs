@@ -56,7 +56,6 @@ public class SkillUIManager : MonoBehaviour
             leftConerImage.rectTransform.anchoredPosition = new Vector2(-218, 0);
             leftConerImage.rectTransform.sizeDelta = new Vector2(10, 90);
         }
-
         public void GenerateContent(TMP_FontAsset fontAsset, Sprite icon, string skillName)
         {
             skillImage = new GameObject("Skill Type Icon").AddComponent<Image>();
@@ -78,7 +77,6 @@ public class SkillUIManager : MonoBehaviour
             skillText.fontSize = 24;
             skillText.text = skillName;
         }
-
         public void GenerateConditionContent(int requireSP, Sprite spIcon)
         {
             conditionImage = new GameObject("Condition Image").AddComponent<Image>();
@@ -361,7 +359,6 @@ public class SkillUIManager : MonoBehaviour
 
         BuildSkillUI(spellDatas);
     }
-
     public void InitializeInventoryList(List<InventoryData> inventoryDatas)
     {
         this.inventoryDatas = inventoryDatas;
@@ -395,8 +392,6 @@ public class SkillUIManager : MonoBehaviour
             UpdateSkillDescription(0);
         }
     }
-
-
     private void BuildInventoryUI(List<InventoryData> inventoryDatas)
     {
         for (int i = 0; i < inventoryDatas.Count; i++)
@@ -423,7 +418,6 @@ public class SkillUIManager : MonoBehaviour
             UpdateInventoryDescription(0);
         }
     }
-
     #endregion
 
     private void UpdateSkillDescription(int index)
@@ -433,7 +427,6 @@ public class SkillUIManager : MonoBehaviour
         string description = skillDatas[index].description;
         descriptionTextUI.text = description;
     }
-
     private void UpdateInventoryDescription(int index)
     {
         InventoryData inventoryData = inventoryDatas[index];
@@ -464,7 +457,6 @@ public class SkillUIManager : MonoBehaviour
             contentImage.color = Color.white;
         }
     }
-
     private void FocusCurrentTypeUI(int index)
     {
         RecoveryAllTypeUI();

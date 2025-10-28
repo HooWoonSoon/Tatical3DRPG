@@ -46,7 +46,7 @@ public class MapDeploymentManager : Entity
 
             if (previewCharacter != null && gridCursor.currentNode != null)
             {
-                Vector3 offset = lasSelectedCharacter.transform.position - lasSelectedCharacter.GetCharacterNodePosition();
+                Vector3 offset = lasSelectedCharacter.transform.position - lasSelectedCharacter.GetCharacterNodePos();
                 previewCharacter.transform.position = gridCursor.currentNode.GetVector() + offset;
             }
         }
@@ -228,7 +228,7 @@ public class MapDeploymentManager : Entity
     {
         DestroyPreviewModel();
 
-        Vector3 offset = character.transform.position - character.GetCharacterNodePosition();
+        Vector3 offset = character.transform.position - character.GetCharacterNodePos();
         previewCharacter = Instantiate(character.characterModel);
         previewCharacter.transform.position = gridCursor.currentNode.GetVector() + offset;
 

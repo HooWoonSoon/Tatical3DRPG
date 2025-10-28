@@ -110,6 +110,11 @@ public class PlayerBattleState : PlayerBaseState
                 {
                     GameNode selectedNode = BattleManager.instance.GetSelectedGameNode();
                     targetNode = character.GetSkillTargetShowTilemap(confirmMoveNode, selectedNode);
+                    
+                    if (confirmMoveNode != null)
+                    {
+                        BattleManager.instance.ShowProjectTileParabola(character, confirmMoveNode, targetNode);
+                    }
                 }
                 if (Input.GetKeyDown(KeyCode.Escape))
                 {
@@ -117,13 +122,7 @@ public class PlayerBattleState : PlayerBaseState
                 }
                 else if (Input.GetKeyDown(KeyCode.Return))
                 {
-                    if (targetNode == null) { return; }
-                    if (currentSkill.targetType != SkillTargetType.None)
-                    {
-                        if (targetNode.GetUnitGridCharacter() == null) { return; }
-                        ChangePhase(BattlePhase.Move);
-                    }
-                    else
+                    if (BattleManager.instance.IsValidateSkillTarget(character, currentSkill, targetNode))
                     {
                         ChangePhase(BattlePhase.Move);
                     }
@@ -170,6 +169,7 @@ public class PlayerBattleState : PlayerBaseState
                 }
                 break;
             case BattlePhase.SkillCast:
+                BattleManager.instance.CastSkill(character, currentSkill, confirmMoveNode, targetNode);
                 if (moveTargetConfirmed)
                 {
                     endTurnConfirmed = true;
@@ -185,7 +185,7 @@ public class PlayerBattleState : PlayerBaseState
                 if (BattleManager.instance.IsOrientationChanged())
                 {
                     Orientation orientation = BattleManager.instance.GetSelectedOrientation();
-                    character.SetOrientation(orientation);
+                    character.SetTransfromOrientation(orientation);
                 }
                 else if (Input.GetKeyDown(KeyCode.Return))
                 {
@@ -211,6 +211,9 @@ public class PlayerBattleState : PlayerBaseState
         {
             case BattlePhase.SkillComand:
                 SkillUIManager.instance.onListOptionChanged -= skillChangedHandler;
+                break;
+            case BattlePhase.SkillTarget:
+                BattleManager.instance.CloseProjectTileParabola(character);
                 break;
         }
     }
@@ -243,13 +246,15 @@ public class PlayerBattleState : PlayerBaseState
                 };
 
                 SkillUIManager.instance.onListOptionChanged += skillChangedHandler;
+                //  First designate skill
+                currentSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
+
                 BattleManager.instance.SetGridCursorAt(confirmMoveNode);
                 BattleManager.instance.ActivateMoveCursorAndHide(false, false);
                 BattleUIManager.instance.ActivateActionPanel(false);
                 BattleUIManager.instance.OpenUpdateSkillUI(character);
                 BattleUIManager.instance.ActiveAllCharacterInfoTip(true);
 
-                currentSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
                 character.ShowSkillTilemap(confirmMoveNode);
                 break;
             case BattlePhase.SkillTarget:

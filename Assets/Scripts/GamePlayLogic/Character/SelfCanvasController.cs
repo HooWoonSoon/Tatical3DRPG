@@ -12,4 +12,11 @@ public class SelfCanvasController : MonoBehaviour
     {
         queueTextUI.text = number.ToString();
     }
+
+    public void SetHeathPercetange(float percentage)
+    {
+        healtUI.type = Image.Type.Filled;
+        healtUI.fillMethod = Image.FillMethod.Horizontal;
+        healtUI.fillAmount = percentage;
+    }
 }

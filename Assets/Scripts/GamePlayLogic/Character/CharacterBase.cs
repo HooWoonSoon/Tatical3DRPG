@@ -23,6 +23,7 @@ public abstract class CharacterBase : Entity
     public List<SkillData> skillData;
 
     public float moveSpeed = 5f;
+    public Vector3Int currentGridPos;
     public SkillData currentSkill { get; private set;}
     public GameNode currentSkillTargetNode { get; private set; }
     public PathRoute pathRoute { get; private set; }
@@ -38,19 +39,6 @@ public abstract class CharacterBase : Entity
     }
 
     #region Orientation
-    public void SetOrientation(Orientation orientation)
-    {
-        this.orientation = orientation;
-        switch (orientation)
-        {
-            case Orientation.left:
-                transform.localScale = new Vector3(-1, 1, 1);
-                break;
-            case Orientation.right:
-                transform.localScale = Vector3.one;
-                break;
-        }
-    }
     public void SetOrientation(Vector3 direction)
     {
         direction = Vector3Int.RoundToInt(direction);
@@ -58,18 +46,35 @@ public abstract class CharacterBase : Entity
         if (direction == new Vector3(-1, 0, 0))
         {
             orientation = Orientation.left;
+            SetTransfromOrientation(orientation);
         }
         else if (direction == new Vector3(1, 0, 0))
         {
             orientation = Orientation.right;
+            SetTransfromOrientation(orientation);
         }
         else if (direction == new Vector3(0, 0, -1))
         {
             orientation = Orientation.back;
+            SetTransfromOrientation(orientation);
         }
         else if (direction == new Vector3(0, 0, 1))
         {
             orientation = Orientation.forward;
+            SetTransfromOrientation(orientation);
+        }
+    }
+    public void SetTransfromOrientation(Orientation orientation)
+    {
+        this.orientation = orientation;
+        switch (orientation)
+        {
+            case Orientation.left:
+                transform.rotation = Quaternion.Euler(0, 180, 0);
+                break;
+            case Orientation.right:
+                transform.rotation = Quaternion.Euler(0, 0, 0);
+                break;
         }
     }
     public Vector3Int GetOrientationVector()
@@ -90,23 +95,23 @@ public abstract class CharacterBase : Entity
     }
     #endregion
 
-    public Vector3Int GetCharacterNodePosition()
+    public void SetGridPos()
+    {
+        Vector3Int nextGridPos = Utils.RoundXZFloorYInt(transform.position);
+        if (nextGridPos == currentGridPos) { return; }
+        
+        currentGridPos = nextGridPos;
+        GridCharacter.instance.SetGridCharacter(currentGridPos, this);
+    }
+    public Vector3Int GetCharacterNodePos()
     {
         return Utils.RoundXZFloorYInt(transform.position);
     }
     public GameNode GetCharacterOriginNode()
     {
-        return world.GetNode(GetCharacterNodePosition());
+        return world.GetNode(GetCharacterNodePos());
     }
 
-    public void FacingDirection(Vector3 direction)
-    {
-        if (direction.x > 0)
-            transform.localScale = Vector3.one;
-        else if (direction.x < 0)
-            transform.localScale = new Vector3(-1, 1, 1);
-    }
-   
     public void SetSelfToNode(GameNode targetNode, float offsetY = 0.5f)
     {
         Vector3 targetPos = targetNode.GetVector();
@@ -127,7 +132,7 @@ public abstract class CharacterBase : Entity
     }
     public PathRoute GetPathRoute(GameNode targetNode)
     {
-        Vector3 selfPos = GetCharacterNodePosition();
+        Vector3 selfPos = GetCharacterNodePos();
         Vector3 targetPos = targetNode.GetVector();
         List<Vector3> pathVectorList = pathFinding.GetPathRoute(selfPos, targetPos, 1, 1).pathRouteList;
         return new PathRoute
@@ -156,7 +161,6 @@ public abstract class CharacterBase : Entity
                 currentPos = pathRoute.character.transform.position;
             }
 
-            FacingDirection(direction);
             SetOrientation(direction);
             
             pathRoute.character.transform.position = Vector3.MoveTowards(currentPos, nextPathPosition, moveSpeed * Time.deltaTime);
@@ -165,7 +169,7 @@ public abstract class CharacterBase : Entity
             {
                 pathRoute.character.transform.position = nextPathPosition;
                 pathRoute.pathIndex++;
-                GridCharacter.instance.SetGridCharacter(Utils.RoundXZFloorYInt(transform.position), this);
+                SetGridPos();
                 if (pathRoute.pathIndex >= pathRoute.pathRouteList.Count)
                 {
                     //Debug.Log($"Reached target {pathRoute.targetPosition}");
@@ -238,7 +242,7 @@ public abstract class CharacterBase : Entity
     public List<Vector3Int> GetUnlimitedMovablePos(int size)
     {
         List<Vector3Int> result = new List<Vector3Int>();
-        Vector3Int selfPos = GetCharacterNodePosition();
+        Vector3Int selfPos = GetCharacterNodePos();
         List<GameNode> coverage = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, size, 1, 1);
         foreach (var node in coverage)
         {
@@ -253,7 +257,7 @@ public abstract class CharacterBase : Entity
     {
         List<GameNode> result = new List<GameNode>();
         int movableRange = data.movableRange;
-        Vector3Int selfPos = GetCharacterNodePosition();
+        Vector3Int selfPos = GetCharacterNodePos();
         List<GameNode> coverage = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, movableRange, 1, 1);
         foreach (var node in coverage)
         {
@@ -267,7 +271,7 @@ public abstract class CharacterBase : Entity
     public List<GameNode> GetConflictNode()
     {
         int selfRange = data.movableRange;
-        Vector3Int selfPos = GetCharacterNodePosition();
+        Vector3Int selfPos = GetCharacterNodePos();
         List<GameNode> selfRangeExtend = pathFinding.GetCalculateDijkstraCost(selfPos, 1, 1);
         List<GameNode> selfMovableNode = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, selfRange, 1, 1);
         HashSet<GameNode> selfMovableNodeSet = new HashSet<GameNode>(selfMovableNode);
@@ -320,7 +324,7 @@ public abstract class CharacterBase : Entity
     }
     private List<GameNode> GetSkillRangeFromNode(SkillData skill)
     {
-        return skill.GetInflueneNode(world, world.GetNode(GetCharacterNodePosition()));
+        return skill.GetInflueneNode(world, world.GetNode(GetCharacterNodePos()));
     }
     public List<CharacterBase> GetSkillAttackableCharacter(SkillData skill, GameNode gameNode)
     {
@@ -490,6 +494,12 @@ public abstract class CharacterBase : Entity
             return true;
         }
         return false;
+    }
+    public float GetCurrentHealthPercentage()
+    {
+        float maxHeath = data.healthPoint;
+        float percentage = (float)Math.Round((currentHealth / maxHeath), 2);
+        return percentage;
     }
 
     public abstract void TeleportToNodeDeployble(GameNode targetNode);

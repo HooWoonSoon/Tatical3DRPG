@@ -81,6 +81,9 @@ public class BattleUIManager : MonoBehaviour
             {
                 int queue = CTTimeline.instance.GetCharacterCurrentQueue(character);
                 selfCanvasController.SetQueue(queue);
+                float healthPercentage = character.GetCurrentHealthPercentage();
+                selfCanvasController.SetHeathPercetange(healthPercentage);
+
                 Canvas selfCanvas = selfCanvasController.selfCanvas;
                 if (selfCanvas == null)
                     Debug.LogWarning($"{character} missing Self Canvas");

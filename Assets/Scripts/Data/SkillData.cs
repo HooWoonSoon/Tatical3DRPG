@@ -2,11 +2,16 @@
 using UnityEngine;
 public enum SkillTargetType
 {
-    None, Our, Opposite, Both
+    Self, Our, Opposite, Both
 }
 public enum SkillType
 {
     Acttack, Heal
+}
+
+public enum Trajectory
+{
+    Linear, Parabola 
 }
 
 [CreateAssetMenu(fileName = "SkillData", menuName = "Tactics/Skill")]
@@ -21,6 +26,10 @@ public class SkillData : ScriptableObject
     public AbilityType type;
     public SkillType skillType;
     public SkillTargetType targetType;
+    public bool skillDesignatedSelf;
+
+    public bool isProjectile;
+    public GameObject projectTilePrefab;
 
     public Sprite spIcon;
     public int requiredSP;

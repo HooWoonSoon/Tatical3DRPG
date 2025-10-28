@@ -18,14 +18,20 @@ public class PlayerMoveStateExplore : PlayerBaseState
         base.Exit();
     }
 
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+    }
+
     public override void Update()
     {
         base.Update();
 
+        character.StepClimbUp(character.xInput, character.zInput, character.stepClimbHeight);
         character.Move(character.xInput, character.zInput);
-        character.StepClimb(character.xInput, character.zInput, character.stepHeight);
         character.CalculateVelocity();
         character.YCoordinateAllignment();
+        character.SetGridPos();
 
         if (character.xInput == 0 && character.zInput == 0)
         {

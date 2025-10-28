@@ -14,10 +14,10 @@ public class PathFinding
         this.world = world;
     }
 
-    //  Summary
-    //      Example I passing the world position to the pathfinding function,
-    //      even if I save every chunk as the local position, I may not need to convert the world position to the local position
-    //      because the pathfinding receive the world position and just check for the grid world position without interaction with the chunk
+    /// <summary>
+    /// Input the world position to the pathfinding function,
+    /// the pathfinding receive the world position and just check for the grid world position without interaction with the chunk
+    /// </summary>
     private List<GameNode> FindPath(int startWorldX, int startWorldY, int startWorldZ, int endWorldX, int endWorldY, int endWorldZ,
         int riseLimit, int lowerLimit)
     {
@@ -83,10 +83,11 @@ public class PathFinding
         return ret;
     }
 
-    //  Summary
-    //      In the distance between a and b, first of all need to finding the most shorter distance of x, y, z line
-    //      in order to calculate the distance cost, then found the most shorter distance of line.
-    //      Note that the A* algorithm triggers this function once every time the cell is moved.
+    /// <summary>
+    /// In the distance between a and b, first of all need to finding the most shorter distance of x, y, z line
+    /// in order to calculate the distance cost, then found the most shorter distance of line.
+    /// Note that the A* algorithm triggers this function once every time the cell is moved.
+    /// </summary>
     private int CalculateDistanceCost(GameNode a, GameNode b)
     {
         int xCost = Mathf.Abs(b.x - a.x);
@@ -208,10 +209,11 @@ public class PathFinding
 
     #region Dijkstra Region Search
 
-    //  Summary
-    //      Get the coverange from input position then use the dijkstra algorithm
-    //      to calculate the cost of each node check if the cost is lower than the
-    //      movable range cost then add to the result list
+    /// <summary>
+    /// Get the coverange from input position then use the dijkstra algorithm
+    /// to calculate the cost of each node check if the cost is lower than the
+    /// movable range cost then add to the result list
+    /// </summary>
     public List<Vector3Int> GetCostDijkstraCoverangePos(Vector3 start, int movableRangeCost, int riseLimit, int lowerLimit)
     {
         List<Vector3Int > result = new List<Vector3Int>();
@@ -239,10 +241,11 @@ public class PathFinding
         return result;
     }
 
-    //  Summary
-    //      Get the coverange gamenode from input position then use the dijkstra algorithm
-    //      to calculate the cost of each node till all the walkable node is calculated
-    //      or the cost is over the 200 limit
+    /// <summary>
+    /// Get the coverange gamenode from input position then use the dijkstra algorithm
+    /// to calculate the cost of each node till all the walkable node is calculated
+    /// or the cost is over the 200 limit
+    /// </summary>
     public List<GameNode> GetCalculateDijkstraCost(Vector3 start, int riseLimit, int lowerLimit)
     {
         GameNode startNode = world.GetNode(start);

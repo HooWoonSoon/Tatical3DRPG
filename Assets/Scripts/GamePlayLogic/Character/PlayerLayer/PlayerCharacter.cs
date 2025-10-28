@@ -41,8 +41,9 @@ public class PlayerCharacter : CharacterBase
     public PlayerMovePathStateExplore movePathStateExplore { get; private set; }
 
     [Header("Physic")]
-    [SerializeField] private float gravity = -9.8f;
-    public float stepHeight = 1f;
+    [SerializeField] private float gravity = -9.81f;
+    [SerializeField] private float terminateGravity = -60f;
+    public float stepClimbHeight = 1f;
     private Vector3 velocity;
     private const float DASH_MAGNIFICATION = 1.5f;
 
@@ -82,8 +83,12 @@ public class PlayerCharacter : CharacterBase
     private void Update()
     {
         stateMechine.currentState.Update();
+        transform.position += velocity * Time.deltaTime;
+    }
 
-        transform.Translate(velocity, Space.World);
+    private void FixedUpdate()
+    {
+        stateMechine.currentState.FixedUpdate();
     }
 
     #region History
@@ -128,8 +133,9 @@ public class PlayerCharacter : CharacterBase
         }
     }
 
-    //  Summary
-    //      Move the unit character with the frequence input
+    /// <summary>
+    /// Moves the unit character based on the given input frequencies.
+    /// </summary>
     public void Move(float x, float z)
     {
         if (x == 0 && z == 0)
@@ -139,15 +145,14 @@ public class PlayerCharacter : CharacterBase
         }
 
         Vector3 direction = new Vector3(x, 0, z).normalized;
-        FacingDirection(direction);
         SetOrientation(direction);
         isMoving = true;
 
         //  Check movement and return
 
-        velocity.x = direction.x * moveSpeed * Time.deltaTime;
-        velocity.z = direction.z * moveSpeed * Time.deltaTime;
-        Vector3 targetPosition = transform.position + velocity;
+        velocity.x = direction.x * moveSpeed;
+        velocity.z = direction.z * moveSpeed;
+        Vector3 targetPosition = transform.position + velocity * Time.deltaTime;
 
         if (!world.IsValidWorldRange(targetPosition))
         {
@@ -159,7 +164,10 @@ public class PlayerCharacter : CharacterBase
     {
         if (!isStepClimb)
         {
-            velocity += Vector3.up * gravity * Time.deltaTime;
+            velocity.y = velocity.y + gravity * Time.fixedDeltaTime;
+
+            if (velocity.y < terminateGravity)
+                velocity.y = terminateGravity;
 
             if (velocity.z > 0 && CheckBottomForward() || velocity.z < 0 && CheckBottomBackward())
                 velocity.z = 0;
@@ -180,7 +188,7 @@ public class PlayerCharacter : CharacterBase
         Vector3 min = centerPos - half;
         Vector3 max = centerPos + half;
 
-        float checkY = min.y + downSpeed;
+        float checkY = min.y + downSpeed * Time.fixedDeltaTime;
 
         if (world.CheckSolidNode(min.x, checkY, min.z) ||
             world.CheckSolidNode(max.x, checkY, min.z) ||
@@ -198,7 +206,7 @@ public class PlayerCharacter : CharacterBase
     }
 
     #region StepClimb
-    public void StepClimb(float x, float z, float height)
+    public void StepClimbUp(float x, float z, float height)
     {
         if (isStepClimb)
         {
@@ -267,9 +275,9 @@ public class PlayerCharacter : CharacterBase
     {
         if (!isStepClimb) return 0;
 
-        float speed = targetStep * STEP_CLIMB_SPEED * Time.deltaTime;
+        float speed = targetStep * STEP_CLIMB_SPEED;
         float remaining = targetStep - stepProgress;
-        float delta = Mathf.Min(speed, remaining);
+        float delta = Mathf.Min(speed * Time.deltaTime, remaining);
 
         stepProgress += delta;
         if (stepProgress >= targetStep)
@@ -286,7 +294,7 @@ public class PlayerCharacter : CharacterBase
 
         float cellSize = world.cellSize;
         float halfCell = cellSize / 2f;
-        float targetY = GetCharacterNodePosition().y + halfCell;
+        float targetY = GetCharacterNodePos().y + halfCell;
         velocity.y = 0;
         transform.position = new Vector3(transform.position.x, targetY, transform.position.z);
     }

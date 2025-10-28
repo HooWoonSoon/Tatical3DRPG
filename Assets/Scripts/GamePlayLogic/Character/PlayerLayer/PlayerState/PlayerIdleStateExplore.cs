@@ -16,12 +16,18 @@ public class PlayerIdleStateExplore : PlayerBaseState
         base.Exit();
     }
 
+    public override void FixedUpdate()
+    {
+        base.FixedUpdate();
+    }
+
     public override void Update()
     {
         base.Update();
 
         character.CalculateVelocity();
         character.YCoordinateAllignment();
+        character.SetGridPos();
 
         if (character.xInput != 0 || character.zInput != 0)
         {

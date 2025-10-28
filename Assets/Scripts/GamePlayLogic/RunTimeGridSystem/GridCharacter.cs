@@ -58,6 +58,12 @@ public class GridCharacter : Entity
             return;
 
         GameNode gameNode = world.GetNode(characterPos);
+        if (gameNode == null) 
+        { 
+            Debug.Log("Invalid node update"); 
+            return; 
+        }
+
         if (gameNode != null)
         {
             gameNode.SetUnitGridCharacter(character);
@@ -70,6 +76,20 @@ public class GridCharacter : Entity
             if (node != null)
             {
                 node.character = null;
+            }
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (world == null) return;
+
+        foreach (GameNode node in world.loadedNodes.Values)
+        {
+            if (node.character != null)
+            {
+                Gizmos.color = new Color(0, 0, 0, 0.5f);
+                Gizmos.DrawCube(node.GetVector() + Vector3.up, Vector3.one);
             }
         }
     }

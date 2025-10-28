@@ -258,8 +258,10 @@ public static class Utils
         z = Mathf.RoundToInt(position.z);
     }
 
-    //  Summary
-    //      Sort the followerVectorRange based on distance to unit position
+
+    /// <summary>
+    /// Sort the followerVectorRange based on distance to unit position
+    /// </summary>
     public static List<Vector3Int> SortTargetRangeByDistance(Vector3Int from, List<Vector3Int> targets)
     {
         var sorted = new List<Vector3Int>(targets);
