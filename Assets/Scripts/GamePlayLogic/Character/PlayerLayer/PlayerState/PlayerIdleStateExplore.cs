@@ -27,7 +27,6 @@ public class PlayerIdleStateExplore : PlayerBaseState
 
         character.CalculateVelocity();
         character.YCoordinateAllignment();
-        character.SetGridPos();
 
         if (character.xInput != 0 || character.zInput != 0)
         {

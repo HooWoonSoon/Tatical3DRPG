@@ -3,12 +3,24 @@ using UnityEngine;
 public class ParabolaRenderer : MonoBehaviour
 {
     public LineRenderer lineRenderer;
-    [Range(0, 90)][SerializeField] private float elevationAngle;
     public static ParabolaRenderer instance { get; private set; }
 
-    public void DrawProjectileVisual(Vector3 start, Vector3 target)
+    private void Start()
     {
+        if (lineRenderer == null) { GetComponent<LineRenderer>(); }
+    }
+
+    public void DrawProjectileVisual(Vector3 start, Vector3 target, int elevationAngle)
+    {
+        if (!CheckParabolaTarget(start, target)) 
+        {
+            ResetParabolaVisual();
+            return; 
+        }
+
         lineRenderer.enabled = true;
+
+        Debug.Log("Draw Projectile Visual");
 
         Vector3 displacementXZ = new Vector3(target.x - start.x, 0, target.z - start.z);
         float distanceXZ = displacementXZ.magnitude;
@@ -45,5 +57,20 @@ public class ParabolaRenderer : MonoBehaviour
             Vector3 nextPoint = start + forwardDir * x + Vector3.up * y;
             lineRenderer.SetPosition(i, nextPoint);
         }
+    }
+    
+    private bool CheckParabolaTarget(Vector3 start, Vector3 end)
+    {
+        if (start == end) 
+        {
+            Debug.Log("Invalid parabola, target to self");
+            return false; 
+        }
+        return true;
+    }
+    private void ResetParabolaVisual()
+    {
+        lineRenderer.positionCount = 0;
+        lineRenderer.enabled = false;
     }
 }

@@ -2,11 +2,6 @@
 using UnityEngine;
 using System.Linq;
 
-public enum TeamType
-{
-    Player, Opposite, Allay, Neutral
-}
-
 public enum UnitType
 {
     Melee, Ranged

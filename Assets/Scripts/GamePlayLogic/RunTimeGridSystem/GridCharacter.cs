@@ -69,6 +69,22 @@ public class GridCharacter : Entity
             gameNode.SetUnitGridCharacter(character);
         }
     }
+    public void SetGridCharacter(GameNode characterNode, CharacterBase character)
+    {
+        if (character == null || !character.gameObject.activeSelf)
+            return;
+
+        if (characterNode == null)
+        {
+            Debug.Log("Invalid node update");
+            return;
+        }
+
+        if (characterNode != null)
+        {
+            characterNode.SetUnitGridCharacter(character);
+        }
+    }
     private void ResetAllGridCharacter()
     {
         foreach (GameNode node in world.loadedNodes.Values)

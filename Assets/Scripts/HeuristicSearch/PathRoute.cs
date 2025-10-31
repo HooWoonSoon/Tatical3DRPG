@@ -32,6 +32,6 @@ public class PathRoute
         }
 
         string pathLog = string.Join(" -> ", pathRouteList.ConvertAll(p => p.ToString()));
-        Debug.Log($"PathRoute: {pathLog}");
+        Debug.Log($"{character} to PathTarget: {targetPosition},  PathRoute: {pathLog}");
     }
 }

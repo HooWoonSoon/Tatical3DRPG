@@ -170,15 +170,23 @@ public class World
         return false;
     }
 
-    public List<GameNode> GetAllSolidNode()
+    public List<GameNode> GetAllSolidNodeList()
     {
         List<GameNode> solidNodes = new List<GameNode>();
         foreach (var node in loadedNodes.Values)
         {
             if (node.hasCube)
-            {
                 solidNodes.Add(node);
-            }
+        }
+        return solidNodes;
+    }
+    public HashSet<GameNode> GetAllSolidNodeSet()
+    {
+        HashSet<GameNode> solidNodes = new HashSet<GameNode>();
+        foreach (var node in loadedNodes.Values)
+        {
+            if (node.hasCube)
+                solidNodes.Add(node);
         }
         return solidNodes;
     }
@@ -204,6 +212,26 @@ public class World
         }
 
         return solidPos;
+    }
+    public List<GameNode> GetAllWalkableNodeList()
+    {
+        List<GameNode> walkableNode = new List<GameNode>();
+        foreach (var node in loadedNodes.Values)
+        {
+            if (node.isWalkable)
+                walkableNode.Add(node);
+        }
+        return walkableNode;
+    }
+    public HashSet<GameNode> GetAllWalkableNodeSet()
+    {
+        HashSet<GameNode> walkableNode = new HashSet<GameNode>();
+        foreach (var node in loadedNodes.Values)
+        {
+            if (node.isWalkable)
+                walkableNode.Add(node);
+        }
+        return walkableNode;
     }
     #endregion
 

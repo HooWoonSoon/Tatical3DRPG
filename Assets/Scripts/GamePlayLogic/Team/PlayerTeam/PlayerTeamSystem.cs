@@ -50,9 +50,9 @@ public class PlayerTeamSystem : TeamSystem
     private void Update()
     {
         stateMachine.currentPlayerTeamState.Update();
-        
+
         currentLeader.MovementInput(out float inputX, out float inputZ);
-        currentLeader.SetVelocity(inputX, inputZ);
+        currentLeader.SetMoveDirection(inputX, inputZ);
 
         for (int i = 0; i < linkMembers.Count; i++)
         {
@@ -68,14 +68,23 @@ public class PlayerTeamSystem : TeamSystem
         //    stateMachine.ChangeState(teamSortPathFindingState);
         //}   
 
+        //FindMouseTargetPath(currentLeader);
+    }
+
+    /// <summary>
+    /// Process A* path finding for specific character, the destination would be the mouse target
+    /// </summary>
+    /// <param name="character"></param>
+    private void FindMouseTargetPath(CharacterBase character)
+    {
         if (Input.GetMouseButtonDown(0))
         {
             GameNode hitNode = Utils.GetRaycastHitNode(world.loadedNodes);
-            if (hitNode == null) { return;}
+            if (hitNode == null) { return; }
             Vector3Int targetPosition = hitNode.GetVectorInt();
             if (targetPosition == new Vector3Int(-1, -1, -1)) return;
 
-            currentLeader.SetAStarMovePos(targetPosition);
+            character.SetAStarMovePos(targetPosition);
         }
     }
 
@@ -223,7 +232,7 @@ public class PlayerTeamSystem : TeamSystem
         if (member.isLink == false || follower == null) return;
         GetFollowTargetDirection(member, follower, out Vector3 direciton);
 
-        member.SetVelocity(direciton.x, direciton.z);
+        member.SetMoveDirection(direciton.x, direciton.z);
     }
 
     //  Summary
@@ -356,4 +365,17 @@ public class PlayerTeamSystem : TeamSystem
         return true;
     }
     #endregion
+
+    private void OnDrawGizmos()
+    {
+        if (world == null) { return; }
+
+        GameNode hitNode = Utils.GetRaycastHitNode(world.loadedNodes);
+        if (hitNode == null) { return; }
+        Vector3Int targetPosition = hitNode.GetVectorInt();
+        if (targetPosition == new Vector3Int(-1, -1, -1)) return;
+
+        Gizmos.color = new Color(1, 0, 0, 0.5f);
+        Gizmos.DrawCube(targetPosition + new Vector3(0, 1, 0), Vector3.one);
+    }
 }

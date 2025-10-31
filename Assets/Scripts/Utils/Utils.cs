@@ -208,7 +208,7 @@ public static class Utils
         for (int i = 0; i < 2000; i++)
         {
             position += direction * 0.1f;
-            Vector3Int blockPos = Vector3Int.FloorToInt(new Vector3(position.x, position.y, position.z));
+            Vector3Int blockPos = RoundXZFloorYInt(new Vector3(position.x, position.y, position.z));
 
             if (loadedNodes.TryGetValue(blockPos, out GameNode node))
             {

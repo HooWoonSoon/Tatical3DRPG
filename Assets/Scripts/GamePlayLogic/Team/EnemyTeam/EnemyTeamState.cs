@@ -15,7 +15,7 @@ public class EnemyTeamState
     }
     public virtual void Enter()
     {
-        //Debug.Log($"Enter {StateName()}");
+        Debug.Log($"Enter {StateName()}");
     }
     public virtual void Update()
     {

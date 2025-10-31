@@ -126,11 +126,6 @@ public class PathFinding
         return path;
     }
 
-    private GameNode GetNode(int x, int y, int z)
-    {
-        return world.GetNode(x, y, z);
-    }
-
     private List<GameNode> GetNeighbourList(GameNode currentNode, int riseLimit, int lowerLimit)
     {
         List<GameNode> neighbourList = new List<GameNode>();
@@ -183,7 +178,7 @@ public class PathFinding
     }
 
     public void SetProcessPath(Vector3 currentPosition, Vector3 targetPosition, int riseLimit, int lowerLimit)
-    {
+    {   
         float startTime = Time.realtimeSinceStartup;
 
         world.GetWorldPosition(targetPosition, out int endX, out int endY, out int endZ);
@@ -192,6 +187,7 @@ public class PathFinding
         if (!world.IsValidNode(startX, startY, startZ) || !world.IsValidNode(endX, endY, endZ))
         {
             Debug.Log("Invalid node position");
+            processedPath = null;
             return;
         }
 
@@ -200,10 +196,12 @@ public class PathFinding
         float endTime = Time.realtimeSinceStartup;
         //Debug.Log($"Set process path completed in {endTime - startTime:F4} seconds");
     }
-
     public PathRoute GetPathRoute(Vector3 start, Vector3 end, int riseLimit, int lowerLimit)
     {
         SetProcessPath(start, end, riseLimit, lowerLimit);
+        if (processedPath.Count == 0) { Debug.Log("No path"); return null; }
+        string pathLog = string.Join(" -> ", processedPath.ConvertAll(p => p.GetVector().ToString()));
+        Debug.Log(pathLog);
         return new PathRoute(processedPath, start);
     }
 

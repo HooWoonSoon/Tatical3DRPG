@@ -77,7 +77,7 @@ public class MapDeploymentUIManager : Entity
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            MapTransitionManger.instance.ClearEventCallback(() =>
+            MapTransitionManager.instance.ClearEventCallback(() =>
             {
                 leaveBattlefieldNotifactionPanel.SetActive(false);
             });
@@ -122,12 +122,13 @@ public class MapDeploymentUIManager : Entity
         {
             leaveBattlefieldNotifactionPanel.SetActive(true);
 
-            MapTransitionManger.instance.RequestReturnPreviousMap(() =>
+            MapTransitionManager.instance.RequestReturnPreviousMap(() =>
             {
                 ResetModified();
                 CloseBattleUI();
                 leaveBattlefieldNotifactionPanel.SetActive(false);
                 characterDeploymentPanel.SetActive(false);
+                BattleManager.instance.EndBattle();
             }, () =>
             {
                 leaveBattlefieldNotifactionPanel.SetActive(false);
@@ -263,6 +264,10 @@ public class MapDeploymentUIManager : Entity
     #endregion
 
     #region External Methods
+    /// <summary>
+    /// Record character into the deployment UI system
+    /// </summary>
+    /// <param name="characters"></param>
     public void InsertCharactersInMap(List<CharacterBase> characters)
     {
         for (int i = 0; i < characters.Count; i++)

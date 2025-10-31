@@ -33,7 +33,6 @@ public class MapDeploymentManager : Entity
     protected override void Start()
     {
         base.Start();
-        MapTransitionManger.instance.onRequireDeployment += StartDeployment;
     }
 
     private void Update()
@@ -46,7 +45,7 @@ public class MapDeploymentManager : Entity
 
             if (previewCharacter != null && gridCursor.currentNode != null)
             {
-                Vector3 offset = lasSelectedCharacter.transform.position - lasSelectedCharacter.GetCharacterNodePos();
+                Vector3 offset = lasSelectedCharacter.transform.position - lasSelectedCharacter.GetCharacterTranformToNodePos();
                 previewCharacter.transform.position = gridCursor.currentNode.GetVector() + offset;
             }
         }
@@ -84,30 +83,6 @@ public class MapDeploymentManager : Entity
         CasualPutGridCursorAtLoadedMap();
 
         onStartDeployment?.Invoke();
-
-        if (mapData.presetTeams == null || mapData.presetTeams.Length == 0) { return; }
-
-        PresetTeam[] presetTeams = mapData.presetTeams;
-
-        for (int i = 0; i < presetTeams.Length; i++)
-        {
-            PresetUnit[] presetUnits = presetTeams[i].presetUnits;
-            List<CharacterBase> teamCharacters = new List<CharacterBase>();
-
-            for (int j = 0; j < presetUnits.Length; j++)
-            {
-                CharacterBase character = presetUnits[j].character;
-                GameNode deploymentNode = world.GetNode(presetUnits[j].deployPos);
-                if (deployableNode != null)
-                {
-                    character.gameObject.SetActive(true);
-                    character.TeleportToNodeDeployble(deploymentNode);
-                    teamCharacters.Add(character);
-                }
-            }
-            MapDeploymentUIManager.instance.InsertCharactersInMap(teamCharacters);
-            TeamManager.instance.GenerateTeam(teamCharacters, presetTeams[i].teamType);
-        }
     }
 
     //  Summary
@@ -228,7 +203,7 @@ public class MapDeploymentManager : Entity
     {
         DestroyPreviewModel();
 
-        Vector3 offset = character.transform.position - character.GetCharacterNodePos();
+        Vector3 offset = character.transform.position - character.GetCharacterTranformToNodePos();
         previewCharacter = Instantiate(character.characterModel);
         previewCharacter.transform.position = gridCursor.currentNode.GetVector() + offset;
 

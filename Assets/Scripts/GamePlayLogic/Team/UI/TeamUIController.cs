@@ -46,11 +46,6 @@ public class TeamUIController : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        uILinkTooltip.gameObject.SetActive(false);
-    }
-
     private void Update()
     {
         //  Summary

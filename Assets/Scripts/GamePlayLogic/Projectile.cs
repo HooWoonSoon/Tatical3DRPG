@@ -2,13 +2,15 @@
 
 public class Projectile : Entity
 {
+    private CharacterBase shooter;
+    private SkillData skillData;
+
     private UnitDetectable unitDetectable;
-    private UnitDetectable exludeHitDetectable;
+    private UnitDetectable excludeHitDetectable;
 
     [Header("Physic")]
     public float gravity = -9.81f;
     [SerializeField] private float terminateGravity = -60f;
-    [Range(0, 90)][SerializeField] private float elevationAngle = 60; //  Debug
     private Vector3 velocity;
 
     protected override void Start()
@@ -20,9 +22,7 @@ public class Projectile : Entity
     {
         CalculateVelocity();
         transform.position += velocity * Time.deltaTime;
-
-        float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+        transform.rotation = Quaternion.LookRotation(velocity);
 
         OnHit();
     }
@@ -32,22 +32,31 @@ public class Projectile : Entity
         UnitDetectable[] unitDetectables = unitDetectable.OverlapSelfRange();
         foreach (var unitDetectable in unitDetectables)
         {
-            if (unitDetectable == exludeHitDetectable) { continue; }
+            if (unitDetectable == excludeHitDetectable) { continue; }
 
             if (unitDetectable != null)
             {
                 Debug.Log($"Hit {unitDetectable.name}");
+                DoDamage(unitDetectable);
                 Destroy(gameObject);
                 return;
             }
         }
+    }
+
+    private void DoDamage(UnitDetectable target)
+    {
+        CharacterBase targetCharacter = target.GetComponent<CharacterBase>();
+        if (targetCharacter == null) { return; }
+        int damage = skillData.damageAmount;
+        targetCharacter.TakeDamage(damage);
     }
     
     public void Launch(Vector3 direction, float speed)
     {
         velocity = direction.normalized * speed;
     }
-    public void LaunchToTarget(Vector3 start, Vector3 end)
+    public void LaunchToTarget(Vector3 start, Vector3 end, int elevationAngle)
     {
         Vector3 displacementXZ = new Vector3(end.x - start.x, 0, end.z - start.z);
         float distanceXZ = displacementXZ.magnitude;
@@ -73,10 +82,14 @@ public class Projectile : Entity
         transform.position = start;
         Launch(Quaternion.Euler(0, rotationY, 0) * Quaternion.Euler(-elevationAngle, 0, 0) * Vector3.forward, velocity);
     }
-    public void LaunchToTarget(UnitDetectable exludeHitDetectable, Vector3 start, Vector3 end)
+    public void LaunchToTarget(CharacterBase shooter, SkillData skillData,
+        Vector3 start, Vector3 end)
     {
-        this.exludeHitDetectable = exludeHitDetectable;
-        LaunchToTarget(start, end);
+        this.shooter = shooter;
+        this.skillData = skillData;
+        excludeHitDetectable = shooter.detectable;
+        int angle = skillData.initialElevationAngle;
+        LaunchToTarget(start, end, angle);
     }
 
     private float CheckGrounded(float downSpeed)

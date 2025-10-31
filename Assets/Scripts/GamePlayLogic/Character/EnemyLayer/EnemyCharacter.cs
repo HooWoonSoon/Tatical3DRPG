@@ -1,10 +1,9 @@
-﻿using UnityEngine.TextCore.Text;
+﻿using UnityEngine;
 
 public class EnemyCharacter : CharacterBase
 {
     public EnemyStateMachine stateMechine;
 
-    public EnemyExploreState exploreState { get; private set; }
     public EnemyDeploymentState deploymentState { get; private set; }
     public EnemyBattleState battleState { get; private set; }
     public EnemyIdleStateExplore idleStateExplore { get; private set; }
@@ -13,7 +12,6 @@ public class EnemyCharacter : CharacterBase
     {
         stateMechine = new EnemyStateMachine();
 
-        exploreState = new EnemyExploreState(stateMechine, this);
         battleState = new EnemyBattleState(stateMechine, this);
         deploymentState = new EnemyDeploymentState(stateMechine, this);
 
@@ -22,18 +20,27 @@ public class EnemyCharacter : CharacterBase
     protected override void Start()
     {
         base.Start();
-        stateMechine.Initialize(exploreState);
+        stateMechine.Initialize(idleStateExplore);
 
         MapDeploymentManager.instance.onStartDeployment += () =>
         {
             stateMechine.ChangeState(deploymentState);
         };
     }
-    private void Update()
+    protected override void Update()
     {
+        base.Update();
         stateMechine.currentState.Update();
     }
 
+    public override void SetAStarMovePos(Vector3 targetPosition)
+    {
+        throw new System.NotImplementedException();
+    }
+    public override void SetAStarMovePos(Vector3Int targetPosition)
+    {
+        throw new System.NotImplementedException();
+    }
     public override void TeleportToNodeDeployble(GameNode targetNode)
     {
         if (targetNode != null)

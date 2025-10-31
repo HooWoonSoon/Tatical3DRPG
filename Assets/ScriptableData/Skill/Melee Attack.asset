@@ -21,10 +21,11 @@ MonoBehaviour:
   skillType: 0
   targetType: 2
   skillDesignatedSelf: 0
-  isProjectTile: 0
+  isProjectile: 0
   projectTilePrefab: {fileID: 0}
+  initialElevationAngle: 0
   spIcon: {fileID: 0}
   requiredSP: 0
-  damageAmount: 10
+  damageAmount: 15
   healAmount: 0
   skillCastTime: 1

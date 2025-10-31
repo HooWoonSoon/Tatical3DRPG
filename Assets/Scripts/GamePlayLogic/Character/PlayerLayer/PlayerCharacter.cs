@@ -24,7 +24,6 @@ public class PlayerCharacter : CharacterBase
     public bool isMoving;
     private bool isGrounded;
     private bool isStepClimb;
-    private bool isDash;
     #endregion
 
     public Vector3? targetPosition = null;
@@ -80,8 +79,9 @@ public class PlayerCharacter : CharacterBase
         };
     }
 
-    private void Update()
+    protected override void Update()
     {
+        base.Update();
         stateMechine.currentState.Update();
         transform.position += velocity * Time.deltaTime;
     }
@@ -111,7 +111,7 @@ public class PlayerCharacter : CharacterBase
     }
     #endregion
 
-    public void SetVelocity(float xInput, float zInput)
+    public void SetMoveDirection(float xInput, float zInput)
     {
         this.xInput = xInput;
         this.zInput = zInput;
@@ -124,12 +124,10 @@ public class PlayerCharacter : CharacterBase
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
             moveSpeed = moveSpeed * DASH_MAGNIFICATION;
-            isDash = true;
         }
         else if (Input.GetKeyUp(KeyCode.LeftShift))
         {
             moveSpeed = moveSpeed / DASH_MAGNIFICATION;
-            isDash = false;
         }
     }
 
@@ -294,7 +292,7 @@ public class PlayerCharacter : CharacterBase
 
         float cellSize = world.cellSize;
         float halfCell = cellSize / 2f;
-        float targetY = GetCharacterNodePos().y + halfCell;
+        float targetY = GetCharacterTranformToNodePos().y + halfCell;
         velocity.y = 0;
         transform.position = new Vector3(transform.position.x, targetY, transform.position.z);
     }
@@ -410,14 +408,15 @@ public class PlayerCharacter : CharacterBase
     #endregion
 
     #region A * Target
-    public void SetAStarMovePos(Vector3 targetPosition)
+    public override void SetAStarMovePos(Vector3 targetPosition)
     {
         Vector3Int targetPos = Utils.RoundXZFloorYInt(targetPosition);
         SetAStarMovePos(targetPos);
     }
-    public void SetAStarMovePos(Vector3Int targetPosition)
+    public override void SetAStarMovePos(Vector3Int targetPosition)
     {
-        List<Vector3> pathVectorList = pathFinding.GetPathRoute(transform.position, targetPosition, 1, 1).pathRouteList;
+        Vector3Int startPosition = currentNode.GetVectorInt();
+        List<Vector3> pathVectorList = pathFinding.GetPathRoute(startPosition, targetPosition, 1, 1).pathRouteList;
         if (pathVectorList.Count != 0)
         {
             PathRoute pathRoute = new PathRoute
@@ -428,6 +427,7 @@ public class PlayerCharacter : CharacterBase
                 pathIndex = 0
             };
             SetPathRoute(pathRoute);
+            velocity = Vector3.zero;
             stateMechine.ChangeState(movePathStateExplore);
         }
     }
@@ -465,6 +465,7 @@ public class PlayerCharacter : CharacterBase
 
     public override void ReadyBattle()
     {
+        velocity = Vector3.zero;
         stateMechine.ChangeState(battleState);
     }
 

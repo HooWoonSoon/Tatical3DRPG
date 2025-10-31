@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Melee Magic Attack
   m_EditorClassIdentifier: 
   skillName: Melee Magic Attack
-  skillIcon: {fileID: 21300000, guid: 49c9206e2a50e8944a4b8e5608ab5a9d, type: 3}
+  skillIcon: {fileID: 21300000, guid: 085d528972ae104429c63fcb59a38846, type: 3}
   range: 2
   aoeRadius: 1
   description: Consumes a portion of SP to deal magic damage to enemy within 2-tile
@@ -21,8 +21,12 @@ MonoBehaviour:
   type: 1
   skillType: 0
   targetType: 2
+  skillDesignatedSelf: 0
+  isProjectile: 0
+  projectTilePrefab: {fileID: 0}
+  initialElevationAngle: 0
   spIcon: {fileID: 0}
   requiredSP: 10
-  damageAmount: 15
+  damageAmount: 20
   healAmount: 0
   skillCastTime: 1

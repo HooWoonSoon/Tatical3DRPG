@@ -1,10 +1,17 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
+public enum TeamType
+{
+    Player, Opposite, Allay, Neutral
+}
+
+
 public class TeamDeployment : MonoBehaviour
 {
     public List<CharacterBase> teamCharacter = new List<CharacterBase>();
     public List<InventoryData> inventoryDatas = new List<InventoryData>();
+    public TeamType teamType;
 
     private void Start()
     {

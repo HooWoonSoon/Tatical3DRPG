@@ -65,6 +65,7 @@ public class SkillDataEditor : Editor
             if (data.isProjectile)
             {
                 data.projectTilePrefab = (GameObject)EditorGUILayout.ObjectField("Projectile Prefab", data.projectTilePrefab, typeof(GameObject), false);
+                data.initialElevationAngle = EditorGUILayout.IntSlider("Initial Elevation Angle", data.initialElevationAngle, 0, 90);
             }
         }
     }

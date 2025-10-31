@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(UnitDetectable))]
 public class MapSwitchTrigger : Entity
@@ -10,16 +10,23 @@ public class MapSwitchTrigger : Entity
     public Transform teleportPoint;
     public Transform returnPoint;
     private UnitDetectable selfDetectable;
+    private HashSet<UnitDetectable> previousDetected = new HashSet<UnitDetectable>();
 
     public static MapSwitchTrigger currentTrigger;
 
     public void Update()
     {
-        if (currentTrigger != null) { return; }
-
         UnitDetectable selfDetectable = GetComponentInChildren<UnitDetectable>();
         UnitDetectable[] unitDetectables = selfDetectable.OverlapSelfRange();
-        
+
+        bool leaderLeft = CheckPlayerLeaderExit(unitDetectables);
+        if (leaderLeft)
+        {
+            MapTransitionManager.instance.CancelMapTransition(() => currentTrigger = null);
+        }
+
+        if (currentTrigger != null) { return; }
+
         foreach (UnitDetectable detectable in unitDetectables)
         {
             PlayerCharacter playerCharacter = detectable.GetComponent<PlayerCharacter>();
@@ -29,26 +36,35 @@ public class MapSwitchTrigger : Entity
                 if (teleportPoint != null)
                 {
                     currentTrigger = this;
-                    MapTransitionManger.instance.SaveSnapShot(MapManager.instance.currentActivatedMap, returnPoint, playerCharacter);
-                    MapTransitionManger.instance.RequestMapTransition(switchMapID, 
+                    MapTransitionManager.instance.SaveSnapShot(MapManager.instance.currentActivatedMap, returnPoint, playerCharacter);
+                    MapTransitionManager.instance.RequestMapTransition(switchMapID,
                         teleportPoint.position, returnPoint.position, playerCharacter,
                         () => { currentTrigger = null; },
-                        () => { currentTrigger = null;});
+                        () => { currentTrigger = null; });
                 }
                 return;
             }
         }
     }
 
-    private IEnumerator DelayTrigger(float time, Action action = null)
+    private bool CheckPlayerLeaderExit(UnitDetectable[] unitDetectables)
     {
-        float timer = time;
-        while (timer > 0)
+        HashSet<UnitDetectable> currentDetected = new HashSet<UnitDetectable>(unitDetectables);
+
+        foreach (UnitDetectable unit in previousDetected)
         {
-            timer -= Time.deltaTime;
-            yield return null;
+            if (!currentDetected.Contains(unit))
+            {
+                PlayerCharacter character = unit.GetComponent<PlayerCharacter>();
+                if (character != null && character.isLeader)
+                {
+                    Debug.Log("Leader left range");
+                    return true;
+                }
+            }
         }
-        action?.Invoke();
+        previousDetected = currentDetected;
+        return false;
     }
 
     private void OnDrawGizmos()

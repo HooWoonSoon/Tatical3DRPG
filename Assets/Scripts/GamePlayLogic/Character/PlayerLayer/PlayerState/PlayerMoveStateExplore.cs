@@ -31,7 +31,6 @@ public class PlayerMoveStateExplore : PlayerBaseState
         character.Move(character.xInput, character.zInput);
         character.CalculateVelocity();
         character.YCoordinateAllignment();
-        character.SetGridPos();
 
         if (character.xInput == 0 && character.zInput == 0)
         {

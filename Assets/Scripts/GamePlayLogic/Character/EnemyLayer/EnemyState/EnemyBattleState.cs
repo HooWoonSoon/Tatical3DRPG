@@ -100,7 +100,7 @@ public class EnemyBattleState : EnemyBaseState
             case BattlePhase.Thinking:
                 CameraMovement.instance.ChangeFollowTarget(character.transform);
                 float startTime = Time.realtimeSinceStartup;
-                DecisionMaker decisionMaker = new DecisionMaker(character);
+                DecisionSystem decisionMaker = new DecisionSystem(character);
                 decisionMaker.GetResult(out SkillData skill, out GameNode movaToNode, out GameNode skillTargetNode);
                 Debug.Log($"Decision Time: {Time.realtimeSinceStartup - startTime}");
                 confrimMoveNode = movaToNode;

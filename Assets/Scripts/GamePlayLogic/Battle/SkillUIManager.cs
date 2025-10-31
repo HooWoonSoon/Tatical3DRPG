@@ -510,6 +510,8 @@ public class SkillUIManager : MonoBehaviour
 
         if (index < 0 || index >= uIImages.Count) { return; }
 
+        StopAllCoroutines();
+
         RectTransform imageRect = uIImages[index].leftConerImage.rectTransform;
         StartCoroutine(Utils.UIExtraMoveCoroutine(imageRect, new Vector2(5, 0), 0.2f));
         StartCoroutine(Utils.UIExtraScaleCoroutine(imageRect, new Vector2(10, 0), 0.2f));

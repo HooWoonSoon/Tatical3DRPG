@@ -5,6 +5,7 @@ public class UnitDetectable : Entity
 {
     public Vector3 center;
     public Vector3 size;
+
     [SerializeField] private int mahhatassRange;
 
     public static List<UnitDetectable> all = new List<UnitDetectable>();
@@ -45,6 +46,12 @@ public class UnitDetectable : Entity
         }
         return hits.ToArray();
     }
+
+    /// <summary>
+    /// Start from the unit center extend with 3D mahhatass range to obtain other unit detectable
+    /// </summary>
+    /// <param name="mahhatassRange"></param>
+    /// <returns></returns>
     public UnitDetectable[] OverlapMahhatassRange(int mahhatassRange)
     {
         this.mahhatassRange = mahhatassRange;

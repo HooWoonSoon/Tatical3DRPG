@@ -80,8 +80,12 @@ public class BattleManager : Entity
 
         for (int i = 0; i < joinedBattleUnits.Count; i++)
         {
-            joinedBattleUnits[i].SetPathRoute(pathRoutes[i]);
             joinedBattleUnits[i].ReadyBattle();
+        }
+        for (int i = 0; i < pathRoutes.Count; i++)
+        {
+            pathRoutes[i].character.SetPathRoute(pathRoutes[i]);
+            Debug.Log($"{pathRoutes[i].character} to target {pathRoutes[i].targetPosition}");
         }
     }
     private List<PathRoute> GetBattleUnitRefinePath()
@@ -95,34 +99,37 @@ public class BattleManager : Entity
             Vector3Int unitPosition = character.GetCharacterNodePos();
             while (iteration <= 16 && !found)
             {
-                List<Vector3Int> optionPos = character.GetUnlimitedMovablePos(iteration);
+                List<Vector3Int> optionPos = character.GetUnlimitedMovablePos(iteration, occupiedPos);
                 List<Vector3Int> sortPos = Utils.SortTargetRangeByDistance(unitPosition, optionPos);
+
                 for (int i = 0; i < sortPos.Count; i++)
                 {
-                    if (!occupiedPos.Contains(sortPos[i]))
+                    Vector3Int target = sortPos[i];
+                    if (occupiedPos.Contains(target)) { continue; }
+
+                    PathRoute route = pathFinding.GetPathRoute(unitPosition, target, 1, 1);
+                    if (route == null || route.pathRouteList == null || route.pathRouteList.Count == 0)
+                        continue;
+
+                    pathRoutes.Add(new PathRoute
                     {
-                        List<Vector3> pathVectorList = (pathFinding.GetPathRoute(unitPosition, sortPos[i], 1, 1).pathRouteList);
-                        if (pathVectorList.Count != 0)
-                        {
-                            pathRoutes.Add(new PathRoute
-                            {
-                                character = character,
-                                targetPosition = sortPos[i],
-                                pathRouteList = pathVectorList,
-                                pathIndex = 0
-                            });
-                            occupiedPos.Add(sortPos[i]);
-                            found = true;
-                            break;
-                        }
-                    }
+                        character = character,
+                        targetPosition = sortPos[i],
+                        pathRouteList = new List<Vector3>(route.pathRouteList),
+                        pathIndex = 0
+                    });
+                    occupiedPos.Add(sortPos[i]);
+                    found = true;
+                    //Debug.Log($"Adding PathRoute for {character.name} to {sortPos[i]}, route count {route.pathRouteList.Count}");
+
+                    break;
                 }
                 iteration++;
             }
 
             if (!found)
             {
-                Debug.LogError($"{character.name} Not Found Path");
+                Debug.LogError($"{character.name} Not Found Path, Origin Position {unitPosition}");
                 return null;
             }
         }
@@ -182,6 +189,13 @@ public class BattleManager : Entity
         action?.Invoke();
     }
     #endregion
+
+    public void EndBattle()
+    {
+        isBattleStarted = false;
+        battleTeams.Clear();
+        joinedBattleUnits.Clear();
+    }
 
     #region Cursor Gizmos
     public void ActivateMoveCursorAndHide(bool active, bool hide)
@@ -251,31 +265,81 @@ public class BattleManager : Entity
     #endregion
 
     #region Preview Parabola
-    public void ShowProjectTileParabola(CharacterBase selfCharacter, GameNode originNode, GameNode targetNode)
+    public void ShowProjectileParabola(CharacterBase selfCharacter,
+        GameNode originNode, GameNode targetNode,
+        bool checkInRange = false, bool forceOffset = false)
     {
-        if (targetNode == null) 
+        if (targetNode == null)
         {
             Debug.Log("No obtained node");
-            return; 
+            return;
         }
+
         ParabolaRenderer parabola = selfCharacter.GetComponentInChildren<ParabolaRenderer>();
-        if (parabola == null) 
+        if (parabola == null)
         {
             Debug.LogWarning("Missing Parabola Component in character");
-            return; 
+            return;
         }
 
-        Vector3 offset = new Vector3(0, 2f, 0);
-
         if (originNode == null)
-            parabola.DrawProjectileVisual(selfCharacter.transform.position + offset, targetNode.GetVector());
-        else
-            parabola.DrawProjectileVisual(originNode.GetVector() + offset, targetNode.GetVector());
+            originNode = selfCharacter.GetCharacterOriginNode();
+
+        Vector3 offset = new Vector3(0, 1f, 0);
+        Vector3 originPos = originNode.GetVector();
+        Vector3 targetPos = targetNode.GetVector();
+
+        CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
+        if (targetCharacter != null)
+            targetPos = targetCharacter.transform.position + offset;
+        else if (forceOffset)
+            targetPos += offset;
+
+        if (originPos == targetPos)
+        {
+            Debug.Log("Invalid parabola, target to self");
+            CloseProjectileParabola(selfCharacter);
+            return;
+        }
+
+        foreach (SkillData skill in selfCharacter.skillData)
+        {
+            if (!skill.isProjectile)
+                continue;
+
+            if (checkInRange)
+            {
+                List<GameNode> influenceNodes = skill.GetInflueneNode(world, originNode);
+                if (!influenceNodes.Contains(targetNode))
+                    continue;
+            }
+
+            parabola.DrawProjectileVisual(originPos + offset, targetPos, skill.initialElevationAngle);
+            return;
+        }
     }
-    public void CloseProjectTileParabola(CharacterBase selfCharacter)
+
+    public void CloseAllProjectileParabola()
     {
-        LineRenderer lineRenderer = selfCharacter.GetComponentInChildren<LineRenderer>();
-        lineRenderer.enabled = false;
+        for (int i = 0; i < joinedBattleUnits.Count; i++)
+            CloseProjectileParabola(joinedBattleUnits[i]);
+    }
+    public void CloseProjectileParabola(CharacterBase character)
+    {
+        LineRenderer lineRenderer = character.GetComponentInChildren<LineRenderer>();
+        if (lineRenderer == null) { return; }
+        lineRenderer.positionCount = 0;
+    }
+    public void ShowOppositeTeamParabola(CharacterBase targetCharacter, GameNode targetNode)
+    {
+        List<CharacterBase> oppositeUnit = GetCharacterOpposites(targetCharacter);
+        for (int i = 0; i < oppositeUnit.Count; i++)
+        {
+            GameNode originNode = oppositeUnit[i].GetCharacterOriginNode();
+            if (targetNode == null)
+                targetNode = targetCharacter.GetCharacterOriginNode();
+            ShowProjectileParabola(oppositeUnit[i], originNode, targetNode, true, true);
+        }
     }
     #endregion
 
@@ -285,14 +349,21 @@ public class BattleManager : Entity
         {
             GameObject projectilePrefab = Instantiate(currentSkill.projectTilePrefab, originNode.GetVector(), Quaternion.identity);
             Projectile projectile = projectilePrefab.GetComponent<Projectile>();
+
+            Vector3 offset = new Vector3(0, 2f, 0);
+            Vector3 targetPos = targetNode.GetVector();
+            CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
+            if (targetCharacter != null)
+                targetPos = targetCharacter.transform.position + offset;
+
             if (projectile != null)
             {
                 if (originNode == null)
-                    projectile.LaunchToTarget(selfCharacter.detectable, 
-                        selfCharacter.transform.position + new Vector3(0, 2f, 0), targetNode.GetVector());
+                    projectile.LaunchToTarget(selfCharacter, currentSkill, 
+                        selfCharacter.transform.position + offset, targetPos);
                 else
-                    projectile.LaunchToTarget(selfCharacter.detectable, 
-                        originNode.GetVector() + new Vector3(0, 2f, 0), targetNode.GetVector());
+                    projectile.LaunchToTarget(selfCharacter, currentSkill,
+                        originNode.GetVector() + offset, targetPos);
             }
         }
     }
@@ -310,7 +381,7 @@ public class BattleManager : Entity
     {
         DestroyPreviewModel();
         if (lastSelectedNode.character != null) { return; }
-        Vector3 offset = character.transform.position - character.GetCharacterNodePos();
+        Vector3 offset = character.transform.position - character.GetCharacterTranformToNodePos();
         previewCharacter = Instantiate(character.characterModel);
         previewCharacter.transform.position = lastSelectedNode.GetVector() + offset;
         if (previewMaterial != null)
@@ -362,6 +433,19 @@ public class BattleManager : Entity
         onLoadNextTurn?.Invoke();
     }
 
+    public List<CharacterBase> GetCharacterOpposites(CharacterBase allyCharacter)
+    {
+        List<CharacterBase> oppositeUnit = new List<CharacterBase>();
+        foreach (TeamDeployment team in battleTeams)
+        {
+            if (allyCharacter.currentTeam == team) { continue; }
+            foreach (CharacterBase opposite in team.teamCharacter)
+            {
+                oppositeUnit.Add(opposite);
+            }
+        }
+        return oppositeUnit;
+    }
     public List<TeamDeployment> GetBattleTeam() => battleTeams;
     public List<CharacterBase> GetBattleUnit() => joinedBattleUnits;
 

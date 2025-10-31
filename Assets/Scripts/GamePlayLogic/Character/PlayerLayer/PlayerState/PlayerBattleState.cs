@@ -113,7 +113,7 @@ public class PlayerBattleState : PlayerBaseState
                     
                     if (confirmMoveNode != null)
                     {
-                        BattleManager.instance.ShowProjectTileParabola(character, confirmMoveNode, targetNode);
+                        BattleManager.instance.ShowProjectileParabola(character, confirmMoveNode, selectedNode);
                     }
                 }
                 if (Input.GetKeyDown(KeyCode.Escape))
@@ -211,9 +211,10 @@ public class PlayerBattleState : PlayerBaseState
         {
             case BattlePhase.SkillComand:
                 SkillUIManager.instance.onListOptionChanged -= skillChangedHandler;
+                BattleManager.instance.CloseAllProjectileParabola();
                 break;
             case BattlePhase.SkillTarget:
-                BattleManager.instance.CloseProjectTileParabola(character);
+                BattleManager.instance.CloseAllProjectileParabola();
                 break;
         }
     }
@@ -251,6 +252,7 @@ public class PlayerBattleState : PlayerBaseState
 
                 BattleManager.instance.SetGridCursorAt(confirmMoveNode);
                 BattleManager.instance.ActivateMoveCursorAndHide(false, false);
+                BattleManager.instance.ShowOppositeTeamParabola(character, confirmMoveNode);
                 BattleUIManager.instance.ActivateActionPanel(false);
                 BattleUIManager.instance.OpenUpdateSkillUI(character);
                 BattleUIManager.instance.ActiveAllCharacterInfoTip(true);
@@ -259,6 +261,7 @@ public class PlayerBattleState : PlayerBaseState
                 break;
             case BattlePhase.SkillTarget:
                 BattleManager.instance.ActivateMoveCursorAndHide(true, false);
+                BattleManager.instance.ShowOppositeTeamParabola(character, confirmMoveNode);
                 BattleUIManager.instance.CloseSkillUI();
                 BattleUIManager.instance.ActiveAllCharacterInfoTip(true);
                 break;

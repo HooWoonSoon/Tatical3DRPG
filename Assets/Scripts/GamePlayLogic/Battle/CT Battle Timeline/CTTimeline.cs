@@ -55,7 +55,6 @@ public class CTTimeline : MonoBehaviour
     private CharacterBase currentCharacter;
 
     [SerializeField] private UITransitionToolkit uITransitionToolkit;
-    public event Action confirmCTTimeline;
 
     public static CTTimeline instance { get; private set; }
 

@@ -30,6 +30,7 @@ public class SkillData : ScriptableObject
 
     public bool isProjectile;
     public GameObject projectTilePrefab;
+    [Range(0, 90)] public int initialElevationAngle;
 
     public Sprite spIcon;
     public int requiredSP;

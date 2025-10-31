@@ -6,33 +6,61 @@ using UnityEngine;
 public class EnemyTeamSystem : TeamSystem
 {
     public TeamDeployment teamDeployment;
-    public TeamStateMachine stateMechine;
+    public TeamStateMachine stateMachine;
 
-    public TeamIdleState teamIdleState { get; private set; }    // Debug Use Now
+    public TeamIdleState teamIdleState { get; private set; }
     public TeamScoutingState teamScoutingState { get; private set; }
+
+    private Dictionary<Type, EnemyTeamState> stateCache = new Dictionary<Type, EnemyTeamState>();
 
     public HashSet<TeamDeployment> detectedTeam = new HashSet<TeamDeployment>();
     public List<CharacterBase> detectedCharacters = new List<CharacterBase>();
     public HashSet<CharacterBase> lastUnit = new HashSet<CharacterBase>();
      
     private Vector3 lastPosition;
-    private float eslapseTime = 0;
 
     private void Awake()
     {
-        stateMechine = new TeamStateMachine();
-        teamScoutingState = new TeamScoutingState(stateMechine, this);
-        teamIdleState = new TeamIdleState(stateMechine, this);
+        stateMachine = new TeamStateMachine();
+
+        RegisterState(new TeamIdleState(stateMachine, this));
+        RegisterState(new TeamScoutingState(stateMachine, this));
     }
     protected override void Start()
     {
         base.Start();
-        stateMechine.Initialize(teamScoutingState);
     }
 
     private void Update()
     {
-        stateMechine.currentEnemyTeamState.Update();
+        stateMachine.currentEnemyTeamState?.Update();
+    }
+
+    private void RegisterState(EnemyTeamState state)
+    {
+        var type = state.GetType();
+        if (!stateCache.ContainsKey(type))
+            stateCache.Add(type, state);
+    }
+
+    public void Initialize<T>(TeamDeployment teamDeployment) where T : EnemyTeamState
+    {
+        this.teamDeployment = teamDeployment;
+        InitializeState<T>();
+    }
+
+    public void InitializeState<T>() where T : EnemyTeamState
+    {
+        if (stateCache.TryGetValue(typeof(T), out var state))
+        {
+            stateMachine.Initialize(state);
+        }
+        else
+        {
+            var newState = (T)Activator.CreateInstance(typeof(T), stateMachine, this);
+            RegisterState(newState);
+            stateMachine.Initialize(newState);
+        }
     }
 
     #region Scouting
@@ -118,9 +146,9 @@ public class EnemyTeamSystem : TeamSystem
     public void SwitchScoutingMode(bool active)
     {
         if (active)
-            stateMechine.ChangeState(teamScoutingState);
+            stateMachine.ChangeState(teamScoutingState);
         else
-            stateMechine.ChangeState(teamIdleState);
+            stateMachine.ChangeState(teamIdleState);
     }
 }
 
