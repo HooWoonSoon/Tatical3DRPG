@@ -21,7 +21,7 @@ public class TeamSortPathFindingState : PlayerTeamState
         base.Update();
         if (IsAllReachedTarget())
         {
-            stateMachine.ChangeState(team.teamFreeControlState);
+            stateMachine.ChangeState(team.teamIdleState);
         }
     }
 

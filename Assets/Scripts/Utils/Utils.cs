@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
@@ -352,5 +353,53 @@ public static class Utils
             yield return null;
         }
         text.color = endColor;
+    }
+
+    public static void ApplyAnimation(MonoBehaviour mono, RectTransform rectTransform,
+    Vector2 startPosition, Vector2 endPosition, Vector2 startScale, Vector2 endScale, float duration,
+    bool useElastic, UnityEvent onComplete)
+    {
+        mono.StartCoroutine(Animate(rectTransform, startPosition, endPosition,
+            startScale, endScale, duration, useElastic, onComplete));
+    }
+
+    private static IEnumerator Animate(RectTransform rectTransform,
+        Vector2 startPosition, Vector2 endPosition, Vector2 startScale, Vector2 endScale, float duration,
+        bool useElastic, UnityEvent onComplete)
+    {
+        float elapsedTime = 0f;
+
+        Vector2 extraOffset = Vector2.zero;
+        float extraScale = 1f;
+
+        if (useElastic)
+        {
+            extraOffset = new Vector2(5f, 0f);
+            extraScale = 1.1f;
+        }
+
+        while (elapsedTime < duration)
+        {
+            float t = elapsedTime / duration;
+            float adjustedT;
+
+            if (useElastic)
+                adjustedT = t * t * (3f - 2f * t);
+            else
+                adjustedT = t * t;
+
+            rectTransform.anchoredPosition = Vector2.Lerp(startPosition, endPosition + extraOffset, adjustedT);
+            rectTransform.localScale = Vector2.Lerp(startScale, endScale * extraScale, adjustedT);
+
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        //  Summary
+        //      Ensure the final position and scale is exactly the target
+        rectTransform.anchoredPosition = endPosition;
+        rectTransform.localScale = endScale;
+
+        onComplete?.Invoke();
     }
 }

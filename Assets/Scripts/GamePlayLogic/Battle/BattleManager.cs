@@ -21,8 +21,6 @@ public class BattleManager : Entity
     public Material previewMaterial;
     private GameObject previewCharacter;
 
-    public event Action onStartBattle;
-    public event Action onLoadNextTurn;
     public event Action onConfrimCallback;
     public event Action onCancelCallback;
     public static BattleManager instance { get; private set; }
@@ -65,11 +63,20 @@ public class BattleManager : Entity
     #region Setup Battle
     public void SetJoinedBattleUnit(HashSet<CharacterBase> joinedBattleUnits)
     {
-        this.joinedBattleUnits = joinedBattleUnits.ToList();
+        SetJoinedBattleUnit(joinedBattleUnits.ToList());
     }
     public void SetJoinedBattleUnit(List<CharacterBase> joinedBattleUnits)
     {
         this.joinedBattleUnits = joinedBattleUnits;
+        SubcribeCharacterState(joinedBattleUnits);
+    }
+    private void SubcribeCharacterState(List<CharacterBase> joinedBattleUnits)
+    {
+        for (int i = 0; i < joinedBattleUnits.Count; i++)
+        {
+            joinedBattleUnits[i].OnUnitKnockout += HandleUnitKnockout;
+            Debug.Log($"Subscribed {joinedBattleUnits[i]}");
+        }
     }
     #endregion
     
@@ -85,7 +92,6 @@ public class BattleManager : Entity
         for (int i = 0; i < pathRoutes.Count; i++)
         {
             pathRoutes[i].character.SetPathRoute(pathRoutes[i]);
-            Debug.Log($"{pathRoutes[i].character} to target {pathRoutes[i].targetPosition}");
         }
     }
     private List<PathRoute> GetBattleUnitRefinePath()
@@ -149,7 +155,6 @@ public class BattleManager : Entity
         BattleUIManager.instance.OnBattleUIFinish += () =>
         {
             Debug.Log("StartBattle");
-            onStartBattle?.Invoke();
             isBattleStarted = true;
         };
     }
@@ -231,8 +236,14 @@ public class BattleManager : Entity
         if (targetCharacter == null) { return false; }
 
         TeamDeployment team = character.currentTeam;
+
         bool isAlly = team.teamCharacter.Contains(targetCharacter);
 
+        if (currentSkill == null)
+        {
+            Debug.LogError($"IsValidateSkillTarget: currentSkill is NULL! Character = {character.name}");
+            return false;
+        }
         switch (currentSkill.targetType)
         {
             case SkillTargetType.Self:
@@ -283,7 +294,7 @@ public class BattleManager : Entity
         }
 
         if (originNode == null)
-            originNode = selfCharacter.GetCharacterOriginNode();
+            originNode = selfCharacter.GetCharacterTransformToNode();
 
         Vector3 offset = new Vector3(0, 1f, 0);
         Vector3 originPos = originNode.GetVector();
@@ -335,9 +346,9 @@ public class BattleManager : Entity
         List<CharacterBase> oppositeUnit = GetCharacterOpposites(targetCharacter);
         for (int i = 0; i < oppositeUnit.Count; i++)
         {
-            GameNode originNode = oppositeUnit[i].GetCharacterOriginNode();
+            GameNode originNode = oppositeUnit[i].GetCharacterTransformToNode();
             if (targetNode == null)
-                targetNode = targetCharacter.GetCharacterOriginNode();
+                targetNode = targetCharacter.GetCharacterTransformToNode();
             ShowProjectileParabola(oppositeUnit[i], originNode, targetNode, true, true);
         }
     }
@@ -430,7 +441,11 @@ public class BattleManager : Entity
 
     public void OnLoadNextTurn()
     {
-        onLoadNextTurn?.Invoke();
+        CTTimeline.instance.NextCharacterTurn();
+    }
+    private void HandleUnitKnockout(CharacterBase character)
+    {
+        CTTimeline.instance.RemoveCharacter(character);
     }
 
     public List<CharacterBase> GetCharacterOpposites(CharacterBase allyCharacter)

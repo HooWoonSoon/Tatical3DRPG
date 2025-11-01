@@ -200,8 +200,8 @@ public class PathFinding
     {
         SetProcessPath(start, end, riseLimit, lowerLimit);
         if (processedPath.Count == 0) { Debug.Log("No path"); return null; }
-        string pathLog = string.Join(" -> ", processedPath.ConvertAll(p => p.GetVector().ToString()));
-        Debug.Log(pathLog);
+        //string pathLog = string.Join(" -> ", processedPath.ConvertAll(p => p.GetVector().ToString()));
+        //Debug.Log(pathLog);
         return new PathRoute(processedPath, start);
     }
 

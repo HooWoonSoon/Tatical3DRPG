@@ -63,11 +63,6 @@ public class CTTimeline : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
-    {
-        BattleManager.instance.onLoadNextTurn += NextCharacterTurn;
-    }
-
     public void SetJoinedBattleUnit(List<CharacterBase> characters)
     {
         battleCharacter.Clear();
@@ -76,12 +71,20 @@ public class CTTimeline : MonoBehaviour
             InsertCharacter(characters[i]);
         }
     }
-    private void InsertCharacter(CharacterBase character)
+    public void InsertCharacter(CharacterBase character)
     {
         if (!battleCharacter.ContainsKey(character))
         {
             CharacterTacticsTime tactics = new CharacterTacticsTime(character);
             battleCharacter.Add(character, tactics);
+        }
+    }
+    public void RemoveCharacter(CharacterBase character)
+    {
+        if (battleCharacter.ContainsKey(character))
+        {
+            battleCharacter.Remove(character);
+            Debug.Log($"Remove {character} from battleCharacter dictionary");
         }
     }
     public void SetupTimeline()
@@ -155,7 +158,7 @@ public class CTTimeline : MonoBehaviour
     public void NextCharacterTurn()
     {
         if (currentCTRound == null) { return; }
-        Debug.Log($"{currentCharacter} end this turn");
+        //Debug.Log($"{currentCharacter} end this turn");
         NextNumber();
         currentCharacter = currentCTRound.cTTimelineQueue[currentTurnIndex];
         CTTurnUIManager.instance.TargetCurrentCTTurnUI(currentCTRound, currentTurnIndex);
@@ -186,6 +189,8 @@ public class CTTimeline : MonoBehaviour
     {
         uITransitionToolkit.ResetUIFormToTargetPos(1);
     }
+
+    #region Search
     public int GetCharacterCurrentQueue(CharacterBase character)
     {
         if (cTRounds.Count == 0) 
@@ -218,5 +223,6 @@ public class CTTimeline : MonoBehaviour
     public int GetCurrentRound() => currentRoundIndex;
     public CharacterBase GetCurrentCharacter() => currentCharacter;
     public Dictionary<CharacterBase, CharacterTacticsTime> GetBattleCharacter() => battleCharacter;
+    #endregion
 }
 

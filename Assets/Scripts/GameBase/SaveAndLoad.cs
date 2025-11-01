@@ -18,7 +18,7 @@ public static class SaveAndLoad
         string json = File.ReadAllText(fullPath);
         List<GameNodeData> nodeDataList = JsonConvert.DeserializeObject<List<GameNodeData>>(json);
         world.UpdateAndReleaseMapNode(nodeDataList);
-        Debug.Log("Map Loaded");
+        //Debug.Log("Map Loaded");
     }
     public static void LoadMap(World world, string mapDataPath, Action onLoad = null)
     {
@@ -31,7 +31,7 @@ public static class SaveAndLoad
         string json = File.ReadAllText(fullPath);
         List<GameNodeData> nodeDataList = JsonConvert.DeserializeObject<List<GameNodeData>>(json);
         world.UpdateAndReleaseMapNode(nodeDataList);
-        Debug.Log("Map Loaded");
+        //Debug.Log("Map Loaded");
 
         onLoad?.Invoke();
     }

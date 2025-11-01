@@ -4,15 +4,15 @@ using UnityEngine.UI;
 public class TeamLinkButton : MonoBehaviour
 {
     public PlayerTeamSystem teamSystem;
-    public UILinkTooltip uILinkTooltip;
-    private TeamLinkUIClass currentTeamUIClass;
+    public MiniUISetTooltip uILinkTooltip;
+    private TeamLinkUI currentTeamLinkUI;
 
     public Button linkOrUnlinkButton;
     public Button detailButton;
 
-    public void Initialize(TeamLinkUIClass currentTeamUIClass)
+    public void Initialize(TeamLinkUI currentTeamUIClass)
     {
-        this.currentTeamUIClass = currentTeamUIClass;
+        this.currentTeamLinkUI = currentTeamUIClass;
 
         linkOrUnlinkButton.onClick.RemoveAllListeners();
         detailButton.onClick.RemoveAllListeners();
@@ -23,22 +23,23 @@ public class TeamLinkButton : MonoBehaviour
 
     public void OnClickLinkUnlinkButton()
     {
-        Debug.Log($"Unlink button clicked with index: {currentTeamUIClass.index}");
-        if (currentTeamUIClass.character.isLink == true)
+        Debug.Log($"Unlink button clicked with index: {currentTeamLinkUI.index}");
+        if (currentTeamLinkUI.character.isLink == true)
         {
-            currentTeamUIClass.UnlinkCharacter();
-            teamSystem.RemoveUnlinkCharacterFromTeam(currentTeamUIClass.character);
-            teamSystem.AddCharacterToUnlinkList(currentTeamUIClass.character);
+            currentTeamLinkUI.UnlinkCharacter();
+            teamSystem.RemoveUnlinkCharacterFromTeam(currentTeamLinkUI.character);
+            teamSystem.AddCharacterToUnlinkList(currentTeamLinkUI.character);
         }
         else
         {
-            currentTeamUIClass.LinkCharacter();
-            teamSystem.InsertTeamFollower(currentTeamUIClass.character);
+            currentTeamLinkUI.LinkCharacter();
+            teamSystem.InsertTeamFollower(currentTeamLinkUI.character);
+            teamSystem.stateMachine.ChangeState(teamSystem.teamSortPathFindingState);
         }
     }
 
     public void OnClickDetailButton()
     {
-        Debug.Log("Detail button clicked with index: " + currentTeamUIClass.index);
+        Debug.Log("Detail button clicked with index: " + currentTeamLinkUI.index);
     }
 }

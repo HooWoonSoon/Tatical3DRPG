@@ -60,7 +60,7 @@ public class GridCharacter : Entity
         GameNode gameNode = world.GetNode(characterPos);
         if (gameNode == null) 
         { 
-            Debug.Log("Invalid node update"); 
+            //Debug.Log("Invalid node update"); 
             return; 
         }
 

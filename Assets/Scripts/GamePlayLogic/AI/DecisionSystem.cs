@@ -30,7 +30,7 @@ public class DecisionSystem
         {
             List<GameNode> skillInflueneMovableNode = decisionMaker.GetSkillAttackMovableNode(skill);
 
-            Debug.Log($"Skill Node: {skillInflueneMovableNode.Count}");
+            //Debug.Log($"Skill Node: {skillInflueneMovableNode.Count}");
             if (skillInflueneMovableNode.Count == 0) continue;
 
             float bestSkillScore = 0;

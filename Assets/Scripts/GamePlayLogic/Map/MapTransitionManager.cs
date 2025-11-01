@@ -56,6 +56,12 @@ public class MapTransitionManager : Entity
     public void RequestMapTransition(string mapID, Vector3 teleportPos, Vector3 returnPos, 
         PlayerCharacter player, Action confirmAction = null, Action cancelAction = null)
     {
+        if (BattleManager.instance.isBattleStarted) 
+        {
+            Debug.Log("Battle is started not allow to process map transition");
+            return; 
+        }
+
         MapData mapData = MapManager.instance.GetMapData(mapID);
 
         if (!mapData.requireDeployment)
@@ -65,7 +71,7 @@ public class MapTransitionManager : Entity
             ExecuteSwitchMapAndTeleport(mapData, teleportPos, playerCharacters, true);
             confirmAction?.Invoke();
 
-            Debug.Log("Execute the map transition");
+            //Debug.Log("Execute the map transition");
         }
         else
         {

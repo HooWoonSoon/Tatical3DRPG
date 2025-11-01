@@ -15,15 +15,15 @@ public class TeamSystem : Entity
         }
         return false;
     }
-    //private void OnDrawGizmos()
-    //{
-        //if (teamPathRoutes.Count == 0) return;
-        //for (int i = 0; i < teamPathRoutes.Count; i++)
-        //{
-        //    if (teamPathRoutes[i].targetPosition.Value == null) return;
+    private void OnDrawGizmos()
+    {
+        if (teamPathRoutes.Count == 0) return;
+        for (int i = 0; i < teamPathRoutes.Count; i++)
+        {
+            if (teamPathRoutes[i].targetPosition.Value == null) return;
 
-        //    Gizmos.color = Color.red;
-        //    Gizmos.DrawCube(teamPathRoutes[i].targetPosition.Value, Vector3.one);
-        //}
-    //}
+            Gizmos.color = Color.red;
+            Gizmos.DrawCube(teamPathRoutes[i].targetPosition.Value + new Vector3(0, 1, 0), Vector3.one);
+        }
+    }
 }

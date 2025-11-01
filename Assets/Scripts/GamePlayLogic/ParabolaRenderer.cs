@@ -20,7 +20,7 @@ public class ParabolaRenderer : MonoBehaviour
 
         lineRenderer.enabled = true;
 
-        Debug.Log("Draw Projectile Visual");
+        //Debug.Log("Draw Projectile Visual");
 
         Vector3 displacementXZ = new Vector3(target.x - start.x, 0, target.z - start.z);
         float distanceXZ = displacementXZ.magnitude;

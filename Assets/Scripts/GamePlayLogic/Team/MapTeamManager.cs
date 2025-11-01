@@ -63,12 +63,12 @@ public class MapTeamManager : MonoBehaviour
                 if (isDeploy)
                 {
                     enemyTeamSystem.Initialize<TeamIdleState>(teamDeployment);
-                    Debug.Log("Generate Team Deploy");
+                    //Debug.Log("Generate Team Deploy");
                 }
                 else
                 {
                     enemyTeamSystem.Initialize<TeamScoutingState>(teamDeployment);
-                    Debug.Log("Generate Team Scouting");
+                    //Debug.Log("Generate Team Scouting");
                 }
                 break;
         }

@@ -4,7 +4,6 @@ using UnityEngine.TextCore.Text;
 
 public class PlayerTeamSystem : TeamSystem
 {
-    public LayerMask layermask;
     public TeamDeployment teamDeployment;
     public List<TeamFollower> linkMembers;
     private List<PlayerCharacter> unlinkMember = new List<PlayerCharacter>();
@@ -14,7 +13,8 @@ public class PlayerTeamSystem : TeamSystem
     [SerializeField] private int historyLimit = 15;
 
     public TeamStateMachine stateMachine;
-    public TeamFreeControlState teamFreeControlState { get; private set; }
+    public PlayerTeamIdleState teamIdleState { get; private set; }
+    public PlayerTeamActionState teamActionState { get; private set; }
     public TeamSortPathFindingState teamSortPathFindingState { get; private set; }
 
     private void OnEnable()
@@ -36,7 +36,8 @@ public class PlayerTeamSystem : TeamSystem
         Initialize();
         stateMachine = new TeamStateMachine();
         
-        teamFreeControlState = new TeamFreeControlState(stateMachine, this);
+        teamIdleState = new PlayerTeamIdleState(stateMachine, this);
+        teamActionState = new PlayerTeamActionState(stateMachine, this);
         teamSortPathFindingState = new TeamSortPathFindingState(stateMachine, this);
     }
 
@@ -44,37 +45,18 @@ public class PlayerTeamSystem : TeamSystem
     {
         base.Start();
         SetTeamFollowerLeader();
-        stateMachine.Initialize(teamFreeControlState);
+        stateMachine.Initialize(teamIdleState);
     }
 
     private void Update()
     {
         stateMachine.currentPlayerTeamState.Update();
-
-        currentLeader.MovementInput(out float inputX, out float inputZ);
-        currentLeader.SetMoveDirection(inputX, inputZ);
-
-        for (int i = 0; i < linkMembers.Count; i++)
-        {
-            FollowWithNearIndexMember(linkMembers[i].character, linkMembers[i].targetToFollow);
-            if (linkMembers[i].character.xInput != 0 || linkMembers[i].character.zInput != 0)
-            {
-                linkMembers[i].character.UpdateHistory();
-            }
-        }
-
-        //if (Input.GetKeyDown(KeyCode.C))
-        //{
-        //    stateMachine.ChangeState(teamSortPathFindingState);
-        //}   
-
         //FindMouseTargetPath(currentLeader);
     }
 
     /// <summary>
     /// Process A* path finding for specific character, the destination would be the mouse target
     /// </summary>
-    /// <param name="character"></param>
     private void FindMouseTargetPath(CharacterBase character)
     {
         if (Input.GetMouseButtonDown(0))
@@ -158,8 +140,9 @@ public class PlayerTeamSystem : TeamSystem
         }
     }
 
-    //  Summary
-    //      Add a new character to the team follower list and remove it from the unlink character.
+    /// <summary>
+    /// Add a new character to the team follower list and remove it from the unlink character.
+    /// </summary>
     public void InsertTeamFollower(PlayerCharacter unitCharacter)
     {
         TeamFollower teamFollower = new TeamFollower();
@@ -210,9 +193,13 @@ public class PlayerTeamSystem : TeamSystem
 
     //  Summary
     //      External call to add a character to the unlink character list.
-    public void AddCharacterToUnlinkList(PlayerCharacter unitCharacter)
+    public void AddCharacterToUnlinkList(PlayerCharacter character)
     {
-        if (!unlinkMember.Contains(unitCharacter)) { unlinkMember.Add(unitCharacter); }
+        if (!unlinkMember.Contains(character)) 
+        { 
+            character.ForceStopVelocity();
+            unlinkMember.Add(character);
+        }
     }
     #endregion
 
@@ -227,7 +214,7 @@ public class PlayerTeamSystem : TeamSystem
     #region Logic handle team follower
     //  Summary
     //      Follow the target character with the nearest index member.
-    private void FollowWithNearIndexMember(PlayerCharacter member, PlayerCharacter follower)
+    public void FollowWithNearIndexMember(PlayerCharacter member, PlayerCharacter follower)
     {
         if (member.isLink == false || follower == null) return;
         GetFollowTargetDirection(member, follower, out Vector3 direciton);
@@ -265,6 +252,11 @@ public class PlayerTeamSystem : TeamSystem
         teamPathRoutes.Clear();
 
         List<PathRoute> teamSortRoute = GetTeamSortPath(linkMembers, spacingDistance);
+        if (teamSortRoute == null) 
+        {
+            Debug.LogWarning("Can't execute team path finding because not found any executable path");
+            return; 
+        }
         if (IsTeamSortPathAvaliable(teamSortRoute))
         {
             teamPathRoutes = teamSortRoute;
@@ -275,6 +267,7 @@ public class PlayerTeamSystem : TeamSystem
             for (int i = 0; i < linkMembers.Count; i++)
             {
                 PlayerCharacter character = linkMembers[i].character;
+                character.ForceStopVelocity();
                 character.stateMechine.ChangeState(character.movePathStateExplore);
             }
         }
@@ -289,6 +282,9 @@ public class PlayerTeamSystem : TeamSystem
         for (int i = 1; i < linkMembers.Count; i++)
         {
             Vector3Int fromPosition = Utils.RoundXZFloorYInt(linkMembers[i].character.transform.position);
+            GameNode currentNode = linkMembers[i].character.currentNode;
+            if (currentNode != null)
+                fromPosition = currentNode.GetVectorInt();
 
             if (IsWithinFollowRange(fromPosition, lastTargetPosition))
             {
@@ -331,7 +327,9 @@ public class PlayerTeamSystem : TeamSystem
 
         for (int i = 0; i < sortedTarget.Count; i++)
         {
-            List<Vector3> pathVectorList = pathFinding.GetPathRoute(fromPosition, sortedTarget[i], 1, 1).pathRouteList;
+            PathRoute route = pathFinding.GetPathRoute(fromPosition, sortedTarget[i], 1, 1);
+            if (route == null) { return false; }
+            List<Vector3> pathVectorList = route.pathRouteList;
 
             bool existSameTarget = IsTargetPositionExist(pathRoute, sortedTarget[i]);
             if (existSameTarget == true)

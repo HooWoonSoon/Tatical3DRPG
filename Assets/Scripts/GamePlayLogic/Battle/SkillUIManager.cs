@@ -230,7 +230,6 @@ public class SkillUIManager : MonoBehaviour
         List<InventoryData> inventoryDatas, CharacterBase character)
     {
         ResetAll();
-        typeIndex = 0;
         currentCharacter = character;
         InitializeTypeIcon(skillDatas);
         InitializeSkillList(skillDatas);
@@ -242,7 +241,7 @@ public class SkillUIManager : MonoBehaviour
         currentCharacter = null;
         typeIndex = -1;
         listOptionIndex = -1;
-        currentSelectedType = AbilityType.Skill;
+        currentSelectedType = 0;
         typeUIImages = new List<TypeUIImage>();
         skillDatas = new List<SkillData>();
         spellDatas = new List<SkillData>();
@@ -334,7 +333,11 @@ public class SkillUIManager : MonoBehaviour
             typeUIImages.Add(typeUIInventory);
         }
 
-        FocusCurrentTypeUI(0);
+        if (typeMapDictionary.Count > 0)
+        {
+            typeIndex = 0;
+            FocusCurrentTypeUI(0);
+        }
     }
     #endregion
 
@@ -384,7 +387,7 @@ public class SkillUIManager : MonoBehaviour
             }
         }
 
-        if (skillDatas.Count >= 1)
+        if (skillDatas.Count > 0)
         {
             listOptionIndex = 0;
             FocusCurrentListUI(0);

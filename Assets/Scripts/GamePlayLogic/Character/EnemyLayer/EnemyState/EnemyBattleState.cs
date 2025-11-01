@@ -102,7 +102,7 @@ public class EnemyBattleState : EnemyBaseState
                 float startTime = Time.realtimeSinceStartup;
                 DecisionSystem decisionMaker = new DecisionSystem(character);
                 decisionMaker.GetResult(out SkillData skill, out GameNode movaToNode, out GameNode skillTargetNode);
-                Debug.Log($"Decision Time: {Time.realtimeSinceStartup - startTime}");
+                //Debug.Log($"Decision Time: {Time.realtimeSinceStartup - startTime}");
                 confrimMoveNode = movaToNode;
                 if (confrimMoveNode != null)
                 {

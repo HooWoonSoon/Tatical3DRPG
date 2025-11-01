@@ -64,7 +64,7 @@ public class PlayerBattleState : PlayerBaseState
 
                 if (Input.GetKeyDown(KeyCode.Escape))
                 { 
-                    BattleManager.instance.SetGridCursorAt(character.GetCharacterOriginNode());
+                    BattleManager.instance.SetGridCursorAt(character.GetCharacterTransformToNode());
                 }
                 else if (Input.GetKeyDown(KeyCode.Return))
                 {
@@ -72,7 +72,7 @@ public class PlayerBattleState : PlayerBaseState
                     if (!character.IsInMovableRange(moveTargetNode)) return;
 
                     confirmMoveNode = moveTargetNode;
-                    if (confirmMoveNode != character.GetCharacterOriginNode())
+                    if (confirmMoveNode != character.GetCharacterTransformToNode())
                     {
                         moveTargetConfirmed = true;
                     }
@@ -81,7 +81,7 @@ public class PlayerBattleState : PlayerBaseState
                 }
                 else if (Input.GetKeyDown(KeyCode.P))
                 {
-                    confirmMoveNode = character.GetCharacterOriginNode();
+                    confirmMoveNode = character.GetCharacterTransformToNode();
                     endTurnConfirmed = true;
                     ChangePhase(BattlePhase.End);
                 }
@@ -140,7 +140,7 @@ public class PlayerBattleState : PlayerBaseState
                     if (!character.IsInMovableRange(moveTargetNode)) return;
 
                     confirmMoveNode = moveTargetNode;
-                    if (confirmMoveNode != character.GetCharacterOriginNode())
+                    if (confirmMoveNode != character.GetCharacterTransformToNode())
                     {
                         moveTargetConfirmed = true;
                     }
@@ -230,7 +230,7 @@ public class PlayerBattleState : PlayerBaseState
             case BattlePhase.MoveComand:
                 character.ShowDangerAndMovableTileFromNode();
                 CameraMovement.instance.ChangeFollowTarget(character.transform);
-                BattleManager.instance.SetGridCursorAt(character.GetCharacterOriginNode());
+                BattleManager.instance.SetGridCursorAt(character.GetCharacterTransformToNode());
 
                 //  If get return to move command phase
                 BattleManager.instance.DestroyPreviewModel();
@@ -239,23 +239,22 @@ public class PlayerBattleState : PlayerBaseState
                 BattleUIManager.instance.ActiveAllCharacterInfoTip(false);
                 break;
             case BattlePhase.SkillComand:
-                skillChangedHandler = () =>
-                {
-                    currentSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
-                    character.SetSkill(currentSkill);
-                    character.ShowSkillTilemap(confirmMoveNode);
-                };
-
-                SkillUIManager.instance.onListOptionChanged += skillChangedHandler;
-                //  First designate skill
-                currentSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
-
                 BattleManager.instance.SetGridCursorAt(confirmMoveNode);
                 BattleManager.instance.ActivateMoveCursorAndHide(false, false);
                 BattleManager.instance.ShowOppositeTeamParabola(character, confirmMoveNode);
                 BattleUIManager.instance.ActivateActionPanel(false);
                 BattleUIManager.instance.OpenUpdateSkillUI(character);
                 BattleUIManager.instance.ActiveAllCharacterInfoTip(true);
+
+                skillChangedHandler = () =>
+                {
+                    currentSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
+                    character.SetSkill(currentSkill);
+                    character.ShowSkillTilemap(confirmMoveNode);
+                };
+                SkillUIManager.instance.onListOptionChanged += skillChangedHandler;
+                //  First designate skill
+                currentSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
 
                 character.ShowSkillTilemap(confirmMoveNode);
                 break;
@@ -268,7 +267,7 @@ public class PlayerBattleState : PlayerBaseState
             case BattlePhase.ReleaseMoveComand:
                 character.ShowDangerAndMovableTileFromNode();
                 CameraMovement.instance.ChangeFollowTarget(character.transform);
-                BattleManager.instance.SetGridCursorAt(character.GetCharacterOriginNode());
+                BattleManager.instance.SetGridCursorAt(character.GetCharacterTransformToNode());
                 BattleUIManager.instance.ActiveAllCharacterInfoTip(true);
                 break;
             case BattlePhase.Move:

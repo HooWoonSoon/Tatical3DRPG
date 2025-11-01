@@ -2,8 +2,7 @@
 using UnityEngine;
 using System.Collections;
 using System;
-using Unity.VisualScripting;
-using UnityEngine.TextCore.Text;
+
 public class PlayerCharacter : CharacterBase
 {
     public GameObject imageObject;
@@ -201,6 +200,12 @@ public class PlayerCharacter : CharacterBase
             isGrounded = false;
             return downSpeed;
         }
+    }
+    public void ForceStopVelocity()
+    {
+        xInput = 0;
+        zInput = 0;
+        velocity = Vector3.zero;
     }
 
     #region StepClimb
@@ -427,7 +432,7 @@ public class PlayerCharacter : CharacterBase
                 pathIndex = 0
             };
             SetPathRoute(pathRoute);
-            velocity = Vector3.zero;
+            ForceStopVelocity();
             stateMechine.ChangeState(movePathStateExplore);
         }
     }
@@ -450,7 +455,7 @@ public class PlayerCharacter : CharacterBase
         {
             SetSelfToNode(targetNode, 0.5f);
             stateMechine.ChangeState(deploymentState);
-            velocity = Vector3.zero;
+            ForceStopVelocity();
         }
     }
     public override void TeleportToNodeFree(GameNode targetNode)
@@ -459,13 +464,13 @@ public class PlayerCharacter : CharacterBase
         {
             SetSelfToNode(targetNode, 0.5f);
             stateMechine.ChangeState(idleStateExplore);
-            velocity = Vector3.zero;
+            ForceStopVelocity();
         }
     }
 
     public override void ReadyBattle()
     {
-        velocity = Vector3.zero;
+        ForceStopVelocity();
         stateMechine.ChangeState(battleState);
     }
 

@@ -4,10 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public enum Orientation
-{
-    right, left, forward, back
-}
+public enum Orientation { right, left, forward, back }
+public enum UnitState { Active, Knockout, Dead }
 
 public abstract class CharacterBase : Entity
 {
@@ -24,12 +22,16 @@ public abstract class CharacterBase : Entity
     public int currentHealth { get; set; }
     public float moveSpeed = 5f;
 
-    protected GameNode currentNode;
+    public GameNode currentNode { get; private set; }
     public SkillData currentSkill { get; private set;}
     public GameNode currentSkillTargetNode { get; private set; }
     public PathRoute pathRoute { get; private set; }
 
     public Orientation orientation = Orientation.right;
+    public UnitState unitState = UnitState.Active;
+
+    public event Action<CharacterBase> OnUnitKnockout;
+
 
     protected override void Start()
     {
@@ -130,7 +132,7 @@ public abstract class CharacterBase : Entity
         }
         return currentNode.GetVectorInt();
     }
-    public GameNode GetCharacterOriginNode()
+    public GameNode GetCharacterTransformToNode()
     {
         return world.GetNode(GetCharacterTranformToNodePos());
     }
@@ -244,6 +246,16 @@ public abstract class CharacterBase : Entity
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
+        if (currentHealth <= 0)
+        {
+            currentHealth = 0;
+            unitState = UnitState.Knockout;
+            if (BattleManager.instance.isBattleStarted)
+            {
+                Debug.Log($"Battle started? {BattleManager.instance.isBattleStarted}");
+                OnUnitKnockout?.Invoke(this);
+            }
+        }
     }
     public void TakeHeal(int heal)
     {

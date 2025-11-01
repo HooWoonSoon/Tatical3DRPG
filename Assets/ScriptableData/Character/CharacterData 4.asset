@@ -17,7 +17,8 @@ MonoBehaviour:
   characterTurnUISprite: {fileID: 0}
   ID: 5
   type: 1
-  healthPoint: 100
+  unitType: 0
+  healthPoint: 10
   mentalPoint: 0
   magicAttackPoint: 0
   physicAttackPoint: 0
