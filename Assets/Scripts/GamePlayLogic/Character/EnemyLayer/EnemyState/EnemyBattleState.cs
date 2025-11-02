@@ -13,6 +13,9 @@ public class EnemyBattleState : EnemyBaseState
     private float phaseStartTime;
     private GameNode confrimMoveNode;
 
+    private GameNode targetNode;
+    private SkillData currentSkill;
+
     public EnemyBattleState(EnemyStateMachine stateMachine, EnemyCharacter character) : base(stateMachine, character)
     {
     }
@@ -68,7 +71,6 @@ public class EnemyBattleState : EnemyBaseState
             case BattlePhase.SkillCast:
                 if (phaseStartTime > character.currentSkill.skillCastTime)
                 {
-                    character.SkillCalculate();
                     ChangePhase(BattlePhase.End);
                 }
                 break;
@@ -101,14 +103,14 @@ public class EnemyBattleState : EnemyBaseState
                 CameraMovement.instance.ChangeFollowTarget(character.transform);
                 float startTime = Time.realtimeSinceStartup;
                 DecisionSystem decisionMaker = new DecisionSystem(character);
-                decisionMaker.GetResult(out SkillData skill, out GameNode movaToNode, out GameNode skillTargetNode);
+                decisionMaker.GetResult(out currentSkill, out confrimMoveNode, out targetNode);
                 //Debug.Log($"Decision Time: {Time.realtimeSinceStartup - startTime}");
-                confrimMoveNode = movaToNode;
+
                 if (confrimMoveNode != null)
                 {
-                    character.SetPathRoute(movaToNode);
+                    character.SetPathRoute(confrimMoveNode);
                 }
-                character.SetSkillAndTarget(skill, skillTargetNode);
+                character.SetSkillAndTarget(currentSkill, targetNode);
                 break;
             case BattlePhase.Move:
                 character.ShowDangerMovableAndTargetTilemap(confrimMoveNode);
@@ -116,6 +118,7 @@ public class EnemyBattleState : EnemyBaseState
                 break;
             case BattlePhase.SkillCast:
                 character.ShowSkillTargetTilemap();
+                BattleManager.instance.CastSkill(character, currentSkill, confrimMoveNode, targetNode);
                 break;
             case BattlePhase.End:
                 character.ResetVisualTilemap();

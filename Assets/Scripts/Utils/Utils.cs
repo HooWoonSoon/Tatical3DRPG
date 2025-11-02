@@ -71,13 +71,18 @@ public static class Utils
         triangles[tIndex + 5] = vIndex2;
     }
 
-    public static TextMeshProUGUI CreateCanvasText(string text, Transform canvas, Vector3 localPosition, Quaternion quaternion, int fontSize, Color color, TextAlignmentOptions textAlignment)
+    public static TextMeshProUGUI CreateCanvasText(string text, Transform parent, Vector3 worldPosition, int fontSize, Color color, TextAlignmentOptions textAlignment)
     {
-        GameObject gameObejct = new GameObject("Text", typeof(TextMeshProUGUI));
-        Transform transform = gameObejct.transform;
-        transform.SetParent(canvas, false);
-        transform.localPosition = localPosition;
-        transform.rotation = quaternion;
+        Vector3 screenPoint = Camera.main.WorldToScreenPoint(worldPosition);
+
+        RectTransform parentRect = parent as RectTransform;
+        Vector2 localPoint;
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(parentRect, screenPoint, null, out localPoint);
+
+        GameObject gameObejct = new GameObject($"Text {text}", typeof(TextMeshProUGUI));
+        RectTransform rectTransform = gameObejct.GetComponent<RectTransform>();
+        rectTransform.SetParent(parent, false);
+        rectTransform.anchoredPosition = localPoint;
 
         TextMeshProUGUI textMeshPro = gameObejct.GetComponent<TextMeshProUGUI>();
         textMeshPro.text = text;
@@ -401,5 +406,37 @@ public static class Utils
         rectTransform.localScale = endScale;
 
         onComplete?.Invoke();
+    }
+
+    public static IEnumerator VibrationCorroutine(Transform objectTransform,
+    Vector3 minOffset, Vector3 maxOffset, int number, float duration)
+    {
+        Vector3 originPosition = objectTransform.position;
+
+        float eachDuration = duration / number;
+        for (int i = 0; i < number; i++)
+        {
+            Vector3 targetOffset = (i % 2 == 0) ? maxOffset : minOffset;
+            Vector3 targetPosition = originPosition + targetOffset;
+
+            float elapsedTime = 0f;
+            while (elapsedTime < eachDuration / 2f)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / (eachDuration / 2f);
+                objectTransform.position = Vector3.Lerp(originPosition, targetPosition, t);
+                yield return null;
+            }
+
+            elapsedTime = 0f;
+            while (elapsedTime < eachDuration / 2f)
+            {
+                elapsedTime += Time.deltaTime;
+                float t = elapsedTime / (eachDuration / 2f);
+                objectTransform.position = Vector3.Lerp(targetPosition, originPosition, t);
+                yield return null;
+            }
+        }
+        objectTransform.position = originPosition;
     }
 }

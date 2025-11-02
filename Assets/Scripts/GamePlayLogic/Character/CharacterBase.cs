@@ -218,48 +218,40 @@ public abstract class CharacterBase : Entity
         currentSkill = skill;
         currentSkillTargetNode = targetNode;
     }
-    public void SkillCalculate()
-    {
-        CharacterBase targetCharacter = currentSkillTargetNode.GetUnitGridCharacter();
-        if (currentSkill.skillType == SkillType.Acttack)
-        {
-            int damage = currentSkill.damageAmount;
-            if (targetCharacter != null)
-            {
-                targetCharacter.TakeDamage(damage);
-                //Debug.Log($"{this.gameObject.name} damage {character.gameObject.name} for {damage} points. Remaining health: {character.currenthealth}");
-                BattleUIManager.instance.CreateCountText(targetCharacter, damage);
-            }
-        }
-        else if (currentSkill.skillType == SkillType.Heal)
-        {
-            int heal = currentSkill.healAmount;
-            if (targetCharacter != null)
-            {
-                targetCharacter.TakeHeal(heal);
-                BattleUIManager.instance.CreateCountText(targetCharacter, heal);
-            }
-        }
-        currentSkill = null;
-    }
 
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
+        UniversalUIManager.instance.CreateCountText(this, damage);
+        TakeDamageEffect();
         if (currentHealth <= 0)
         {
             currentHealth = 0;
             unitState = UnitState.Knockout;
             if (BattleManager.instance.isBattleStarted)
             {
-                Debug.Log($"Battle started? {BattleManager.instance.isBattleStarted}");
                 OnUnitKnockout?.Invoke(this);
             }
         }
     }
+    private void TakeDamageEffect()
+    {
+        if (characterModel == null) { return; }
+
+        if (orientation == Orientation.right || orientation == Orientation.left)
+        {
+            StartCoroutine(Utils.VibrationCorroutine(transform, new Vector3(-0.1f, 0, 0), new Vector3(0.1f, 0, 0), 3, 0.2f));
+        }
+        else if (orientation == Orientation.forward || orientation == Orientation.back)
+        {
+            StartCoroutine(Utils.VibrationCorroutine(transform, new Vector3(0, 0, -0.1f), new Vector3(0, 0, 0.1f), 3, 0.2f));
+        }
+    }
+    
     public void TakeHeal(int heal)
     {
         currentHealth += heal;
+        UniversalUIManager.instance.CreateCountText(this, heal);
     }
 
     public bool IsYourTurn(CharacterBase character)

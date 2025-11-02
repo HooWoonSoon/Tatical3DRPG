@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: -0.903}
-  m_LocalScale: {x: 0.17, y: 0.06, z: 0.02}
+  m_LocalScale: {x: 0.18, y: 0.07, z: 0.04}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6826083718572125311}
@@ -114,7 +114,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: -0.419}
-  m_LocalScale: {x: 0.86, y: 0.02, z: 0.02}
+  m_LocalScale: {x: 0.86, y: 0.03, z: 0.03}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6826083718572125311}
@@ -200,7 +200,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: -0.023000002}
-  m_LocalScale: {x: 0.3, y: 0.1, z: 0.02}
+  m_LocalScale: {x: 0.35, y: 0.12, z: 0.05}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 6826083718572125311}
@@ -306,8 +306,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b55e3253a7e72c4fba9a0f0a74560ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  center: {x: -0.35, y: 0, z: 0}
-  size: {x: 1, y: 0.15, z: 0.1}
+  center: {x: 0, y: 0, z: -0.43}
+  size: {x: 0.1, y: 0.15, z: 1.2}
   mahhatassRange: 0
 --- !u!114 &-3380316190938836373
 MonoBehaviour:

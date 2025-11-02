@@ -22,30 +22,56 @@ public class UnitDetectable : Entity
     {
         List<UnitDetectable> hits = new List<UnitDetectable>();
 
-        Vector3 selfCenter = transform.position + center;
-        Vector3 selfHalfSize = size * 0.5f;
-        Vector3 selfMin = selfCenter - selfHalfSize;
-        Vector3 selfMax = selfCenter + selfHalfSize;
+        Bounds selfBounds = GetRotatedBounds(transform.position, transform.rotation, center, size);
 
         foreach (UnitDetectable unit in all)
         {
-            if (unit == this) { continue; }
+            if (unit == this) continue;
 
-            Vector3 otherCenter = unit.transform.position + unit.center;
-            Vector3 otherHalfSize = unit.size * 0.5f;
-            Vector3 otherMin = otherCenter - otherHalfSize;
-            Vector3 otherMax = otherCenter + otherHalfSize;
+            Bounds otherBounds = GetRotatedBounds(unit.transform.position, unit.transform.rotation, unit.center, unit.size);
 
-            bool isOverlapping = (selfMin.x <= otherMax.x && selfMax.x >= otherMin.x) &&
-                             (selfMin.y <= otherMax.y && selfMax.y >= otherMin.y) &&
-                             (selfMin.z <= otherMax.z && selfMax.z >= otherMin.z);
-            if (isOverlapping)
+            if (selfBounds.Intersects(otherBounds))
             {
                 hits.Add(unit);
             }
         }
+
         return hits.ToArray();
     }
+
+    private Bounds GetRotatedBounds(Vector3 position, Quaternion rotation, Vector3 center, Vector3 size)
+    {
+        Vector3 worldCenter = position + rotation * center;
+        Vector3 half = size * 0.5f;
+
+        Vector3[] corners = new Vector3[8]
+        {
+        rotation * new Vector3(-half.x, -half.y, -half.z),
+        rotation * new Vector3( half.x, -half.y, -half.z),
+        rotation * new Vector3(-half.x,  half.y, -half.z),
+        rotation * new Vector3( half.x,  half.y, -half.z),
+        rotation * new Vector3(-half.x, -half.y,  half.z),
+        rotation * new Vector3( half.x, -half.y,  half.z),
+        rotation * new Vector3(-half.x,  half.y,  half.z),
+        rotation * new Vector3( half.x,  half.y,  half.z),
+        };
+
+        for (int i = 0; i < 8; i++)
+            corners[i] += position;
+
+        Vector3 min = corners[0];
+        Vector3 max = corners[0];
+        for (int i = 1; i < 8; i++)
+        {
+            min = Vector3.Min(min, corners[i]);
+            max = Vector3.Max(max, corners[i]);
+        }
+
+        Bounds b = new Bounds();
+        b.SetMinMax(min, max);
+        return b;
+    }
+
 
     /// <summary>
     /// Start from the unit center extend with 3D mahhatass range to obtain other unit detectable

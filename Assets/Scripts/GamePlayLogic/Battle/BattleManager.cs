@@ -5,8 +5,18 @@ using UnityEngine;
 
 public class BattleManager : Entity
 {
-    public List<TeamDeployment> battleTeams = new List<TeamDeployment>();
-    public List<CharacterBase> joinedBattleUnits = new List<CharacterBase>();
+    #region Team
+    public enum TeamStatus { Active, Defeated }
+    private List<TeamDeployment> battleTeams;
+
+    private Dictionary<TeamDeployment, TeamStatus> oppositeTeamStatus;
+    private Dictionary<TeamDeployment, TeamStatus> allyTeamStatus;
+    private Dictionary<TeamDeployment, TeamStatus> playerTeamStatus;
+    #endregion
+
+    private List<CharacterBase> joinedBattleUnits = new List<CharacterBase>();
+    private List<CharacterBase> knockOutCharacter = new List<CharacterBase>();
+
     public bool isBattleStarted = false;
 
     [Header("Cursor")]
@@ -160,12 +170,33 @@ public class BattleManager : Entity
     }
     private void FindJoinedTeam()
     {
+        battleTeams = new List<TeamDeployment>();
+
+        oppositeTeamStatus = new Dictionary<TeamDeployment, TeamStatus>();
+        allyTeamStatus = new Dictionary<TeamDeployment, TeamStatus>();
+        playerTeamStatus = new Dictionary<TeamDeployment, TeamStatus>();
+
         foreach (CharacterBase character in joinedBattleUnits)
         {
             TeamDeployment team = character.currentTeam;
             if (!battleTeams.Contains(team))
             {
                 battleTeams.Add(team);
+                switch (team.teamType)
+                {
+                    case TeamType.Player:
+                        if (!playerTeamStatus.ContainsKey(team))
+                            playerTeamStatus.Add(team, TeamStatus.Active);
+                        break;
+                    case TeamType.Opposite:
+                        if (!oppositeTeamStatus.ContainsKey(team))
+                            oppositeTeamStatus.Add(team, TeamStatus.Active);
+                        break;
+                    case TeamType.Allay:
+                        if (!allyTeamStatus.ContainsKey(team))
+                            allyTeamStatus.Add(team, TeamStatus.Active);
+                        break;
+                }
             }
         }
     }
@@ -194,6 +225,61 @@ public class BattleManager : Entity
         action?.Invoke();
     }
     #endregion
+
+    public void CheckBattleState()
+    {
+        foreach (TeamDeployment team in battleTeams)
+        {
+            bool allKnockedOut = true;
+
+            foreach (CharacterBase character in team.teamCharacter)
+            {
+                if (!knockOutCharacter.Contains(character))
+                {
+                    allKnockedOut = false;
+                    break;
+                }
+            }
+
+            if (allKnockedOut)
+            {
+                switch (team.teamType)
+                {
+                    case TeamType.Player:
+                        if (playerTeamStatus.ContainsKey(team))
+                        {
+                            playerTeamStatus[team] = TeamStatus.Defeated;
+                            BattleDefeat();
+                        }
+                        break;
+                    case TeamType.Opposite:
+                        if (oppositeTeamStatus.ContainsKey(team))
+                            oppositeTeamStatus[team] = TeamStatus.Defeated;
+                        break;
+                    case TeamType.Allay:
+                        if (allyTeamStatus.ContainsKey(team))
+                            allyTeamStatus[team] = TeamStatus.Defeated;
+                        break;
+                }
+                Debug.Log($"{team} has lost the battle!");
+            }
+        }
+
+        bool allOppositeDefeated = oppositeTeamStatus.Values.All(status => status == TeamStatus.Defeated);
+        if (allOppositeDefeated)
+        {
+            BattleVictory();
+        }
+    }
+
+    public void BattleVictory()
+    {
+        Debug.Log("Battle Victory");
+    }
+    public void BattleDefeat()
+    {
+        Debug.Log("Battle Defeat");
+    }
 
     public void EndBattle()
     {
@@ -241,7 +327,7 @@ public class BattleManager : Entity
 
         if (currentSkill == null)
         {
-            Debug.LogError($"IsValidateSkillTarget: currentSkill is NULL! Character = {character.name}");
+            Debug.LogWarning($"CurrentSkill is null! Character = {character.name}");
             return false;
         }
         switch (currentSkill.targetType)
@@ -276,42 +362,38 @@ public class BattleManager : Entity
     #endregion
 
     #region Preview Parabola
+    /// <summary>
+    /// Show projectile parabola form origin node position to target node position, 
+    /// if input current skill aren't equal projectile series skill it would happend any thing.
+    /// </summary>
     public void ShowProjectileParabola(CharacterBase selfCharacter,
-        GameNode originNode, GameNode targetNode,
-        bool checkInRange = false, bool forceOffset = false)
+        SkillData currentSkill, GameNode originNode, GameNode targetNode,
+        bool forceOffset = false)
     {
-        if (targetNode == null)
+        if (currentSkill == null || !currentSkill.isProjectile)
         {
-            Debug.Log("No obtained node");
-            return;
-        }
-
-        ParabolaRenderer parabola = selfCharacter.GetComponentInChildren<ParabolaRenderer>();
-        if (parabola == null)
-        {
-            Debug.LogWarning("Missing Parabola Component in character");
-            return;
-        }
-
-        if (originNode == null)
-            originNode = selfCharacter.GetCharacterTransformToNode();
-
-        Vector3 offset = new Vector3(0, 1f, 0);
-        Vector3 originPos = originNode.GetVector();
-        Vector3 targetPos = targetNode.GetVector();
-
-        CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
-        if (targetCharacter != null)
-            targetPos = targetCharacter.transform.position + offset;
-        else if (forceOffset)
-            targetPos += offset;
-
-        if (originPos == targetPos)
-        {
-            Debug.Log("Invalid parabola, target to self");
             CloseProjectileParabola(selfCharacter);
             return;
         }
+
+        if (!TryGetParabolaData(selfCharacter, originNode, targetNode, forceOffset,
+            out ParabolaRenderer parabola, out Vector3 originPos, out Vector3 targetPos))
+            return;
+
+        parabola.DrawProjectileVisual(originPos + Vector3.up, targetPos, currentSkill.initialElevationAngle);
+    }
+    /// <summary>
+    /// Find selfCharacter skill responsitory, if include any projectile series skill then
+    /// show projectile parabola form origin node position to target node position, overwise it would
+    /// happend any thing.
+    /// </summary>
+    public void ShowAnyProjectileParabola(CharacterBase selfCharacter,
+        GameNode originNode, GameNode targetNode,
+        bool checkInRange = false, bool forceOffset = false)
+    {
+        if (!TryGetParabolaData(selfCharacter, originNode, targetNode, forceOffset,
+            out ParabolaRenderer parabola, out Vector3 originPos, out Vector3 targetPos))
+            return;
 
         foreach (SkillData skill in selfCharacter.skillData)
         {
@@ -325,9 +407,52 @@ public class BattleManager : Entity
                     continue;
             }
 
-            parabola.DrawProjectileVisual(originPos + offset, targetPos, skill.initialElevationAngle);
+            parabola.DrawProjectileVisual(originPos + Vector3.up, targetPos, skill.initialElevationAngle);
             return;
         }
+    }
+    private bool TryGetParabolaData(CharacterBase selfCharacter,
+    GameNode originNode, GameNode targetNode, bool forceOffset,
+    out ParabolaRenderer parabola, out Vector3 originPos, out Vector3 targetPos)
+    {
+        parabola = null;
+        originPos = Vector3.zero;
+        targetPos = Vector3.zero;
+
+        if (targetNode == null)
+        {
+            Debug.Log("No obtained node");
+            return false;
+        }
+
+        parabola = selfCharacter.GetComponentInChildren<ParabolaRenderer>();
+        if (parabola == null)
+        {
+            Debug.LogWarning("Missing Parabola Component in character");
+            return false;
+        }
+
+        if (originNode == null)
+            originNode = selfCharacter.GetCharacterTransformToNode();
+
+        Vector3 offset = new Vector3(0, 1f, 0);
+        originPos = originNode.GetVector();
+        targetPos = targetNode.GetVector();
+
+        CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
+        if (targetCharacter != null)
+            targetPos = targetCharacter.transform.position + offset;
+        else if (forceOffset)
+            targetPos += offset;
+
+        if (originPos == targetPos)
+        {
+            Debug.Log("Invalid parabola, target to self");
+            CloseProjectileParabola(selfCharacter);
+            return false;
+        }
+
+        return true;
     }
 
     public void CloseAllProjectileParabola()
@@ -349,7 +474,7 @@ public class BattleManager : Entity
             GameNode originNode = oppositeUnit[i].GetCharacterTransformToNode();
             if (targetNode == null)
                 targetNode = targetCharacter.GetCharacterTransformToNode();
-            ShowProjectileParabola(oppositeUnit[i], originNode, targetNode, true, true);
+            ShowAnyProjectileParabola(oppositeUnit[i], originNode, targetNode, true, true);
         }
     }
     #endregion
@@ -358,24 +483,56 @@ public class BattleManager : Entity
     {
         if (currentSkill.isProjectile)
         {
-            GameObject projectilePrefab = Instantiate(currentSkill.projectTilePrefab, originNode.GetVector(), Quaternion.identity);
-            Projectile projectile = projectilePrefab.GetComponent<Projectile>();
-
-            Vector3 offset = new Vector3(0, 2f, 0);
-            Vector3 targetPos = targetNode.GetVector();
-            CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
+            CastSkillProjectile(selfCharacter, currentSkill, originNode, targetNode);
+        }
+        else
+        {
+            CastSkil(selfCharacter, currentSkill, targetNode);
+        }
+    }
+    private void CastSkil(CharacterBase selfCharacter, SkillData currentSkill, GameNode targetNode)
+    {
+        CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
+        if (currentSkill.skillType == SkillType.Acttack)
+        {
+            int damage = currentSkill.damageAmount;
             if (targetCharacter != null)
-                targetPos = targetCharacter.transform.position + offset;
-
-            if (projectile != null)
             {
-                if (originNode == null)
-                    projectile.LaunchToTarget(selfCharacter, currentSkill, 
-                        selfCharacter.transform.position + offset, targetPos);
-                else
-                    projectile.LaunchToTarget(selfCharacter, currentSkill,
-                        originNode.GetVector() + offset, targetPos);
+                targetCharacter.TakeDamage(damage);
             }
+        }
+        else if (currentSkill.skillType == SkillType.Heal)
+        {
+            int heal = currentSkill.healAmount;
+            if (targetCharacter != null)
+            {
+                targetCharacter.TakeHeal(heal);
+            }
+        }
+    }
+    private void CastSkillProjectile(CharacterBase selfCharacter, SkillData currentSkill, GameNode originNode, GameNode targetNode)
+    {
+        if (!currentSkill.isProjectile) { return; }
+
+        GameObject projectilePrefab = Instantiate(currentSkill.projectTilePrefab, originNode.GetVector(), Quaternion.identity);
+        CameraMovement.instance.ChangeFollowTarget(projectilePrefab.transform);
+        Debug.Log($"Instantiate projectile {currentSkill.projectTilePrefab.name} at {originNode}");
+        Projectile projectile = projectilePrefab.GetComponent<Projectile>();
+
+        Vector3 offset = new Vector3(0, 2f, 0);
+        Vector3 targetPos = targetNode.GetVector();
+        CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
+        if (targetCharacter != null)
+            targetPos = targetCharacter.transform.position + offset;
+
+        if (projectile != null)
+        {
+            if (originNode == null)
+                projectile.LaunchToTarget(selfCharacter, currentSkill, 
+                    selfCharacter.transform.position + offset, targetPos);
+            else
+                projectile.LaunchToTarget(selfCharacter, currentSkill,
+                    originNode.GetVector() + offset, targetPos);
         }
     }
 
@@ -446,6 +603,9 @@ public class BattleManager : Entity
     private void HandleUnitKnockout(CharacterBase character)
     {
         CTTimeline.instance.RemoveCharacter(character);
+        TeamDeployment characterTeam = character.currentTeam;
+        knockOutCharacter.Add(character);
+        CheckBattleState();
     }
 
     public List<CharacterBase> GetCharacterOpposites(CharacterBase allyCharacter)
@@ -462,7 +622,7 @@ public class BattleManager : Entity
         return oppositeUnit;
     }
     public List<TeamDeployment> GetBattleTeam() => battleTeams;
-    public List<CharacterBase> GetBattleUnit() => joinedBattleUnits;
+    public List<CharacterBase> GetBattleUnits() => joinedBattleUnits;
 
 }
 

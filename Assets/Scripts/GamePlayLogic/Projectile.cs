@@ -38,6 +38,7 @@ public class Projectile : Entity
             {
                 Debug.Log($"Hit {unitDetectable.name}");
                 DoDamage(unitDetectable);
+                CameraMovement.instance.ChangeFollowTarget(shooter.transform);
                 Destroy(gameObject);
                 return;
             }
