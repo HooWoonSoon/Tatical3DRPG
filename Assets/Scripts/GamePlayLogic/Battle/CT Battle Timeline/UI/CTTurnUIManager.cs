@@ -10,31 +10,31 @@ public class CTTurnUIManager : MonoBehaviour
     [Serializable]
     public class TurnUIImage
     {
+        public Image backgroundPanel;
         public Image characterImage;
-        public Image backgroundImage;
         public TextMeshProUGUI turnUIText;
 
         public CharacterBase character;
         public int roundCount;
         public int turnCount;
 
-        public TurnUIImage(Transform parent, CharacterBase character, TMP_FontAsset fontAsset, int roundCount, int turnQueue)
+        public TurnUIImage(Transform parent, CharacterBase character, TMP_FontAsset fontAsset, int roundCount, int turnCount)
         {
             this.character = character;
             this.roundCount = roundCount;
-            this.turnCount = turnQueue;
+            this.turnCount = turnCount;
 
             CreateBackgroundPanel(parent);
-            CreateCharacterImage(backgroundImage.transform);
-            CreateTurnText(backgroundImage.transform, fontAsset);
+            CreateCharacterImage(backgroundPanel.transform);
+            CreateTurnText(backgroundPanel.transform, fontAsset);
         }
 
         private void CreateBackgroundPanel(Transform parent)
         {
-            backgroundImage = new GameObject("BackgroundPanel").AddComponent<Image>();
-            backgroundImage.transform.SetParent(parent, false);
-            backgroundImage.rectTransform.sizeDelta = new Vector2(140, 100);
-            backgroundImage.color = new Color(0, 0, 0, 220 / 255f);
+            backgroundPanel = new GameObject("BackgroundPanel").AddComponent<Image>();
+            backgroundPanel.transform.SetParent(parent, false);
+            backgroundPanel.rectTransform.sizeDelta = new Vector2(140, 100);
+            backgroundPanel.color = new Color(0, 0, 0, 220 / 255f);
         }
 
         private void CreateCharacterImage(Transform parent)
@@ -64,14 +64,15 @@ public class CTTurnUIManager : MonoBehaviour
     [Header("Unit Image")]
     [SerializeField] private GameObject targetUnitImage;
     [SerializeField] private GameObject turnUIContent;
-    [SerializeField] private GameObject turnPhaseUI;
+    [SerializeField] private GameObject roundPhaseUI;
     [SerializeField] private TMP_FontAsset fontAsset;
     private List<TurnUIImage> turnUIImages = new List<TurnUIImage>();
+    private List<GameObject> roundPhaseUIObjects = new List<GameObject>();
     private List<TurnUIImage> pastTurnUIImages = new List<TurnUIImage>();
 
     private List<CTRound> allCTRound;
-    private CTRound currentCTTurn;
-    private int currentTurnIndex = 0;
+    private CTRound currentCTRound;
+    private CTTurn currentCTTurn;
     private int generatedRoundIndex = -1;
     private int generatedTurnIndex = -1;
     
@@ -104,7 +105,7 @@ public class CTTurnUIManager : MonoBehaviour
 
     public void GenerateTimelineUI()
     {
-        ResetTurnUI();
+        ResetAllTurnUI();
         GenerateTurnUI();
         //  Wait 1 frame to let LayoutGroup/Canvas finish
         StartCoroutine(DelayTargetFocus());
@@ -112,15 +113,16 @@ public class CTTurnUIManager : MonoBehaviour
     private IEnumerator DelayTargetFocus()
     {
         yield return null;
-        TargetCurrentCTTurnUI(CTTimeline.instance.GetCurrentCTTurn(), CTTimeline.instance.GetCurrentTurn());
+        TargetCurrentCTTurnUI(CTTimeline.instance.GetCurrentCTRound(), CTTimeline.instance.GetCurrentCTTurn());
     }
 
     private void GenerateTurnUI()
     {
         for (int i = 0; i < allCTRound.Count; i++)
         {
-            GameObject turnPhaseGameObject = Instantiate(turnPhaseUI);
-            turnPhaseGameObject.transform.SetParent(turnUIContent.transform, false);
+            GameObject roundPhaseUIObject = Instantiate(roundPhaseUI);
+            roundPhaseUIObject.transform.SetParent(turnUIContent.transform, false);
+            roundPhaseUIObjects.Add(roundPhaseUIObject);
 
             List<CharacterBase> characterQueues = allCTRound[i].GetCharacterQueue();
 
@@ -136,7 +138,7 @@ public class CTTurnUIManager : MonoBehaviour
 
     public void AppendTurnUI()
     {
-        allCTRound = CTTimeline.instance.GetAllTurnHistory();
+        allCTRound = CTTimeline.instance.GetAllRound();
 
         //  Check release round
         if (generatedRoundIndex >= allCTRound.Count) { return; }
@@ -150,10 +152,10 @@ public class CTTurnUIManager : MonoBehaviour
             generatedRoundIndex++;
             generatedTurnIndex = 0;
 
-            GameObject turnPhaseGameObject = Instantiate(turnPhaseUI);
-            turnPhaseGameObject.transform.SetParent(turnUIContent.transform, false);
-
             if (generatedRoundIndex >= allCTRound.Count) { return; }
+
+            GameObject turnPhaseGameObject = Instantiate(roundPhaseUI);
+            turnPhaseGameObject.transform.SetParent(turnUIContent.transform, false);
 
             cTRound = allCTRound[generatedRoundIndex];
             queue = cTRound.GetCharacterQueue();
@@ -168,11 +170,11 @@ public class CTTurnUIManager : MonoBehaviour
         }
     }
 
-    public void ResetTurnUI()
+    public void ResetAllTurnUI()
     {
         generatedRoundIndex = -1;
         generatedTurnIndex = -1;
-        allCTRound = CTTimeline.instance.GetAllTurnHistory();
+        allCTRound = CTTimeline.instance.GetAllRound();
         if (allCTRound.Count == 0)
         {
             Debug.LogWarning("CTTurnUIManager: No CTRound in history!");
@@ -186,14 +188,63 @@ public class CTTurnUIManager : MonoBehaviour
         turnUIImages.Clear();
     }
 
-    #region External Called
-    public void RecordPastTurnUI(CTRound cTRound, int currentTurnIndex)
+    public void RemoveTurnUIFormRound(CTRound cTRound, CharacterBase character)
+    {
+        for (int i = turnUIImages.Count - 1; i >= 0; i--)
+        {
+            if (turnUIImages[i].roundCount != cTRound.roundCount) continue;
+            if (turnUIImages[i].character != character) continue;
+            if (pastTurnUIImages.Contains(turnUIImages[i])) continue;
+            turnUIImages[i].backgroundPanel.gameObject.SetActive(false);
+        }
+        allCTRound = CTTimeline.instance.GetAllRound();
+    }
+    public void AdjustTurnUIStartRound(int roundIndex)
+    {
+        allCTRound = CTTimeline.instance.GetAllRound();
+        int maxRound = allCTRound.Count;
+        for (int i = turnUIImages.Count - 1; i >= 0; i--)
+        {
+            if (turnUIImages[i].roundCount >= roundIndex)
+            {
+                TurnUIImage turnUIImage = turnUIImages[i];
+                if (turnUIImage != null)
+                {
+                    turnUIImage.backgroundPanel.gameObject.SetActive(false);
+                }
+                turnUIImages.RemoveAt(i);
+            }
+        }
+        for (int i = roundPhaseUIObjects.Count - 1; i >= 0; i--)
+        {
+            roundPhaseUIObjects[i].SetActive(false);
+            roundPhaseUIObjects.RemoveAt(i);
+        }
+
+        for (int i = roundIndex; i < maxRound; i++)
+        {
+            GameObject roundPhaseUIObject = Instantiate(roundPhaseUI);
+            roundPhaseUIObject.transform.SetParent(turnUIContent.transform, false);
+            roundPhaseUIObjects.Add(roundPhaseUIObject);
+
+            List<CharacterBase> characterQueues = allCTRound[i].GetCharacterQueue();
+
+            for (int j = 0; j < characterQueues.Count; j++)
+            {
+                TurnUIImage turnUIImage = new TurnUIImage(turnUIContent.transform,
+                    characterQueues[j],fontAsset,allCTRound[i].roundCount,j);
+                turnUIImages.Add(turnUIImage);
+            }
+        }
+    }
+
+    public void RecordPastTurnUI(CTRound cTRound, CTTurn cTTurn)
     {
         for (int i = turnUIImages.Count - 1; i >= 0 ; i--)
         {
             if (turnUIImages[i].roundCount == cTRound.roundCount)
             {
-                if (turnUIImages[i].turnCount == currentTurnIndex)
+                if (turnUIImages[i].turnCount == cTTurn.turnCount)
                 {
                     pastTurnUIImages.Add(turnUIImages[i]);
                     break;
@@ -201,44 +252,39 @@ public class CTTurnUIManager : MonoBehaviour
             }
         }
     }
-    public void TargetCurrentCTTurnUI(CTRound cTRound, int currentTurn)
+    public void TargetCurrentCTTurnUI(CTRound cTRound, CTTurn currentTurn)
     {
-        currentCTTurn = cTRound;
-        this.currentTurnIndex = currentTurn;
+        currentCTRound = cTRound;
+        currentCTTurn = currentTurn;
 
-        for (int i = 0; i < turnUIImages.Count; i++)
+        for (int i = turnUIImages.Count - 1; i >= 0; i--)
         {
-            if (turnUIImages[i].roundCount == cTRound.roundCount)
-            {
-                if (turnUIImages[i].turnCount == currentTurn)
-                {
-                    UpdateTargetCharacterUI(turnUIImages[i].character);
-                    RectTransform target = turnUIImages[i].backgroundImage.rectTransform;
-                    FocusOnCharacterUI(target);
-                    break;
-                }
-            }
+            if (turnUIImages[i].roundCount != cTRound.roundCount) { continue; }
+            if (turnUIImages[i].turnCount != currentTurn.turnCount) { continue; }
+
+            UpdateTargetCharacterUI(turnUIImages[i].character);
+            RectTransform target = turnUIImages[i].backgroundPanel.rectTransform;
+            FocusOnCharacterUI(target);
+            break;
         }
     }
-
     public void TargetCursorCharacterUI(CharacterBase character)
     {
         for (int i = 0; i < turnUIImages.Count; i++)
         {
-            if (turnUIImages[i].roundCount != currentCTTurn.roundCount) { continue; }
+            if (turnUIImages[i].roundCount != currentCTRound.roundCount) { continue; }
             else
             {
                 if (turnUIImages[i].character == character)
                 {
                     UpdateTargetCharacterUI(character);
-                    RectTransform target = turnUIImages[i].backgroundImage.rectTransform;
+                    RectTransform target = turnUIImages[i].backgroundPanel.rectTransform;
                     FocusOnCharacterUI(target);
                     break;
                 }
             }
         }
     }
-    #endregion
 
     private void FocusOnCharacterUI(RectTransform target)
     {

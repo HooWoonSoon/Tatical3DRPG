@@ -103,7 +103,10 @@ public class PlayerBattleState : PlayerBaseState
                 else if (Input.GetKeyDown(KeyCode.P))
                 {
                     endTurnConfirmed = true;
-                    ChangePhase(BattlePhase.Move);
+                    if (moveTargetConfirmed)
+                        ChangePhase(BattlePhase.Move);
+                    else
+                        ChangePhase(BattlePhase.ReleaseSkillComandEnd);
                 }
                 break;
             case BattlePhase.SkillTarget:

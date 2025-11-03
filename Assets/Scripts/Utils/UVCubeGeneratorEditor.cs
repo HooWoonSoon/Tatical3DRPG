@@ -7,10 +7,10 @@ public class UVCubeMeshGenerator : EditorWindow
 {
     private string filePath = Path.Combine(Application.dataPath, "UnwarpCube.fbx");
 
-    [MenuItem("Utils/Generate UVwarp Cube")]
+    [MenuItem("Tactics/Generate UVwarp Cube")]
     public static void ShowWindow()
     {
-        EditorWindow.GetWindow<UVCubeMeshGenerator>();
+        GetWindow<UVCubeMeshGenerator>();
     }
 
     void OnGUI()
@@ -46,7 +46,6 @@ public class UVCubeMeshGenerator : EditorWindow
 
         //  Summary
         //      Center the cube coordinate point
-        //
         Vector3[] vertices = new Vector3[]
         {
             new Vector3(-0.5f, 0.5f, -0.5f), new Vector3(0.5f, 0.5f, -0.5f), new Vector3(0.5f, 0.5f, 0.5f), new Vector3(-0.5f, 0.5f, 0.5f), //Top
@@ -72,7 +71,6 @@ public class UVCubeMeshGenerator : EditorWindow
         //      but seperate every mesh with top, down forward, back, left, right.
         //      The concept of calculation example like:
         //      in Vector3 y = 1 is top, then the vector2 uv will get (0, 1) default
-        //
         Vector2[] uv = new Vector2[]
         {
             new Vector2(0f, 2f/3f), new Vector2(1f/3f, 2f/3f), new Vector2(1f/3f, 1f), new Vector2(0f, 1f), //top

@@ -481,9 +481,32 @@ public class BattleManager : Entity
 
     public void CastSkill(CharacterBase selfCharacter, SkillData currentSkill, GameNode originNode, GameNode targetNode)
     {
+        if (selfCharacter == null)
+        {
+            Debug.LogError("CastSkill failed: selfCharacter is null");
+            return;
+        }
+
+        if (currentSkill == null)
+        {
+            Debug.LogError("CastSkill failed: currentSkill is null");
+            return;
+        }
+
+        if (targetNode == null)
+        {
+            Debug.LogError("CastSkill failed: targetNode is null");
+            return;
+        }
+
         if (currentSkill.isProjectile)
         {
             CastSkillProjectile(selfCharacter, currentSkill, originNode, targetNode);
+            if (originNode == null)
+            {
+                Debug.LogError("CastSkill failed: originNode is null for projectile");
+                return;
+            }
         }
         else
         {
@@ -493,6 +516,7 @@ public class BattleManager : Entity
     private void CastSkil(CharacterBase selfCharacter, SkillData currentSkill, GameNode targetNode)
     {
         CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
+
         if (currentSkill.skillType == SkillType.Acttack)
         {
             int damage = currentSkill.damageAmount;

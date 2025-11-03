@@ -89,6 +89,7 @@ public class EnemyBattleState : EnemyBaseState
         currentPhase = newPhase;
         phaseStartTime = 0;
         EnterPhase(newPhase);
+        Debug.Log($"{character} enter to {newPhase}");
     }
 
     public void EnterPhase(BattlePhase phase)
@@ -98,6 +99,9 @@ public class EnemyBattleState : EnemyBaseState
             case BattlePhase.Ready:
                 break;
             case BattlePhase.Wait:
+                confrimMoveNode = null;
+                currentSkill = null;
+                targetNode = null;
                 break;
             case BattlePhase.Thinking:
                 CameraMovement.instance.ChangeFollowTarget(character.transform);
