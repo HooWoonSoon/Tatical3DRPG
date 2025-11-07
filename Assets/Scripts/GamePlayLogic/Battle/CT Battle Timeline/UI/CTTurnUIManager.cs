@@ -43,7 +43,7 @@ public class CTTurnUIManager : MonoBehaviour
             characterImage.gameObject.transform.SetParent(parent, false);
             characterImage.rectTransform.anchoredPosition = Vector2.zero;
             characterImage.rectTransform.sizeDelta = new Vector2(130, 90);
-            characterImage.sprite = character.data.characterTurnUISprite;
+            characterImage.sprite = character.data.turnUISprite;
         }
 
         private void CreateTurnText(Transform parent, TMP_FontAsset fontAsset)
@@ -61,8 +61,16 @@ public class CTTurnUIManager : MonoBehaviour
 
     }
 
-    [Header("Unit Image")]
-    [SerializeField] private GameObject targetUnitImage;
+    [Header("Target Image")]
+    [SerializeField] private Image targetUnitImage;
+    [SerializeField] private TextMeshProUGUI maxHeathText;
+    [SerializeField] private TextMeshProUGUI currentHeathText;
+    [SerializeField] private Image heathBarImage;
+    [SerializeField] private TextMeshProUGUI maxMentalText;
+    [SerializeField] private TextMeshProUGUI currentMentalText;
+    [SerializeField] private Image mentalBarImage;
+
+    [Header("Content Image")]
     [SerializeField] private GameObject turnUIContent;
     [SerializeField] private GameObject roundPhaseUI;
     [SerializeField] private TMP_FontAsset fontAsset;
@@ -301,13 +309,24 @@ public class CTTurnUIManager : MonoBehaviour
 
     private void UpdateTargetCharacterUI(CharacterBase character)
     {
-        Image image = targetUnitImage.GetComponent<Image>();
-        if (image == null) { return; }
+        if (targetUnitImage == null) { return; }
 
-        Sprite sprite = character.data.characterTurnUISprite;
+        Sprite sprite = character.data.turnUISprite;
         if (sprite != null)
+            targetUnitImage.sprite = sprite;
+        else
         {
-            image.sprite = sprite;
+            Debug.LogWarning($"{character} turn image is missing");
+            targetUnitImage.sprite = Utils.CreateGraySprite();
         }
+
+        if (maxHeathText != null)
+            maxHeathText.text = character.data.health.ToString();
+        if (currentHeathText != null)
+            currentHeathText.text = character.currentHealth.ToString();
+        if (maxMentalText != null)
+            maxMentalText.text = character.data.mental.ToString();
+        if (currentMentalText != null)
+            currentMentalText.text = character.currentMetal.ToString();
     }
 }

@@ -439,4 +439,15 @@ public static class Utils
         }
         objectTransform.position = originPosition;
     }
+
+    public static Sprite CreateGraySprite()
+    {
+        Texture2D grayTex = Texture2D.grayTexture;
+        Sprite graySprite = Sprite.Create(
+            grayTex,
+            new Rect(0, 0, grayTex.width, grayTex.height),
+            new Vector2(0.5f, 0.5f)
+        );
+        return graySprite;
+    }
 }

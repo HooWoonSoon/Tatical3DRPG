@@ -51,7 +51,7 @@ public class BattleUIManager : MonoBehaviour
     {
         if (skillUI.activeSelf == true) { return; } 
         skillUI.SetActive(true);
-        List<SkillData> characterSkillList = character.skillData;
+        List<SkillData> characterSkillList = character.skillDatas;
         TeamDeployment teamDeployment = character.currentTeam;
         List<InventoryData> invetoryList = teamDeployment.inventoryDatas;
         if (characterSkillList != null)

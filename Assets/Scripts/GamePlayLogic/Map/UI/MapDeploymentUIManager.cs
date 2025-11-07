@@ -16,7 +16,7 @@ public class MapDeploymentUIManager : Entity
             imageRect.sizeDelta = new Vector2(230, 120);
 
             image = imageRect.AddComponent<Image>();
-            image.sprite = data.characterTurnUISprite;
+            image.sprite = data.turnUISprite;
 
             tagObject = new GameObject("Arrow");
             RectTransform tag = tagObject.AddComponent<RectTransform>();

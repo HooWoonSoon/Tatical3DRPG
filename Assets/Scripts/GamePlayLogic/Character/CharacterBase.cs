@@ -17,9 +17,10 @@ public abstract class CharacterBase : Entity
     [Header("Character Information")]
     public SelfCanvasController selfCanvasController;
     public CharacterData data;
-    public List<SkillData> skillData;
+    public List<SkillData> skillDatas;
 
     public int currentHealth { get; set; }
+    public int currentMetal { get; set; }
     public float moveSpeed = 5f;
 
     public GameNode currentNode { get; private set; }
@@ -38,7 +39,8 @@ public abstract class CharacterBase : Entity
         base.Start();
         detectable = GetComponent<UnitDetectable>();
 
-        currentHealth = data.healthPoint;
+        currentHealth = data.health;
+        currentMetal = data.mental;
     }
 
     protected virtual void Update()
@@ -298,7 +300,7 @@ public abstract class CharacterBase : Entity
     public List<GameNode> GetMovableNode()
     {
         List<GameNode> result = new List<GameNode>();
-        int movableRange = data.movableRange;
+        int movableRange = data.movementValue;
         Vector3Int selfPos = GetCharacterTranformToNodePos();
         List<GameNode> coverage = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, movableRange, 1, 1);
         foreach (var node in coverage)
@@ -312,7 +314,7 @@ public abstract class CharacterBase : Entity
     }
     public List<GameNode> GetConflictNode()
     {
-        int selfRange = data.movableRange;
+        int selfRange = data.movementValue;
         Vector3Int selfPos = GetCharacterTranformToNodePos();
         List<GameNode> selfRangeExtend = pathFinding.GetCalculateDijkstraCost(selfPos, 1, 1);
         List<GameNode> selfMovableNode = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, selfRange, 1, 1);
@@ -325,7 +327,7 @@ public abstract class CharacterBase : Entity
             TeamDeployment oppositeTeam = character.currentTeam;
             if (oppositeTeam != currentTeam)
             {
-                int oppositeRange = character.data.movableRange;
+                int oppositeRange = character.data.movementValue;
                 Vector3Int oppositePos = Utils.RoundXZFloorYInt(character.transform.position);
                 List<GameNode> oppositeRangeNodes = pathFinding.GetCostDijkstraCoverangeNodes(oppositePos, oppositeRange, 1, 1);
                 foreach (GameNode rangeNode in oppositeRangeNodes)
@@ -392,7 +394,7 @@ public abstract class CharacterBase : Entity
     public void ShowMovableTilemap()
     {
         ResetVisualTilemap();
-        int selfRange = data.movableRange;
+        int selfRange = data.movementValue;
         List<GameNode> movableNode = GetMovableNode();
         foreach (GameNode node in movableNode)
         {
@@ -420,7 +422,7 @@ public abstract class CharacterBase : Entity
     {
         ResetVisualTilemap();
         List<CharacterBase> characters = GetOppositeCharacter();
-        int selfRange = data.movableRange;
+        int selfRange = data.movementValue;
 
         HashSet<Vector3Int> coverage = new HashSet<Vector3Int>();
         List<Vector3Int> reachableRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
@@ -430,7 +432,7 @@ public abstract class CharacterBase : Entity
         }
         for (int i = 0; i < characters.Count; i++)
         {
-            int oppositeRange = characters[i].data.movableRange;
+            int oppositeRange = characters[i].data.movementValue;
             List<Vector3Int> coverageRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(characters[i].transform.position), oppositeRange, 1, 1);
             foreach (var pos in coverageRange)
             {
@@ -539,7 +541,7 @@ public abstract class CharacterBase : Entity
     }
     public float GetCurrentHealthPercentage()
     {
-        float maxHeath = data.healthPoint;
+        float maxHeath = data.health;
         float percentage = (float)Math.Round((currentHealth / maxHeath), 2);
         return percentage;
     }

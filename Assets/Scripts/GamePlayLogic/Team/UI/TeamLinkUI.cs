@@ -6,7 +6,6 @@ using UnityEngine.UI;
 public class TeamLinkUI
 {
     public PlayerCharacter character { get; private set; }
-    public int ID { get; private set; }
     public int index { get; private set; }
     public int Index
     {
@@ -47,7 +46,6 @@ public class TeamLinkUI
         image = imageObject.GetComponent<Image>();
         image.rectTransform.anchoredPosition = rectPosition;
 
-        ID = character.data.ID;
         Index = index;
 
         LinkCharacter();

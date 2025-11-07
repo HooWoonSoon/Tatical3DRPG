@@ -14,13 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: Archery Shooting
   skillIcon: {fileID: 21300000, guid: 54b763209277a3f438a7733dff99e37a, type: 3}
-  range: 5
-  aoeRadius: 1
   description: The archery shooting, use bow to shoot the unit
   type: 0
   skillType: 0
   targetType: 2
-  skillDesignatedSelf: 0
+  range: 5
+  aoeRadius: 1
   isProjectile: 1
   projectTilePrefab: {fileID: 6351172539165178106, guid: cc2563b24ce269f44b26145380286a4d, type: 3}
   initialElevationAngle: 60

@@ -26,7 +26,7 @@ public class DecisionSystem
 
         float bestScore = int.MinValue;
 
-        foreach (SkillData skill in decisionMaker.skillData)
+        foreach (SkillData skill in decisionMaker.skillDatas)
         {
             List<GameNode> skillInflueneMovableNode = decisionMaker.GetSkillAttackMovableNode(skill);
 

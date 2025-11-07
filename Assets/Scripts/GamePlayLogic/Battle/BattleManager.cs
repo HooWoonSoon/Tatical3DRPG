@@ -395,7 +395,7 @@ public class BattleManager : Entity
             out ParabolaRenderer parabola, out Vector3 originPos, out Vector3 targetPos))
             return;
 
-        foreach (SkillData skill in selfCharacter.skillData)
+        foreach (SkillData skill in selfCharacter.skillDatas)
         {
             if (!skill.isProjectile)
                 continue;

@@ -250,7 +250,7 @@ public class PlayerTeamLinkUIManager : MonoBehaviour
 
         int currentIndex = currentTeamLinkUI.index;
         miniUISetTooltip.PopOut(miniUIPopUpPos[currentIndex]);
-        Debug.Log($"currentIndex: {currentIndex} characterID {currentTeamLinkUI.ID}");
+        Debug.Log($"currentIndex: {currentIndex} characterID {currentTeamLinkUI.character}");
         teamLinkButton.Initialize(currentTeamLinkUI);
         
         prevPopUpIndex = currentIndex;

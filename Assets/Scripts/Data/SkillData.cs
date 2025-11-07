@@ -9,24 +9,18 @@ public enum SkillType
     Acttack, Heal
 }
 
-public enum Trajectory
-{
-    Linear, Parabola 
-}
-
 [CreateAssetMenu(fileName = "SkillData", menuName = "Tactics/Skill")]
 public class SkillData : ScriptableObject
 {
     [Header("Skill Info")]
     public string skillName;
     public Sprite skillIcon;
-    public int range;
-    public int aoeRadius = 1; // If not aoe skill, set to 1
     public string description;
     public AbilityType type;
     public SkillType skillType;
     public SkillTargetType targetType;
-    public bool skillDesignatedSelf;
+    public int range;
+    public int aoeRadius = 1; // If not aoe skill, set to 1
 
     public bool isProjectile;
     public GameObject projectTilePrefab;
