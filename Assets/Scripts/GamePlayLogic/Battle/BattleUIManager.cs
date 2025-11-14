@@ -9,8 +9,8 @@ public class BattleUIManager : MonoBehaviour
     public GameObject battleStatePanel;
 
     [Header("Battle Event Display UI")]
-    public GameObject battleEventDisplayUI;
-    public float duration = 2.0f;
+    public GameObject battleStartDisplayUI;
+    public GameObject battleEndDisplayUI;
 
     [Header("Battle Set Skill UI")]
     public GameObject actionOptionPanel;
@@ -27,7 +27,7 @@ public class BattleUIManager : MonoBehaviour
     private void Start()
     {
         battleStatePanel.SetActive(false);
-        battleEventDisplayUI.SetActive(false);
+        battleStartDisplayUI.SetActive(false);
         actionOptionPanel.SetActive(false);
         skillUI.SetActive(false);
         cTTimelineUI.SetActive(false);
@@ -36,17 +36,33 @@ public class BattleUIManager : MonoBehaviour
     public void PrepareBattleUI()
     {
         battleStatePanel.SetActive(true);
-        battleEventDisplayUI.SetActive(true);
+        battleStartDisplayUI.SetActive(true);
         cTTimelineUI.SetActive(true);
-        StartCoroutine(UIFinish());
+        StartCoroutine(PrepareBattleSequence());
+    }
+    private IEnumerator PrepareBattleSequence()
+    {
+        yield return new WaitForSeconds(2f);
+        OnBattleUIFinish?.Invoke();
+        battleStartDisplayUI.SetActive(false);
     }
 
-    public IEnumerator UIFinish()
+    public void CompleteBattleUI()
     {
-        yield return new WaitForSeconds(duration);
-        OnBattleUIFinish?.Invoke();
-        battleEventDisplayUI.SetActive(false);
+        battleEndDisplayUI.SetActive(true);
+        StartCoroutine(CompleteBattleSequence());
     }
+    private IEnumerator CompleteBattleSequence()
+    {
+        yield return new WaitForSeconds(2f);
+        battleEndDisplayUI.SetActive(false);
+
+        yield return new WaitForSeconds(2f);
+        battleStatePanel.SetActive(false);
+        cTTimelineUI.SetActive(false);
+        BattleManager.instance.EndBattle();
+    }
+
     public void OpenUpdateSkillUI(CharacterBase character)
     {
         if (skillUI.activeSelf == true) { return; } 
@@ -76,23 +92,23 @@ public class BattleUIManager : MonoBehaviour
         {
             SelfCanvasController selfCanvasController = character.selfCanvasController;
             if (selfCanvasController == null)
-                Debug.LogWarning($"{character} missing Self Canvas Controller");
-            else
             {
+                Debug.LogWarning($"{character} missing Self Canvas Controller");
+                continue;
+            }
+
+            if (active)
+            {
+                selfCanvasController.ActiveAll(true);
                 int queue = CTTimeline.instance.GetCharacterCurrentQueue(character);
                 selfCanvasController.SetQueue(queue);
                 float healthPercentage = character.GetCurrentHealthPercentage();
                 selfCanvasController.SetHeathPercetange(healthPercentage);
-
-                Canvas selfCanvas = selfCanvasController.selfCanvas;
-                if (selfCanvas == null)
-                    Debug.LogWarning($"{character} missing Self Canvas");
-                else
-                {
-                    selfCanvas.gameObject.SetActive(active);
-                }
             }
-                
+            else
+            {
+                selfCanvasController.ActiveAll(false);
+            }
         }
     }
 }

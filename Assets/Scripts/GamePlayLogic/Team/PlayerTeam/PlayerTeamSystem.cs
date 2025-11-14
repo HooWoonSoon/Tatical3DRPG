@@ -19,16 +19,16 @@ public class PlayerTeamSystem : TeamSystem
 
     private void OnEnable()
     {
-        TeamEvent.OnLeaderChanged += SetTeamFollowerLeader;
-        TeamEvent.OnTeamSortExchange += SortTeamFollower;
-        TeamEvent.OnTeamSortExchange += ClearAllHistory;
+        GameEvent.onLeaderChangedRequest += SetTeamFollowerLeader;
+        GameEvent.onTeamSortExchange += SortTeamFollower;
+        GameEvent.onTeamSortExchange += ClearAllHistory;
     }
 
     private void OnDisable()
     {
-        TeamEvent.OnLeaderChanged -= SetTeamFollowerLeader;
-        TeamEvent.OnTeamSortExchange -= SortTeamFollower;
-        TeamEvent.OnTeamSortExchange -= ClearAllHistory;
+        GameEvent.onLeaderChangedRequest -= SetTeamFollowerLeader;
+        GameEvent.onTeamSortExchange -= SortTeamFollower;
+        GameEvent.onTeamSortExchange -= ClearAllHistory;
     }
 
     private void Awake()
@@ -153,9 +153,10 @@ public class PlayerTeamSystem : TeamSystem
         SortTeamFollower();
     }
 
-    //  Summary
-    //      Set the leader of the team by checking the index of each unit character.
-    //      The first character in the list is set as the leader.
+    /// <summary>
+    /// Set the leader of the team by checking the index of each unit character.
+    /// The first character in the list is set as the leader.
+    /// </summary>
     public void SetTeamFollowerLeader()
     {
         currentLeader = null;
@@ -168,6 +169,7 @@ public class PlayerTeamSystem : TeamSystem
             { 
                 unitCharacter.isLeader = true;
                 currentLeader = unitCharacter;
+                GameEvent.onLeaderChanged?.Invoke(currentLeader);
             }
             else { unitCharacter.isLeader = false; }
         }
@@ -175,9 +177,10 @@ public class PlayerTeamSystem : TeamSystem
     #endregion
 
     #region External call manage team follower
-    // Summary
-    //      External call to remove the character from the team follower list
-    //      and add it to the unlink character list.
+    /// <summary>
+    /// External call to remove the character from the team follower list
+    /// and add it to the unlink character list.
+    /// </summary>
     public void RemoveUnlinkCharacterFromTeam(PlayerCharacter unitCharacter)
     {
         for (int i = 0; i < linkMembers.Count; i++)
@@ -191,8 +194,9 @@ public class PlayerTeamSystem : TeamSystem
         }
     }
 
-    //  Summary
-    //      External call to add a character to the unlink character list.
+    /// <summary>
+    /// External call to add a character to the unlink character list.
+    /// </summary>
     public void AddCharacterToUnlinkList(PlayerCharacter character)
     {
         if (!unlinkMember.Contains(character)) 
@@ -212,8 +216,9 @@ public class PlayerTeamSystem : TeamSystem
     }
 
     #region Logic handle team follower
-    //  Summary
-    //      Follow the target character with the nearest index member.
+    /// <summary>
+    /// Follow the target character with the nearest index member.
+    /// </summary>
     public void FollowWithNearIndexMember(PlayerCharacter member, PlayerCharacter follower)
     {
         if (member.isLink == false || follower == null) return;
@@ -222,8 +227,9 @@ public class PlayerTeamSystem : TeamSystem
         member.SetMoveDirection(direciton.x, direciton.z);
     }
 
-    //  Summary
-    //      Get the direction to follow the target character.
+    /// <summary>
+    /// Get the direction to follow the target character.
+    /// </summary>
     private void GetFollowTargetDirection(PlayerCharacter member, PlayerCharacter follower, out Vector3 direction)
     {
         direction = Vector3.zero;
@@ -329,7 +335,7 @@ public class PlayerTeamSystem : TeamSystem
         {
             PathRoute route = pathFinding.GetPathRoute(fromPosition, sortedTarget[i], 1, 1);
             if (route == null) { return false; }
-            List<Vector3> pathVectorList = route.pathRouteList;
+            List<Vector3> pathVectorList = route.pathNodeVectorList;
 
             bool existSameTarget = IsTargetPositionExist(pathRoute, sortedTarget[i]);
             if (existSameTarget == true)
@@ -340,7 +346,7 @@ public class PlayerTeamSystem : TeamSystem
 
             if (pathVectorList.Count != 0)
             {
-                pathRoute.pathRouteList = pathVectorList;
+                pathRoute.pathNodeVectorList = pathVectorList;
                 pathRoute.targetPosition = sortedTarget[i];
                 pathRoute.pathIndex = 0;
                 Debug.Log($" {fromPosition} to target {pathRoute.targetPosition}");

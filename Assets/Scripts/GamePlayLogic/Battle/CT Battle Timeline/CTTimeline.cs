@@ -46,7 +46,7 @@ public class CTTimeline : MonoBehaviour
     public Dictionary<CharacterBase, CharacterTacticsTime> battleCharacter;
     private List<CharacterBase> leaveCharacter;
 
-    private List<CTRound> cTRounds = new List<CTRound>();
+    private List<CTRound> cTRounds;
     private const int INITIAL_ROUND = 4;
 
     private CTRound currentCTRound;
@@ -87,7 +87,7 @@ public class CTTimeline : MonoBehaviour
         if (battleCharacter.Count == 0) { return; }
 
         HashSet<CharacterBase> characters = new HashSet<CharacterBase>(battleCharacter.Keys);
-        cTRounds.Clear();
+        cTRounds = new List<CTRound>();
 
         for (int i = 0; i < INITIAL_ROUND; i++)
         {
@@ -163,6 +163,12 @@ public class CTTimeline : MonoBehaviour
             turns.RemoveAt(i);
         }
         CTTurnUIManager.instance.RemoveTurnUIFormRound(cTRound, character);
+    }
+
+    public void EndTimeline()
+    {
+        battleCharacter = null;
+        CTTurnUIManager.instance.ResetAllTurnUI();
     }
 
     private bool IsAllCharacterQueue(List<CharacterTacticsTime> tacticsList)

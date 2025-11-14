@@ -108,12 +108,9 @@ public class SkillManagerEditor : EditorWindow
         }
         else
         {
-            int columns = Mathf.Max(1, Mathf.FloorToInt(position.width / 150));
-            int index = 0;
-
-            for (int i = 0; i < columns && index < list.Count; i++, index++)
+            for (int i = 0; i < list.Count; i++)
             {
-                DrawSkillCard(list[index]);
+                DrawSkillCard(list[i]);
             }
         }
 
@@ -159,11 +156,15 @@ public class SkillManagerEditor : EditorWindow
     {
         if (skillDatabase == null) { return; }
         SkillData newSkill = CreateInstance<SkillData>();
-        int count = skillDatabase.allSkills.Count - 1;
+        int count = skillDatabase.allSkills.Count;
+        
         AssetDatabase.CreateAsset(newSkill, $"Assets/ScriptableData/Skill/Skill({count}).asset");
-        AssetDatabase.SaveAssets();
         skillDatabase.AddSkill(newSkill);
         selectedSkill = newSkill;
+
+        EditorUtility.SetDirty(skillDatabase);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
     private void DrawSkillCard(SkillData skill)
     {
@@ -186,7 +187,7 @@ public class SkillManagerEditor : EditorWindow
         }
         GUILayout.Label(nameToShow, EditorStyles.boldLabel);
 
-        string descriptionToShow = "(-)";
+        string descriptionToShow = "(No description has been written)";
         if (skill.description != null)
         {
             descriptionToShow = skill.description;
@@ -196,8 +197,25 @@ public class SkillManagerEditor : EditorWindow
         EditorGUILayout.BeginHorizontal();
         if (GUILayout.Button("Select", GUILayout.Width(60)))
             Selection.activeObject = skill;
-        if (GUILayout.Button("Edit", GUILayout.Width(60)))
+        if (GUILayout.Button("Edit", GUILayout.Width(50)))
+        {
             selectedSkill = skill;
+            GUI.FocusControl(null);
+        }
+        if (GUILayout.Button("Delete", GUILayout.Width(60)))
+        {
+            if (EditorUtility.DisplayDialog("Delete Skill", $"Are you sure you want to delete skill: {skill.skillName}?", "Yes", "No"))
+            {
+                skillDatabase.RemoveSkill(skill);
+                string path = AssetDatabase.GetAssetPath(skill);
+                AssetDatabase.DeleteAsset(path);
+                selectedSkill = null;
+
+                EditorUtility.SetDirty(skillDatabase);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
+        }
         EditorGUILayout.EndHorizontal();
 
         GUILayout.EndVertical();

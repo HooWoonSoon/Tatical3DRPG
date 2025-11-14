@@ -6,15 +6,15 @@ public class SkillDatabase : ScriptableObject
 {
     public List<SkillData> allSkills;
 
-    private void OnValidate()
-    {
-        allSkills.RemoveAll(skill => skill == null);
-    }
-
     public void AddSkill(SkillData skill)
     {
         allSkills.RemoveAll(skill => skill == null);
         if (!allSkills.Contains(skill)) 
             allSkills.Add(skill);
+    }
+
+    public void RemoveSkill(SkillData skill)
+    {
+        allSkills.Remove(skill);
     }
 }

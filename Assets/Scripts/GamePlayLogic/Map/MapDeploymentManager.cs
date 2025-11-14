@@ -231,7 +231,7 @@ public class MapDeploymentManager : Entity
     }
     public void SetGridCursorAt(GameNode target)
     {
-        gridCursor.HandleGridCursor(target);
+        gridCursor.SetGridCursorAt(target);
     }
     private void CasualPutGridCursorAtLoadedMap()
     {

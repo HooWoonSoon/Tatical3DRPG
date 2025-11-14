@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.Events;
 using System.Collections.Generic;
+using System;
 
 public class PlayerTeamLinkUIManager : MonoBehaviour
 {
@@ -81,18 +82,22 @@ public class PlayerTeamLinkUIManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             ProcessTeamLinkOption(0);
+            CameraToOptionCharacter(0);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha2))
         {
             ProcessTeamLinkOption(1);
+            CameraToOptionCharacter(1);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha3))
         {
             ProcessTeamLinkOption(2);
+            CameraToOptionCharacter(2);
         }
         else if (Input.GetKeyDown(KeyCode.Alpha4))
         {
             ProcessTeamLinkOption(3);
+            CameraToOptionCharacter(3);
         }
 
         //  Summary
@@ -307,4 +312,9 @@ public class PlayerTeamLinkUIManager : MonoBehaviour
         markedTeamLinkUI = null;
     }
     #endregion
+    private void CameraToOptionCharacter(int index)
+    {
+        CharacterBase character = teamUIClasses[index].character;
+        CameraMovement.instance.ChangeFollowTarget(character.transform);
+    }
 }

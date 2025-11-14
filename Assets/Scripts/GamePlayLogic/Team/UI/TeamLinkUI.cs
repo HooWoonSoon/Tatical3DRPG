@@ -29,12 +29,12 @@ public class TeamLinkUI
     #region BroadCasting
     private void BroadCastingLeaderChanged()
     {
-        TeamEvent.OnLeaderChanged?.Invoke();
+        GameEvent.onLeaderChangedRequest?.Invoke();
     }
 
     private void BroadCastingTeamSortExchange()
     {
-        TeamEvent.OnTeamSortExchange?.Invoke();
+        GameEvent.onTeamSortExchange?.Invoke();
     }
     #endregion
 

@@ -280,16 +280,16 @@ public class CTTurnUIManager : MonoBehaviour
     {
         for (int i = 0; i < turnUIImages.Count; i++)
         {
-            if (turnUIImages[i].roundCount != currentCTRound.roundCount) { continue; }
-            else
+            if (turnUIImages[i].roundCount < currentCTRound.roundCount) { continue; }
+            if (turnUIImages[i].turnCount < currentCTTurn.turnCount && 
+                turnUIImages[i].roundCount == currentCTRound.roundCount) { continue;}
+
+            if (turnUIImages[i].character == character)
             {
-                if (turnUIImages[i].character == character)
-                {
-                    UpdateTargetCharacterUI(character);
-                    RectTransform target = turnUIImages[i].backgroundPanel.rectTransform;
-                    FocusOnCharacterUI(target);
-                    break;
-                }
+                UpdateTargetCharacterUI(character);
+                RectTransform target = turnUIImages[i].backgroundPanel.rectTransform;
+                FocusOnCharacterUI(target);
+                break;
             }
         }
     }
@@ -328,5 +328,25 @@ public class CTTurnUIManager : MonoBehaviour
             maxMentalText.text = character.data.mental.ToString();
         if (currentMentalText != null)
             currentMentalText.text = character.currentMetal.ToString();
+
+        if (heathBarImage != null)
+            heathBarImage.fillAmount = (float)character.currentHealth / character.data.health;
+        if (mentalBarImage != null)
+            mentalBarImage.fillAmount = (float)character.currentMetal / character.data.mental;
+    }
+
+    public void ExecuteHealthChange(CharacterBase character, int value)
+    {
+        StartCoroutine(Utils.UIFilledValueChangeCoroutine(
+            heathBarImage, character.data.health, character.currentHealth, value, 0.5f));
+        StartCoroutine(Utils.TextValueChangeCoroutine(
+            currentHeathText, character.currentHealth, value, 0.5f, true));
+    }
+    public void ExecuteMentalChange(CharacterBase character, int value)
+    {
+        StartCoroutine(Utils.UIFilledValueChangeCoroutine(
+            mentalBarImage, character.data.mental, character.currentMetal, value, 0.5f));
+        StartCoroutine(Utils.TextValueChangeCoroutine(
+            currentMentalText, character.currentMetal, value, 0.5f, true));
     }
 }

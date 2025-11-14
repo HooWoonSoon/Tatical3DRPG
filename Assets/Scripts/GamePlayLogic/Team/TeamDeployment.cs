@@ -6,7 +6,6 @@ public enum TeamType
     Player, Opposite, Allay, Neutral
 }
 
-
 public class TeamDeployment : MonoBehaviour
 {
     public List<CharacterBase> teamCharacter = new List<CharacterBase>();

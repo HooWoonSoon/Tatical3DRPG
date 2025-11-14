@@ -19,13 +19,15 @@ MonoBehaviour:
   type: 1
   skillType: 0
   targetType: 2
-  range: 2
+  skillRange: 3
+  occlusionRange: 1
   aoeRadius: 1
   isProjectile: 0
   projectTilePrefab: {fileID: 0}
   initialElevationAngle: 0
   spIcon: {fileID: 0}
-  requiredSP: 10
+  requireMP: 1
+  MPAmount: 10
   damageAmount: 20
   healAmount: 0
   skillCastTime: 1

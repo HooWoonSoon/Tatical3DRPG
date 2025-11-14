@@ -130,15 +130,16 @@ public class MapManager : MonoBehaviour
                 {
                     Debug.LogWarning("Node could not be found");
                 }
-
-                character.gameObject.SetActive(true);
-
-                if (isDeployState)
-                    character.TeleportToNodeDeployble(node);
                 else
-                    character.TeleportToNodeFree(node);
+                {
+                    character.gameObject.SetActive(true);
 
-                teamCharacters.Add(character);
+                    if (isDeployState)
+                        character.TeleportToNodeDeployble(node);
+                    else
+                        character.TeleportToNodeFree(node);
+                    teamCharacters.Add(character);
+                }
             }
 
             if (isDeployState)

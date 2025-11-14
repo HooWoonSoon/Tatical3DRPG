@@ -339,6 +339,28 @@ public static class Utils
         image.color = endColor;
     }
 
+    public static IEnumerator UIFilledValueChangeCoroutine(Image image,
+    float maxValue, float currentValue, float changeValue, float duration)
+    {
+        image.type = Image.Type.Filled;
+        image.fillMethod = Image.FillMethod.Horizontal;
+
+        float currentPercent = Mathf.Clamp01(currentValue / maxValue);
+        float targetPercent = Mathf.Clamp01((currentValue + changeValue) / maxValue);
+
+        image.fillAmount = currentPercent;
+
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            image.fillAmount = Mathf.Lerp(currentPercent, targetPercent, t);
+            yield return null;
+        }
+        image.fillAmount = targetPercent;
+    }
+
     public static IEnumerator TextColorInverseCorroutine(TextMeshProUGUI text, float duration)
     {
         Color startColor = text.color;
@@ -358,6 +380,29 @@ public static class Utils
             yield return null;
         }
         text.color = endColor;
+    }
+    
+    public static IEnumerator TextValueChangeCoroutine(TextMeshProUGUI text,
+        float currentValue, float changeValue, float duration, bool useInteger)
+    {
+        float elapsed = 0f;
+        float targetValue = currentValue + changeValue;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime; 
+            float t = elapsed / duration;
+            float displayValue = Mathf.Lerp(currentValue, targetValue, t);
+
+            if (useInteger)
+                text.text = Mathf.RoundToInt(displayValue).ToString();
+            else
+                text.text = displayValue.ToString("F1");
+        }
+        if (useInteger)
+            text.text = Mathf.RoundToInt(targetValue).ToString();
+        else
+            text.text = targetValue.ToString("F1");
+        yield return null;
     }
 
     public static void ApplyAnimation(MonoBehaviour mono, RectTransform rectTransform,

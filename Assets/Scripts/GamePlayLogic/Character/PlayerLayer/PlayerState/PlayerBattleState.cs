@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using TMPro;
 
 public class PlayerBattleState : PlayerBaseState
 {
@@ -12,10 +13,10 @@ public class PlayerBattleState : PlayerBaseState
     }
 
     private BattlePhase currentPhase;
-    private Action skillChangedHandler;
+    private Action changedHandler;
     private GameNode confirmMoveNode;
     private GameNode targetNode;
-    private SkillData currentSkill;
+    private SkillData selectedSkill;
 
     private bool moveTargetConfirmed = false;
     private bool skillCastConfirmed = false;
@@ -41,6 +42,7 @@ public class PlayerBattleState : PlayerBaseState
     public override void Update()
     {
         base.Update();
+
         switch (currentPhase)
         {
             case BattlePhase.Ready:
@@ -63,11 +65,11 @@ public class PlayerBattleState : PlayerBaseState
                     character.ShowDangerMovableAndTargetTilemap(selectedNode);
                 }
 
-                if (Input.GetKeyDown(KeyCode.Escape))
+                if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Backspace))
                 { 
                     BattleManager.instance.SetGridCursorAt(character.GetCharacterTransformToNode());
                 }
-                else if (Input.GetKeyDown(KeyCode.Return))
+                else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.E))
                 {
                     GameNode moveTargetNode = BattleManager.instance.GetSelectedGameNode();
                     if (!character.IsInMovableRange(moveTargetNode)) return;
@@ -80,7 +82,7 @@ public class PlayerBattleState : PlayerBaseState
                     BattleManager.instance.GeneratePreviewCharacterInMovableRange(character);
                     ChangePhase(BattlePhase.SkillComand);
                 }
-                else if (Input.GetKeyDown(KeyCode.P))
+                else if (Input.GetKeyDown(KeyCode.Z))
                 {
                     confirmMoveNode = character.GetCharacterTransformToNode();
                     endTurnConfirmed = true;
@@ -88,7 +90,7 @@ public class PlayerBattleState : PlayerBaseState
                 }
                 break;
             case BattlePhase.SkillComand:
-                if (Input.GetKeyDown(KeyCode.Escape))
+                if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Backspace))
                 {
                     if (moveTargetConfirmed)
                     {
@@ -96,11 +98,18 @@ public class PlayerBattleState : PlayerBaseState
                     }
                     ChangePhase(BattlePhase.MoveComand);
                 }
-                else if (Input.GetKeyDown(KeyCode.Return))
+                else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.E))
                 {
-                    ChangePhase(BattlePhase.SkillTarget);
+                    if (BattleManager.instance.IsValidSkillSelection(character, selectedSkill))
+                    {
+                        ChangePhase(BattlePhase.SkillTarget);
+                    }
+                    else
+                    {
+                        Debug.Log("Invalid Skill Selection");
+                    }
                 }
-                else if (Input.GetKeyDown(KeyCode.P))
+                else if (Input.GetKeyDown(KeyCode.Z))
                 {
                     endTurnConfirmed = true;
                     if (moveTargetConfirmed)
@@ -113,23 +122,23 @@ public class PlayerBattleState : PlayerBaseState
                 if (BattleManager.instance.IsSelectedNodeChange())
                 {
                     GameNode selectedNode = BattleManager.instance.GetSelectedGameNode();
-                    targetNode = character.GetSkillTargetShowTilemap(confirmMoveNode, selectedNode);
+                    targetNode = character.GetSkillTargetShowTilemap(confirmMoveNode, selectedNode, selectedSkill);
                     
                     if (confirmMoveNode != null)
                     {
-                        BattleManager.instance.ShowProjectileParabola(character, currentSkill, confirmMoveNode, selectedNode);
+                        BattleManager.instance.ShowProjectileParabola(character, selectedSkill, confirmMoveNode, selectedNode);
                     }
                 }
-                if (Input.GetKeyDown(KeyCode.Escape))
+                if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Backspace))
                 {
                     if (!movedConfirmed)
                         ChangePhase(BattlePhase.SkillComand);
                     else
                         ChangePhase(BattlePhase.ReleaseSkillComand);
                 }
-                else if (Input.GetKeyDown(KeyCode.Return))
+                else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.E))
                 {
-                    if (BattleManager.instance.IsValidateSkillTarget(character, currentSkill, targetNode))
+                    if (BattleManager.instance.IsValidSkillTarget(character, selectedSkill, confirmMoveNode, targetNode))
                     {
                         if (moveTargetConfirmed)
                             ChangePhase(BattlePhase.Move);
@@ -144,7 +153,7 @@ public class PlayerBattleState : PlayerBaseState
                     GameNode selectedNode = BattleManager.instance.GetSelectedGameNode();
                     character.ShowDangerMovableAndTargetTilemap(selectedNode);
                 }
-                if (Input.GetKeyDown(KeyCode.Return))
+                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.E))
                 {
                     GameNode moveTargetNode = BattleManager.instance.GetSelectedGameNode();
                     if (!character.IsInMovableRange(moveTargetNode)) return;
@@ -186,11 +195,11 @@ public class PlayerBattleState : PlayerBaseState
                 }
                 break;
             case BattlePhase.ReleaseSkillComand:
-                if (Input.GetKeyDown(KeyCode.Return))
+                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.E))
                 {
                     ChangePhase(BattlePhase.SkillTarget);
                 }
-                else if (Input.GetKeyDown(KeyCode.P))
+                else if (Input.GetKeyDown(KeyCode.Z))
                 {
                     endTurnConfirmed = true;
                     ChangePhase(BattlePhase.ReleaseSkillComandEnd);
@@ -215,13 +224,13 @@ public class PlayerBattleState : PlayerBaseState
                     Orientation orientation = BattleManager.instance.GetSelectedOrientation();
                     character.SetTransfromOrientation(orientation);
                 }
-                else if (Input.GetKeyDown(KeyCode.Escape))
+                else if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Backspace))
                 {
                     endTurnConfirmed = false;
                     BattleManager.instance.HideOrientationArrow();
                     ChangePhase(BattlePhase.ReleaseSkillComand);
                 }
-                else if (Input.GetKeyDown(KeyCode.Return))
+                else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.E))
                 {
                     BattleManager.instance.HideOrientationArrow();
                     BattleManager.instance.OnLoadNextTurn();
@@ -234,7 +243,7 @@ public class PlayerBattleState : PlayerBaseState
                     Orientation orientation = BattleManager.instance.GetSelectedOrientation();
                     character.SetTransfromOrientation(orientation);
                 }
-                else if (Input.GetKeyDown(KeyCode.Return))
+                else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.E))
                 {
                     BattleManager.instance.HideOrientationArrow();
                     BattleManager.instance.OnLoadNextTurn();
@@ -242,6 +251,12 @@ public class PlayerBattleState : PlayerBaseState
                 }
                 break;
         }
+    }
+
+    public override void LateUpdate()
+    {
+        base.LateUpdate();
+        character.CharacterPassWay();
     }
 
     public void ChangePhase(BattlePhase newPhase)
@@ -257,7 +272,7 @@ public class PlayerBattleState : PlayerBaseState
         switch (phase)
         {
             case BattlePhase.SkillComand:
-                SkillUIManager.instance.onListOptionChanged -= skillChangedHandler;
+                GameEvent.onListOptionChanged -= changedHandler;
                 BattleManager.instance.CloseAllProjectileParabola();
                 BattleUIManager.instance.CloseSkillUI();
                 break;
@@ -265,7 +280,7 @@ public class PlayerBattleState : PlayerBaseState
                 BattleManager.instance.CloseAllProjectileParabola();
                 break;
             case BattlePhase.ReleaseSkillComand:
-                SkillUIManager.instance.onListOptionChanged -= skillChangedHandler;
+                GameEvent.onListOptionChanged -= changedHandler;
                 BattleManager.instance.CloseAllProjectileParabola();
                 BattleUIManager.instance.CloseSkillUI();
                 break;
@@ -281,7 +296,7 @@ public class PlayerBattleState : PlayerBaseState
             case BattlePhase.Wait:
                 confirmMoveNode = null;
                 targetNode = null;
-                currentSkill = null;
+                selectedSkill = null;
                 moveTargetConfirmed = false;
                 skillCastConfirmed = false;
                 movedConfirmed = false;
@@ -304,11 +319,14 @@ public class PlayerBattleState : PlayerBaseState
                 BattleManager.instance.ActivateMoveCursorAndHide(true, false);
                 BattleManager.instance.ShowOppositeTeamParabola(character, confirmMoveNode);
                 BattleUIManager.instance.ActiveAllCharacterInfoTip(true);
+
+                GameNode selectedNode = BattleManager.instance.GetSelectedGameNode();
+                targetNode = character.GetSkillTargetShowTilemap(confirmMoveNode, selectedNode, selectedSkill);
                 break;
             case BattlePhase.ReleaseMoveComand:
                 character.ShowDangerAndMovableTileFromNode();
                 BattleManager.instance.SetGridCursorAt(character.GetCharacterTransformToNode());
-                BattleUIManager.instance.ActiveAllCharacterInfoTip(true);
+                BattleUIManager.instance.ActiveAllCharacterInfoTip(false);
                 break;
             case BattlePhase.Move:
                 BattleManager.instance.ActivateMoveCursorAndHide(false, true);
@@ -324,7 +342,7 @@ public class PlayerBattleState : PlayerBaseState
                 break;
             case BattlePhase.SkillCast:
                 BattleManager.instance.DestroyPreviewModel();
-                BattleManager.instance.CastSkill(character, currentSkill, confirmMoveNode, targetNode);
+                BattleManager.instance.CastSkill(character, selectedSkill, confirmMoveNode, targetNode);
                 break;
             case BattlePhase.ReleaseSkillComandEnd:
                 EndInstruction();
@@ -344,17 +362,17 @@ public class PlayerBattleState : PlayerBaseState
         BattleUIManager.instance.OpenUpdateSkillUI(character);
         BattleUIManager.instance.ActiveAllCharacterInfoTip(true);
 
-        skillChangedHandler = () =>
+        changedHandler = () =>
         {
-            currentSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
-            character.SetSkill(currentSkill);
-            character.ShowSkillTilemap(confirmMoveNode);
+            selectedSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
+            character.SetSkill(selectedSkill);
+            character.ShowSkillTilemap(confirmMoveNode, selectedSkill);
         };
-        SkillUIManager.instance.onListOptionChanged += skillChangedHandler;
+        GameEvent.onListOptionChanged += changedHandler;
         //  First designate skill
-        currentSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
+        selectedSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
 
-        character.ShowSkillTilemap(confirmMoveNode);
+        character.ShowSkillTilemap(confirmMoveNode, selectedSkill);
     }
     private void EndInstruction()
     {

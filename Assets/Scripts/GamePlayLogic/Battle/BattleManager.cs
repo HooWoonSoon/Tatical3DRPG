@@ -124,14 +124,14 @@ public class BattleManager : Entity
                     if (occupiedPos.Contains(target)) { continue; }
 
                     PathRoute route = pathFinding.GetPathRoute(unitPosition, target, 1, 1);
-                    if (route == null || route.pathRouteList == null || route.pathRouteList.Count == 0)
+                    if (route == null || route.pathNodeVectorList == null || route.pathNodeVectorList.Count == 0)
                         continue;
 
                     pathRoutes.Add(new PathRoute
                     {
                         character = character,
                         targetPosition = sortPos[i],
-                        pathRouteList = new List<Vector3>(route.pathRouteList),
+                        pathNodeVectorList = new List<Vector3>(route.pathNodeVectorList),
                         pathIndex = 0
                     });
                     occupiedPos.Add(sortPos[i]);
@@ -275,6 +275,18 @@ public class BattleManager : Entity
     public void BattleVictory()
     {
         Debug.Log("Battle Victory");
+        ActivateMoveCursorAndHide(false, true);
+        HideOrientationArrow();
+        CTTimeline.instance.EndTimeline();
+
+        BattleUIManager.instance.CompleteBattleUI();
+        BattleUIManager.instance.ActiveAllCharacterInfoTip(false);
+
+        foreach (CharacterBase character in joinedBattleUnits)
+        {
+            character.ExitBattle();
+        }
+        EndBattle();
     }
     public void BattleDefeat()
     {
@@ -286,6 +298,7 @@ public class BattleManager : Entity
         isBattleStarted = false;
         battleTeams.Clear();
         joinedBattleUnits.Clear();
+        GridTilemapVisual.instance.SetAllTileSprite(GameNode.TilemapSprite.None);
     }
 
     #region Cursor Gizmos
@@ -295,7 +308,7 @@ public class BattleManager : Entity
     }
     public void SetGridCursorAt(GameNode target)
     {
-        gridCursor.HandleGridCursor(target);
+        gridCursor.SetGridCursorAt(target);
     }
     public GameNode GetSelectedGameNode()
     {
@@ -312,13 +325,28 @@ public class BattleManager : Entity
     }
     #endregion
 
+    #region Skill Selection
+    public bool IsValidSkillSelection(CharacterBase character, SkillData selectedSkill)
+    {
+        int skillRequireMP = selectedSkill.MPAmount;
+        if (character.currentMetal < skillRequireMP)
+            return false;
+        else
+            return true;
+    }
+    #endregion
+
     #region Skill Target
-    public bool IsValidateSkillTarget(CharacterBase character,
-        SkillData currentSkill, GameNode targetNode)
+    public bool IsValidSkillTarget(CharacterBase character,
+        SkillData currentSkill, GameNode characterMoveTargetNode, GameNode targetNode)
     {
         if (targetNode == null) { return false; }
 
         CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
+
+        if (characterMoveTargetNode != null && characterMoveTargetNode == targetNode)
+            targetCharacter = character;
+
         if (targetCharacter == null) { return false; }
 
         TeamDeployment team = character.currentTeam;
@@ -380,7 +408,7 @@ public class BattleManager : Entity
             out ParabolaRenderer parabola, out Vector3 originPos, out Vector3 targetPos))
             return;
 
-        parabola.DrawProjectileVisual(originPos + Vector3.up, targetPos, currentSkill.initialElevationAngle);
+        parabola.DrawProjectileVisual(originPos + new Vector3(0, 1.5f, 0), targetPos, currentSkill.initialElevationAngle);
     }
     /// <summary>
     /// Find selfCharacter skill responsitory, if include any projectile series skill then
@@ -407,7 +435,7 @@ public class BattleManager : Entity
                     continue;
             }
 
-            parabola.DrawProjectileVisual(originPos + Vector3.up, targetPos, skill.initialElevationAngle);
+            parabola.DrawProjectileVisual(originPos + new Vector3(0, 1.5f, 0), targetPos, skill.initialElevationAngle);
             return;
         }
     }
@@ -435,15 +463,14 @@ public class BattleManager : Entity
         if (originNode == null)
             originNode = selfCharacter.GetCharacterTransformToNode();
 
-        Vector3 offset = new Vector3(0, 1f, 0);
         originPos = originNode.GetVector();
         targetPos = targetNode.GetVector();
 
         CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
         if (targetCharacter != null)
-            targetPos = targetCharacter.transform.position + offset;
+            targetPos = targetCharacter.transform.position + new Vector3(0, 1.5f, 0);
         else if (forceOffset)
-            targetPos += offset;
+            targetPos += new Vector3(0, 1.5f, 0);
 
         if (originPos == targetPos)
         {
@@ -481,6 +508,10 @@ public class BattleManager : Entity
 
     public void CastSkill(CharacterBase selfCharacter, SkillData currentSkill, GameNode originNode, GameNode targetNode)
     {
+        int costMP = currentSkill.MPAmount;
+        CTTurnUIManager.instance.ExecuteMentalChange(selfCharacter, -costMP);
+        selfCharacter.currentMetal -= costMP;
+        
         if (selfCharacter == null)
         {
             Debug.LogError("CastSkill failed: selfCharacter is null");
@@ -543,20 +574,19 @@ public class BattleManager : Entity
         Debug.Log($"Instantiate projectile {currentSkill.projectTilePrefab.name} at {originNode}");
         Projectile projectile = projectilePrefab.GetComponent<Projectile>();
 
-        Vector3 offset = new Vector3(0, 2f, 0);
         Vector3 targetPos = targetNode.GetVector();
         CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
         if (targetCharacter != null)
-            targetPos = targetCharacter.transform.position + offset;
+            targetPos = targetCharacter.transform.position + new Vector3(0, 1.5f, 0);
 
         if (projectile != null)
         {
             if (originNode == null)
                 projectile.LaunchToTarget(selfCharacter, currentSkill, 
-                    selfCharacter.transform.position + offset, targetPos);
+                    selfCharacter.transform.position + new Vector3(0, 1.5f, 0), targetPos);
             else
                 projectile.LaunchToTarget(selfCharacter, currentSkill,
-                    originNode.GetVector() + offset, targetPos);
+                    originNode.GetVector() + new Vector3(0, 1.5f, 0), targetPos);
         }
     }
 

@@ -33,7 +33,6 @@ public class BlockCombiner
                 materialGroupCombines[material].Add(combine);
             }
         }
-        combinedMesh = new GameObject("CombinedMesh");
 
         foreach (var kvp in materialGroupCombines)
         {
@@ -43,8 +42,8 @@ public class BlockCombiner
             Mesh mesh = new Mesh();
             mesh.CombineMeshes(combines.ToArray(), true);
 
-            GameObject meshObject = new GameObject("Mesh_" + material.name);
-            meshObject.transform.parent = combinedMesh.transform;
+            GameObject meshObject = new GameObject("Map");
+            combinedMesh = meshObject;
 
             meshObject.AddComponent<MeshFilter>().mesh = mesh;
             MeshRenderer meshRenderer = meshObject.AddComponent<MeshRenderer>();

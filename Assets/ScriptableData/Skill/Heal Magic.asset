@@ -14,17 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   skillName: Heal Magic
   skillIcon: {fileID: 21300000, guid: 085d528972ae104429c63fcb59a38846, type: 3}
-  description: Heal yourself
+  description: Consumes a portion of MP to deal magic base 10 heal to unit within
+    range
   type: 1
   skillType: 1
-  targetType: 0
-  range: 1
+  targetType: 3
+  skillRange: 3
+  occlusionRange: 0
   aoeRadius: 1
   isProjectile: 0
   projectTilePrefab: {fileID: 0}
   initialElevationAngle: 0
   spIcon: {fileID: 0}
-  requiredSP: 20
+  requireMP: 1
+  MPAmount: 10
   damageAmount: 0
   healAmount: 10
   skillCastTime: 1

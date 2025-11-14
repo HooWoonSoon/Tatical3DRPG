@@ -62,5 +62,9 @@ public class EnemyCharacter : CharacterBase
     {
         stateMechine.ChangeState(battleState);
     }
+    public override void ExitBattle()
+    {
+        stateMechine.ChangeState(idleStateExplore);
+    }
 }
 

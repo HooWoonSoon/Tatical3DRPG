@@ -51,5 +51,14 @@ public static class CharacterEditorDrawer
         data.magicAttack = EditorGUILayout.IntField("Mag ATK", data.magicAttack);
         data.speed = EditorGUILayout.IntField("Speed", data.speed);
         data.movementValue = EditorGUILayout.IntField("Movement", data.movementValue);
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.FlexibleSpace();
+        if (GUILayout.Button("Save", GUILayout.Width(60)))
+        {
+            EditorUtility.SetDirty(data);
+            AssetDatabase.SaveAssets();
+        }
+        EditorGUILayout.EndHorizontal();
     }
 }

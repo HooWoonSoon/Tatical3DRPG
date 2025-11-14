@@ -13,14 +13,13 @@ MonoBehaviour:
   m_Name: CharacterData 4
   m_EditorClassIdentifier: 
   characterName: EA
-  characterProfile: {fileID: 0}
-  characterTurnUISprite: {fileID: 0}
-  ID: 5
+  profile: {fileID: 0}
+  turnUISprite: {fileID: 0}
   type: 1
   unitType: 0
-  healthPoint: 10
-  mentalPoint: 0
-  magicAttackPoint: 0
-  physicAttackPoint: 0
+  health: 100
+  mental: 80
+  physicAttack: 0
+  magicAttack: 0
   speed: 30
-  movableRange: 5
+  movementValue: 4

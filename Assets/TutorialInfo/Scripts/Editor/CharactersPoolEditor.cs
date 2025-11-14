@@ -1,15 +1,30 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 public class CharactersPoolEditor : EditorWindow
 {
+    private enum PanelState
+    {
+        CharacterPool,
+        CharacterData
+    }
+
     private Texture2D bannerImage;
     private string searchFilter = "";
-    private CharacterPoolsManager manager;
     private Vector2 scrollPos;
+    private Vector2 scrollPos2;
+
+    private CharacterPoolsManager manager;
     private CharacterBase selectedCharacter;
+
+    private CharacterDatabase database;
+    private CharacterData selectedCharacterData;
+
+    private PanelState currentPanel = PanelState.CharacterPool;
+
 
     [MenuItem("Tactics/Characters Pool Editor")]
     private static void ShowWindow()
@@ -22,6 +37,7 @@ public class CharactersPoolEditor : EditorWindow
     {
         LoadBannerImage();
         LoadCharacterPoolManager();
+        LoadCharacterDatabase();
     }
 
     private void LoadBannerImage()
@@ -37,6 +53,19 @@ public class CharactersPoolEditor : EditorWindow
         manager = GameObject.Find("Characters Pool").GetComponent<CharacterPoolsManager>();
         if (manager == null)
             Debug.LogWarning("Character pool not found. Make sure it's in Inpectors");
+    }
+
+    private void LoadCharacterDatabase()
+    {
+        string[] guids = AssetDatabase.FindAssets("t:CharacterDatabase");
+        foreach (string guid in guids)
+        {
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+            if (path != null)
+            {
+                database = AssetDatabase.LoadAssetAtPath<CharacterDatabase>(path);
+            }
+        }
     }
 
     private void OnGUI()
@@ -63,27 +92,140 @@ public class CharactersPoolEditor : EditorWindow
         #region UIRegion 1
         GUILayout.BeginHorizontal();
 
-        if (GUILayout.Button("Refresh", GUILayout.Width(80), GUILayout.Height(35)))
+        EditorGUILayout.BeginVertical("box");
+        GUILayout.Label("Option Mode Interface", EditorStyles.boldLabel);
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Character Pool"))
         {
-            LoadBannerImage();
-            LoadCharacterPoolManager();
+            currentPanel = PanelState.CharacterPool;
         }
-        if (GUILayout.Button("Create Characters Pool", GUILayout.Width(160), GUILayout.Height(35)))
+        if (GUILayout.Button("Character Data"))
         {
-            CreateCharacterPool();
+            currentPanel = PanelState.CharacterData;
         }
-        if (GUILayout.Button("Select Character Pool", GUILayout.Width(160), GUILayout.Height(35)))
-        {
-            if (manager != null) Selection.activeObject = manager;
-        }
+        GUILayout.EndHorizontal();
+        EditorGUILayout.EndVertical();
         GUILayout.EndHorizontal();
         #endregion
 
         searchFilter = EditorGUILayout.TextField(searchFilter, EditorStyles.toolbarSearchField);
 
-        #region UIRegion 2
-        GUILayout.BeginHorizontal();
+        switch (currentPanel)
+        {
+            case PanelState.CharacterPool:
 
+                GUILayout.BeginHorizontal();
+                if (currentPanel == PanelState.CharacterPool)
+                {
+                    if (GUILayout.Button("Refresh", GUILayout.Width(80), GUILayout.Height(25)))
+                    {
+                        LoadBannerImage();
+                        LoadCharacterPoolManager();
+                        LoadCharacterDatabase();
+                    }
+                    if (GUILayout.Button("Create Characters Pool", GUILayout.Width(160), GUILayout.Height(25)))
+                    {
+                        CreateCharacterPool();
+                    }
+                    if (GUILayout.Button("Select Character Pool", GUILayout.Width(160), GUILayout.Height(25)))
+                    {
+                        if (manager != null) Selection.activeObject = manager;
+                    }
+                }
+                GUILayout.EndHorizontal();
+
+                #region UIRegion Character Pool
+                GUILayout.BeginHorizontal();
+
+                #region UIRegion Character Pool - 1
+                DrawCharacterListPanel();
+                #endregion
+
+                GUILayout.BeginVertical("box");
+                scrollPos2 = EditorGUILayout.BeginScrollView(scrollPos2);
+                GUILayout.Label("Editor", EditorStyles.boldLabel);
+
+                if (selectedCharacter != null)
+                {
+                    CharacterEditorDrawer.DrawCharacterEditor(selectedCharacter);
+                    if (selectedCharacter.data != null)
+                    {
+                        CharacterEditorDrawer.DrawCharacterEditor(selectedCharacter.data);
+                    }
+                    else
+                    {
+                        EditorGUILayout.HelpBox("Missing character data", MessageType.Info);
+                    }
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("Press Edit button to select character to edit", MessageType.Info);
+                }
+                GUILayout.EndScrollView();
+
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+                #endregion
+                break;
+            case PanelState.CharacterData:
+                GUILayout.BeginHorizontal();
+                if (GUILayout.Button("Create Character Database", GUILayout.Width(180), GUILayout.Height(25)))
+                {
+
+                }
+                if (GUILayout.Button("Select Character Database", GUILayout.Width(180), GUILayout.Height(25)))
+                {
+                    if (database != null) Selection.activeObject = database;
+                }
+                GUILayout.EndHorizontal();
+
+                GUILayout.BeginHorizontal();
+
+                GUILayout.BeginVertical("box", GUILayout.Width(215));
+                GUILayout.Label("Data List", EditorStyles.boldLabel);
+
+                if (GUILayout.Button("Create Character", EditorStyles.toolbarButton)) CreateData();
+                scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
+
+                if (database != null && database.allCharacterDatas != null)
+                {
+                    var validList = database.allCharacterDatas.Where(d => d != null).ToList();
+
+                    if (validList.Count == 0)
+                    {
+                        EditorGUILayout.HelpBox("Character datas is empty. Please create more data.", MessageType.Info);
+                    }
+                    else
+                    {
+                        foreach (var data in validList)
+                        {
+                            DrawDataCard(data);
+                        }
+                    }
+                }
+                else
+                {
+                    EditorGUILayout.HelpBox("No character data loaded or empty.", MessageType.Warning);
+                }
+                GUILayout.EndScrollView();
+                GUILayout.EndVertical();
+
+                GUILayout.BeginVertical("box");
+                GUILayout.Label("Editor", EditorStyles.boldLabel);
+
+                if (selectedCharacterData != null)
+                    CharacterEditorDrawer.DrawCharacterEditor(selectedCharacterData);
+                else
+                    EditorGUILayout.HelpBox("Press Edit button to select data to edit", MessageType.Info);
+
+                GUILayout.EndVertical();
+                GUILayout.EndHorizontal();
+                break;
+        }
+    }
+
+    private void DrawCharacterListPanel()
+    {
         GUILayout.BeginVertical("box", GUILayout.Width(215));
         GUILayout.Label("Character List", EditorStyles.boldLabel);
         scrollPos = GUILayout.BeginScrollView(scrollPos);
@@ -99,40 +241,13 @@ public class CharactersPoolEditor : EditorWindow
         }
         else
         {
-            int columns = Mathf.Max(1, Mathf.FloorToInt(position.width / 150));
-            int index = 0;
-
-            for (int i = 0; i < columns && index < list.Count; i++, index++)
+            for (int i = 0; i < list.Count; i++)
             {
-                DrawCharacterCard(list[index]);
+                DrawCharacterCard(list[i]);
             }
         }
         GUILayout.EndVertical();
         GUILayout.EndScrollView();
-
-        GUILayout.BeginVertical("box");
-        GUILayout.Label("Editor", EditorStyles.boldLabel);
-
-        if (selectedCharacter != null)
-        {
-            CharacterEditorDrawer.DrawCharacterEditor(selectedCharacter);
-        }
-        else
-        {
-            EditorGUILayout.HelpBox("Press Edit button to select character to edit", MessageType.Info);
-        }
-
-        if (selectedCharacter.data != null)
-        {
-            CharacterEditorDrawer.DrawCharacterEditor(selectedCharacter.data);
-        }
-        else
-        {
-            EditorGUILayout.HelpBox("Missing character data", MessageType.Info);
-        }
-        GUILayout.EndVertical();
-        GUILayout.EndHorizontal();
-        #endregion
     }
 
     private void CreateCharacterPool()
@@ -180,10 +295,65 @@ public class CharactersPoolEditor : EditorWindow
         if (GUILayout.Button("Edit", GUILayout.Width(60)))
         {
             selectedCharacter = character;
+            GUI.FocusControl(null);
         }
         EditorGUILayout.EndHorizontal();
 
-
         GUILayout.EndVertical();
+    }
+
+    private void CreateData()
+    {
+        if (database == null) { return; }
+        CharacterData newData = CreateInstance<CharacterData>();
+        int count = database.allCharacterDatas.Count;
+
+        AssetDatabase.CreateAsset(newData, $"Assets/ScriptableData/Character/CharacterData({count}).asset");
+        database.AddCharacterData(newData);
+        selectedCharacterData = newData;
+
+        EditorUtility.SetDirty(database);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
+    private void DrawDataCard(CharacterData data)
+    {
+        EditorGUILayout.BeginVertical("box");
+        GUILayout.BeginHorizontal();
+
+        GUILayout.BeginVertical();
+        GUILayout.Label("Name: " + data.characterName, EditorStyles.boldLabel);
+        GUILayout.Label("Type: " + data.type);
+        GUILayout.Label("Unit: " + data.unitType);
+
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Select", GUILayout.Width(60)))
+            Selection.activeObject = data;
+        if (GUILayout.Button("Edit", GUILayout.Width(50)))
+        {
+            selectedCharacterData = data;
+            GUI.FocusControl(null);
+        }
+        if (GUILayout.Button("Delete", GUILayout.Width(60)))
+        {
+            if (EditorUtility.DisplayDialog("Delete Data", $"Are you sure you want to delete data: {data.name}?", "Yes", "No"))
+            {
+                database.RemoveData(data);
+                string path = AssetDatabase.GetAssetPath(data);
+                AssetDatabase.DeleteAsset(path);
+                selectedCharacterData = null;
+
+                EditorUtility.SetDirty(database);
+                AssetDatabase.SaveAssets();
+                AssetDatabase.Refresh();
+            }
+        }
+        GUILayout.EndHorizontal();
+        GUILayout.EndVertical();
+
+        GUILayout.FlexibleSpace();
+        GUILayout.EndHorizontal();
+        EditorGUILayout.EndVertical();
     }
 }

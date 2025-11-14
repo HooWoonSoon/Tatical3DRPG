@@ -164,8 +164,6 @@ public class SkillUIManager : MonoBehaviour
     private int listOptionIndex = -1;
 
     private CharacterBase currentCharacter;
-
-    public event Action onListOptionChanged;
     public static SkillUIManager instance { get; private set; }
 
     private void Awake()
@@ -186,7 +184,7 @@ public class SkillUIManager : MonoBehaviour
                 currentSelectedType = type;
                 FocusCurrentTypeUI(typeIndex);
                 RefreshToNextTypeList(type);
-                onListOptionChanged?.Invoke();
+                GameEvent.onListOptionChanged?.Invoke();
             }
         }
         else if (Input.GetKeyDown(KeyCode.D))
@@ -198,7 +196,7 @@ public class SkillUIManager : MonoBehaviour
                 currentSelectedType = type;
                 FocusCurrentTypeUI(typeIndex);
                 RefreshToNextTypeList(type);
-                onListOptionChanged?.Invoke();  
+                GameEvent.onListOptionChanged?.Invoke();  
             }
         }
 
@@ -211,7 +209,7 @@ public class SkillUIManager : MonoBehaviour
                 listOptionIndex -= 1;
                 FocusCurrentListUI(listOptionIndex);
                 UpdateSkillDescription(listOptionIndex);
-                onListOptionChanged?.Invoke();
+                GameEvent.onListOptionChanged?.Invoke();
             }
         }
         else if (Input.GetKeyDown(KeyCode.S))
@@ -221,7 +219,7 @@ public class SkillUIManager : MonoBehaviour
                 listOptionIndex += 1;
                 FocusCurrentListUI(listOptionIndex);
                 UpdateSkillDescription(listOptionIndex);
-                onListOptionChanged?.Invoke();
+                GameEvent.onListOptionChanged?.Invoke();
             }
         }
     }
@@ -374,7 +372,7 @@ public class SkillUIManager : MonoBehaviour
         for (int i = 0; i < skillDatas.Count; i++)
         {
             UIImage skillUIImage = new UIImage(skillUIContent, fontAsset,
-                skillDatas[i].skillIcon, skillDatas[i].skillName, skillDatas[i].requiredSP, skillDatas[i].spIcon);
+                skillDatas[i].skillIcon, skillDatas[i].skillName, skillDatas[i].MPAmount, skillDatas[i].spIcon);
             uIImages.Add(skillUIImage);
         }
 

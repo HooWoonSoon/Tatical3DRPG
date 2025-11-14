@@ -291,15 +291,19 @@ public class World
         int yLength = 0)
     {
         List<Vector3Int> coverage = new List<Vector3Int>();
-
+        
         if (limitY && size > yLength) { size = yLength; }
 
-        int minX = unitPosition.x - size;
-        int maxX = unitPosition.x + size;
-        int minY = unitPosition.y - size;
-        int maxY = unitPosition.y + size;
-        int minZ = unitPosition.z - size;
-        int maxZ = unitPosition.z + size;
+        //  To avoid the unit origin position would extend the uneccesary range
+        if (size <= 0) { return coverage; }
+        int excludeOriginExtent = size - 1;
+
+        int minX = unitPosition.x - excludeOriginExtent;
+        int maxX = unitPosition.x + excludeOriginExtent;
+        int minY = unitPosition.y - excludeOriginExtent;
+        int maxY = unitPosition.y + excludeOriginExtent;
+        int minZ = unitPosition.z - excludeOriginExtent;
+        int maxZ = unitPosition.z + excludeOriginExtent;
 
         for (int x = minX; x <= maxX; x++)
         {
@@ -311,7 +315,7 @@ public class World
                     int manhattasDistance = Mathf.Abs(unitPosition.x - x)
                              + Mathf.Abs(unitPosition.y - y)
                              + Mathf.Abs(unitPosition.z - z);
-                    if (manhattasDistance > size) continue;
+                    if (manhattasDistance > excludeOriginExtent) continue;
 
                     coverage.Add(new Vector3Int(x, y, z));
                 }

@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class MapEditorList : MonoBehaviour
 {
-    public List<GameObject> allMapList;
+    public List<MapEditorLevelList> allMapList;
 
-    public void AddMap(GameObject map)
+    public void AddMap(MapEditorLevelList map)
     {
         allMapList.Add(map);
         ResetMapList();

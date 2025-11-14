@@ -55,8 +55,10 @@ public class MapSwitchTrigger : Entity
         {
             if (!currentDetected.Contains(unit))
             {
-                PlayerCharacter character = unit.GetComponent<PlayerCharacter>();
-                if (character != null && character.isLeader)
+                PlayerCharacter playerCharacter = unit.GetComponent<PlayerCharacter>();
+                if (playerCharacter == null) { continue; }
+
+                if (playerCharacter != null && playerCharacter.isLeader)
                 {
                     Debug.Log("Leader left range");
                     return true;

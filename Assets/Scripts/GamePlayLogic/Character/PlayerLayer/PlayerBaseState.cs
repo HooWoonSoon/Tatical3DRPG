@@ -22,6 +22,10 @@ public abstract class PlayerBaseState
     {
         //Debug.Log($"Update {StateName()}");
     }
+    public virtual void LateUpdate()
+    {
+        //Debug.Log($"Late Update {StateName()}");
+    }
     public virtual void FixedUpdate()
     {
         //Debug.Log($"Fixed Update {StateName()}");

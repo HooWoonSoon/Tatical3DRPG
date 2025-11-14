@@ -90,6 +90,11 @@ public class PlayerCharacter : CharacterBase
         stateMechine.currentState.FixedUpdate();
     }
 
+    private void LateUpdate()
+    {
+        stateMechine.currentState.LateUpdate();
+    }
+
     #region History
     public void UpdateHistory()
     {
@@ -421,14 +426,15 @@ public class PlayerCharacter : CharacterBase
     public override void SetAStarMovePos(Vector3Int targetPosition)
     {
         Vector3Int startPosition = currentNode.GetVectorInt();
-        List<Vector3> pathVectorList = pathFinding.GetPathRoute(startPosition, targetPosition, 1, 1).pathRouteList;
+        PathRoute route = pathFinding.GetPathRoute(startPosition, targetPosition, 1, 1);
+        List<Vector3> pathVectorList = route.pathNodeVectorList;
         if (pathVectorList.Count != 0)
         {
             PathRoute pathRoute = new PathRoute
             {
                 character = this,
                 targetPosition = targetPosition,
-                pathRouteList = pathVectorList,
+                pathNodeVectorList = pathVectorList,
                 pathIndex = 0
             };
             SetPathRoute(pathRoute);
@@ -440,7 +446,7 @@ public class PlayerCharacter : CharacterBase
     {
         SetAStarMovePos(targetPosition);
 
-        while (pathRoute != null && pathRoute.pathIndex < pathRoute.pathRouteList.Count)
+        while (pathRoute != null && pathRoute.pathIndex < pathRoute.pathNodeVectorList.Count)
         {
             yield return null;
         }
@@ -472,6 +478,11 @@ public class PlayerCharacter : CharacterBase
     {
         ForceStopVelocity();
         stateMechine.ChangeState(battleState);
+    }
+
+    public override void ExitBattle()
+    {
+        stateMechine.ChangeState(idleStateExplore);
     }
 
     private void OnDrawGizmos()

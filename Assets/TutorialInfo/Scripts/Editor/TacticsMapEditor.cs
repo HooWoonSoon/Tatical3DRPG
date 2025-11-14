@@ -144,14 +144,19 @@ public class TacticsMapEditor : EditorWindow
         if (mapEditorList == null)
         {
             mapEditorList = new GameObject("All Map").AddComponent<MapEditorList>();
-            mapEditorList.allMapList = new List<GameObject>();
+            mapEditorList.allMapList = new List<MapEditorLevelList>();
         }
 
-        GameObject newMap = new GameObject($"Map{mapEditorList.allMapList.Count}");
-        newMap.AddComponent<Grid>();
-        newMap.AddComponent<MapEditorLevelList>();
+        GameObject newMapObject = new GameObject($"Map{mapEditorList.allMapList.Count}");
+
+        Grid grid = newMapObject.AddComponent<Grid>();
+        grid.cellSize = new Vector3(1, 1, 1);
+        grid.cellLayout = GridLayout.CellLayout.Rectangle;
+        grid.cellSwizzle = Grid.CellSwizzle.XZY;
+
+        MapEditorLevelList newMap = newMapObject.AddComponent<MapEditorLevelList>();
         mapEditorList.AddMap(newMap);
-        Selection.activeGameObject = newMap;
+        Selection.activeGameObject = newMapObject;
 
         Debug.Log("Add New Map");
     }
@@ -216,8 +221,16 @@ public class TacticsMapEditor : EditorWindow
     public void CombineBlock(GameObject gridObject)
     {
         if (Selection.activeGameObject == null) { return; }
-        GetAllBlock(gridObject, out List<GameObject> blocks);
-        BlockCombiner blockCombiner = new BlockCombiner(RedrawVisibleFace(blocks));
+        GameObject combinedMap = GetCombineBlock(gridObject);
+
+        GameObject parentGameObject = GameObject.Find("Combined Mesh");
+        if (parentGameObject == null)
+        {
+            parentGameObject = new GameObject("Combined Mesh");
+        }
+        Transform parent = parentGameObject.transform;
+        combinedMap.transform.SetParent(parent, false);
+        combinedMap.name = gridObject.name + "_CombinedMesh";
     }
     public GameObject GetCombineBlock(GameObject gridObject)
     {
@@ -305,7 +318,7 @@ public class TacticsMapEditor : EditorWindow
         mesh.name = "HeatMapMesh";
         meshFilter.mesh = mesh;
 
-        List<GameNode> dijsktraCostNode = pathFinding.GetCalculateDijkstraCost(character.transform.position, 1, 1);
+        List<GameNode> dijsktraCostNode = pathFinding.GetCalculateDijkstraCostNode(character.transform.position, 1, 1);
         if (dijsktraCostNode == null || dijsktraCostNode.Count == 0)
         {
             Debug.LogWarning("No nodes returned from pathfinding.");

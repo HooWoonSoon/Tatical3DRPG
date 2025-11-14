@@ -20,6 +20,10 @@ public class CameraMovement : MonoBehaviour
         {
             isTargeting = true;
         }
+        GameEvent.onLeaderChanged += (CharacterBase newLeader) =>
+        {
+            ChangeFollowTarget(newLeader.transform);
+        };
         //StartCoroutine(LerpCameraMovement());
     }
 
@@ -82,6 +86,7 @@ public class CameraMovement : MonoBehaviour
 
     public void ChangeFollowTarget(Transform transform)
     {
+        Debug.Log($"Change target {transform.name}");
         followTarget = transform;
         isTargeting = true;
     }

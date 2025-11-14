@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class PathFinding
 {
@@ -26,6 +28,9 @@ public class PathFinding
 
         GameNode startNode = world.GetNode(startWorldX, startWorldY, startWorldZ);
         GameNode endNode = world.GetNode(endWorldX, endWorldY, endWorldZ);
+
+        CharacterBase pathfinder = startNode.GetUnitGridCharacter();
+        if (pathfinder == null) { Debug.LogWarning("Non_character execute find path"); }
 
         openList = new List<GameNode> { startNode };
         closedList = new HashSet<GameNode>();
@@ -55,7 +60,6 @@ public class PathFinding
             openList.Remove(currentNode);
             closedList.Add(currentNode);
 
-
             foreach (GameNode neighbourNode in GetNeighbourList(currentNode, riseLimit, lowerLimit))
             {
                 if (closedList.Contains(neighbourNode)) continue;
@@ -64,6 +68,31 @@ public class PathFinding
                 {
                     closedList.Add(neighbourNode);
                     continue;
+                }
+
+                CharacterBase neighbourCharacter = neighbourNode.GetUnitGridCharacter();
+                if (pathfinder != null && neighbourCharacter != null)
+                {
+                    //  pathfinder has no team, cannot pass through any character
+                    if (pathfinder.currentTeam == null)
+                    {
+                        closedList.Add(neighbourNode);
+                        continue;
+                    }
+
+                    //  neighbour has no team, cannot pass through
+                    if (neighbourCharacter.currentTeam == null)
+                    {
+                        closedList.Add(neighbourNode);
+                        continue;
+                    }
+
+                    //  cannot pass through different team character
+                    if (pathfinder.currentTeam.teamType != neighbourCharacter.currentTeam.teamType)
+                    {
+                        closedList.Add(neighbourNode);
+                        continue;
+                    }
                 }
 
                 int tentativeGCost = currentNode.gCost + CalculateDistanceCost(currentNode, neighbourNode);
@@ -214,8 +243,8 @@ public class PathFinding
     /// </summary>
     public List<Vector3Int> GetCostDijkstraCoverangePos(Vector3 start, int movableRangeCost, int riseLimit, int lowerLimit)
     {
-        List<Vector3Int > result = new List<Vector3Int>();
-        List<GameNode> costNodes = GetCalculateDijkstraCost(start, riseLimit, lowerLimit);
+        List<Vector3Int> result = new List<Vector3Int>();
+        List<GameNode> costNodes = GetCalculateDijkstraCostNode(start, riseLimit, lowerLimit);
         foreach (GameNode node in costNodes)
         {
             if (node.dijkstraCost <= movableRangeCost)
@@ -228,7 +257,7 @@ public class PathFinding
     public List<GameNode> GetCostDijkstraCoverangeNodes(Vector3 start, int movableRangeCost, int riseLimit, int lowerLimit)
     {
         List<GameNode> result = new List<GameNode>();
-        List<GameNode> costNodes = GetCalculateDijkstraCost(start, riseLimit, lowerLimit);
+        List<GameNode> costNodes = GetCalculateDijkstraCostNode(start, riseLimit, lowerLimit);
         foreach (GameNode node in costNodes)
         {
             if (node.dijkstraCost <= movableRangeCost)
@@ -244,7 +273,7 @@ public class PathFinding
     /// to calculate the cost of each node till all the walkable node is calculated
     /// or the cost is over the 200 limit
     /// </summary>
-    public List<GameNode> GetCalculateDijkstraCost(Vector3 start, int riseLimit, int lowerLimit)
+    public List<GameNode> GetCalculateDijkstraCostNode(Vector3 start, int riseLimit, int lowerLimit)
     {
         GameNode startNode = world.GetNode(start);
         if (startNode == null)
@@ -288,6 +317,101 @@ public class PathFinding
             }
         }
         return calcualtedNode;
+    }
+
+    public List<GameNode> GetCostDijkstraCoverangeNodes(CharacterBase pathfinder, int movableRangeCost, int riseLimit, int lowerLimit)
+    {
+        List<GameNode> result = new List<GameNode>();
+        List<GameNode> costNodes = GetCalculateDijkstraCostNode(pathfinder, riseLimit, lowerLimit);
+        foreach (GameNode node in costNodes)
+        {
+            if (node.dijkstraCost <= movableRangeCost)
+            {
+                result.Add(node);
+            }
+        }
+        return result;
+    }
+    public List<GameNode> GetCalculateDijkstraCostNode(CharacterBase pathfinder, int riseLimit, int lowerLimit)
+    {
+        GameNode startNode = pathfinder.currentNode;
+
+        foreach (GameNode gameNode in world.loadedNodes.Values.ToList())
+        {
+            CharacterBase unit = gameNode.GetUnitGridCharacter();
+
+            if (!gameNode.isWalkable) { continue; }
+            if (unit != null && unit.currentTeam.teamType != pathfinder.currentTeam.teamType) { continue; }
+
+            gameNode.dijkstraCost = int.MaxValue;
+            gameNode.cameFromNode = null;
+        }
+        startNode.dijkstraCost = 0;
+
+        List<GameNode> openList = new List<GameNode> { startNode };
+        List<GameNode> calcualtedNodes = new List<GameNode> { startNode };
+
+        while (openList.Count > 0)
+        {
+            GameNode currentNode = openList[0];
+            openList.RemoveAt(0);
+
+            List<GameNode> neighbourNodes = GetNeighbourList(currentNode, riseLimit, lowerLimit);
+
+            foreach (GameNode neighbourNode in neighbourNodes)
+            {
+                if (!neighbourNode.isWalkable) { continue; }
+
+                Vector3Int offset = neighbourNode.GetVectorInt() - currentNode.GetVectorInt();
+                bool isDiagonal = Mathf.Abs(offset.x) + Mathf.Abs(offset.z) > 1;
+                if (isDiagonal) 
+                { 
+                    Vector3Int horizontalPos = new Vector3Int(currentNode.x + offset.x, currentNode.y, currentNode.z); 
+                    Vector3Int verticalPos = new Vector3Int(currentNode.x, currentNode.y, currentNode.z + offset.z); 
+                    
+                    if (!world.loadedNodes.TryGetValue(horizontalPos, out GameNode horizontalNode)) continue; 
+                    if (!world.loadedNodes.TryGetValue(verticalPos, out GameNode verticalNode)) continue; 
+
+                    CharacterBase horizontalCharacter = horizontalNode.GetUnitGridCharacter(); 
+                    CharacterBase verticalCharacter = verticalNode.GetUnitGridCharacter();
+
+                    bool horizontalBlocked = false;
+                    if (!horizontalNode.isWalkable) { horizontalBlocked = true; } 
+                    else if (horizontalCharacter != null) 
+                    {
+                        if (pathfinder.currentTeam.teamType != horizontalCharacter.currentTeam.teamType)
+                            horizontalBlocked = true; 
+                    }
+
+                    bool verticalBlocked = false;
+                    if (!verticalNode.isWalkable) { verticalBlocked = true; }
+                    else if (verticalCharacter != null)
+                    {
+                        if (pathfinder.currentTeam.teamType != verticalCharacter.currentTeam.teamType)
+                            verticalBlocked = true;
+                    }
+                    
+                    if (horizontalBlocked && verticalBlocked) 
+                        continue;
+                }
+
+                int tentativeGCost = currentNode.dijkstraCost + CalculateSlopeCost(currentNode, neighbourNode);
+
+                //  Limit the searching range to avoid the long pathfinding time
+                if (tentativeGCost > 200)
+                    continue;
+
+                if (tentativeGCost < neighbourNode.dijkstraCost)
+                {
+                    neighbourNode.dijkstraCost = tentativeGCost;
+                    neighbourNode.cameFromNode = currentNode;
+                    calcualtedNodes.Add(neighbourNode);
+                    if (!openList.Contains(neighbourNode))
+                        openList.Add(neighbourNode);
+                }
+            }
+        }
+        return calcualtedNodes;
     }
 
     private int CalculateSlopeCost(GameNode a, GameNode b)

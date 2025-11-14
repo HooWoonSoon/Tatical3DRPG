@@ -19,7 +19,8 @@ public class SkillData : ScriptableObject
     public AbilityType type;
     public SkillType skillType;
     public SkillTargetType targetType;
-    public int range;
+    public int skillRange;
+    public int occlusionRange;
     public int aoeRadius = 1; // If not aoe skill, set to 1
 
     public bool isProjectile;
@@ -27,7 +28,8 @@ public class SkillData : ScriptableObject
     [Range(0, 90)] public int initialElevationAngle;
 
     public Sprite spIcon;
-    public int requiredSP;
+    public bool requireMP;
+    public int MPAmount;
 
     //  If skillType is Attack
     public int damageAmount;
@@ -39,8 +41,15 @@ public class SkillData : ScriptableObject
 
     public List<GameNode> GetInflueneNode(World world, GameNode origin)
     {
-        List<GameNode> coverange = world.GetManhattas3DGameNode(origin.GetVectorInt(), range);
-        return coverange;
+        List<GameNode> result = new List<GameNode>();
+        List<GameNode> coverange = world.GetManhattas3DGameNode(origin.GetVectorInt(), skillRange);
+        List<GameNode> occulusion = world.GetManhattas3DGameNode(origin.GetVectorInt(), occlusionRange);
+        foreach (GameNode node in coverange)
+        {
+            if (occulusion.Contains(node)) continue;
+            result.Add(node);
+        }
+        return result;
     }
 }
 

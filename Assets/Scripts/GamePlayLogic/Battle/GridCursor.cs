@@ -69,15 +69,23 @@ public class GridCursor : Entity
         }
     }
 
-    public void HandleGridCursor(GameNode targetNode)
+    /// <summary>
+    /// Set the grid cursor to target node position
+    /// </summary>
+    public void SetGridCursorAt(GameNode targetNode)
     {
-        CharacterBase character = CTTimeline.instance.GetCurrentCharacter();
-        cursor.SetActive(true);
-        CameraMovement.instance.ChangeFollowTarget(cursor.transform);
-        Vector3Int position = targetNode.GetVectorInt();
         currentNode = targetNode;
-        cursor.transform.position = position + new Vector3(0, heightOffset);
         activateCursor = true;
+
+        cursor.SetActive(true);
+        Vector3Int position = targetNode.GetVectorInt();
+        cursor.transform.position = position + new Vector3(0, heightOffset);
+        CameraMovement.instance.ChangeFollowTarget(cursor.transform);
+        CharacterBase character = targetNode.GetUnitGridCharacter();
+        if (character != null)
+        {
+            CTTurnUIManager.instance.TargetCursorCharacterUI(character);
+        }
     }
 
     public void ActivateMoveCursor(bool active, bool hide)
