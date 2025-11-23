@@ -372,7 +372,7 @@ public class SkillUIManager : MonoBehaviour
         for (int i = 0; i < skillDatas.Count; i++)
         {
             UIImage skillUIImage = new UIImage(skillUIContent, fontAsset,
-                skillDatas[i].skillIcon, skillDatas[i].skillName, skillDatas[i].MPAmount, skillDatas[i].spIcon);
+                skillDatas[i].skillIcon, skillDatas[i].skillName, skillDatas[i].MPAmount, skillDatas[i].MPIcon);
             uIImages.Add(skillUIImage);
         }
 

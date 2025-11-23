@@ -16,8 +16,6 @@ public class BattleUIManager : MonoBehaviour
     public GameObject actionOptionPanel;
     public GameObject skillUI;
     public GameObject cTTimelineUI;
-
-    public event Action OnBattleUIFinish;
     public static BattleUIManager instance { get; private set; }
     private void Awake()
     {
@@ -43,7 +41,7 @@ public class BattleUIManager : MonoBehaviour
     private IEnumerator PrepareBattleSequence()
     {
         yield return new WaitForSeconds(2f);
-        OnBattleUIFinish?.Invoke();
+        GameEvent.OnBattleUIFinish?.Invoke();
         battleStartDisplayUI.SetActive(false);
     }
 

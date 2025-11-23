@@ -10,7 +10,7 @@ public class PlayerTeamActionState : PlayerTeamState
     {
         base.Enter();
         PlayerTeamLinkUIManager.instance.PopInTeamLinkOptionContent();
-        CameraMovement.instance.ChangeFollowTarget(team.currentLeader.transform);
+        CameraController.instance.ChangeFollowTarget(team.currentLeader.transform);
     }
 
     public override void Exit()

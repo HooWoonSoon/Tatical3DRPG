@@ -112,7 +112,7 @@ public class MapTransitionManager : Entity
         {
             ExecuteSwitchMapAndTeleport(transitionSnapShot.mapData, 
                 transitionSnapShot.lastRememberNode.position, playerCharacters, true);
-            CameraMovement.instance.ChangeFollowTarget(player.transform);
+            CameraController.instance.ChangeFollowTarget(player.transform);
             confrimAction?.Invoke();
         };
 

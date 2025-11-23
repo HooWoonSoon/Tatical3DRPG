@@ -156,6 +156,12 @@ public class World
     {
         return loadedNodes.ContainsKey(new Vector3Int(x, y, z));
     }
+
+    public bool CheckSolidNode(Vector3 position)
+    {
+        return CheckSolidNode(position.x, position.y, position.z);
+    }
+
     public bool CheckSolidNode(float x, float y, float z)
     {
         int bx = Mathf.FloorToInt((x + cellSize * 0.5f) / cellSize);

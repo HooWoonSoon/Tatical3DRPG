@@ -49,6 +49,8 @@ public class MapSwitchTrigger : Entity
 
     private bool CheckPlayerLeaderExit(UnitDetectable[] unitDetectables)
     {
+        previousDetected.RemoveWhere(item => item == null);
+
         HashSet<UnitDetectable> currentDetected = new HashSet<UnitDetectable>(unitDetectables);
 
         foreach (UnitDetectable unit in previousDetected)
@@ -58,7 +60,7 @@ public class MapSwitchTrigger : Entity
                 PlayerCharacter playerCharacter = unit.GetComponent<PlayerCharacter>();
                 if (playerCharacter == null) { continue; }
 
-                if (playerCharacter != null && playerCharacter.isLeader)
+                if (playerCharacter.isLeader)
                 {
                     Debug.Log("Leader left range");
                     return true;

@@ -5,11 +5,20 @@ using System.Collections;
 public class UniversalUIManager : MonoBehaviour
 {
     public GameObject universalPanel;
+
+    public CanvasGroup castSkillNoticeCanvasGroup;
+    public TextMeshProUGUI castSkillNoticeText;
     public static UniversalUIManager instance { get; private set; }
 
     private void Awake()
     {
         instance = this;
+    }
+
+    private void Start()
+    {
+        GameEvent.onSkillCastStart += (SkillData skill) => ShowSkillCastNotice(skill);
+        GameEvent.onSkillCastEnd += CloseSkillCastNotice;
     }
 
     public void CreateCountText(CharacterBase character, int value)
@@ -37,6 +46,26 @@ public class UniversalUIManager : MonoBehaviour
         {
             Destroy(textUI.gameObject);
         }
+    }
+
+    private void ShowSkillCastNotice(SkillData skill)
+    {
+        castSkillNoticeCanvasGroup.gameObject.SetActive(true);
+        castSkillNoticeText.text = skill.skillName;
+        if (skill.skillCastTime > 0)
+        {
+            StartCoroutine(Utils.UIFadeCoroutine(castSkillNoticeCanvasGroup, 0, 1, 0.2f));
+        }
+    }
+
+    private void CloseSkillCastNotice()
+    {
+        StartCoroutine(CloseSkillCastNoticeCoroutine());
+    }
+    private IEnumerator CloseSkillCastNoticeCoroutine()
+    {
+        yield return Utils.UIFadeCoroutine(castSkillNoticeCanvasGroup, 1, 0, 0.2f);
+        castSkillNoticeCanvasGroup.gameObject.SetActive(false);
     }
 }
 

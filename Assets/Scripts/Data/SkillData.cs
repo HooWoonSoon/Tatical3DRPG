@@ -27,7 +27,7 @@ public class SkillData : ScriptableObject
     public GameObject projectTilePrefab;
     [Range(0, 90)] public int initialElevationAngle;
 
-    public Sprite spIcon;
+    public Sprite MPIcon;
     public bool requireMP;
     public int MPAmount;
 

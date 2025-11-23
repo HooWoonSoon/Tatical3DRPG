@@ -37,6 +37,8 @@ public static class CharacterEditorDrawer
     }
     public static void DrawCharacterEditor(CharacterData data)
     {
+        EditorGUI.BeginChangeCheck();
+
         data.characterName = EditorGUILayout.TextField("Name", data.characterName);
         data.profile = (Sprite)EditorGUILayout.ObjectField("Profile Image", data.profile,
             (typeof(Sprite)), false);
@@ -52,8 +54,14 @@ public static class CharacterEditorDrawer
         data.speed = EditorGUILayout.IntField("Speed", data.speed);
         data.movementValue = EditorGUILayout.IntField("Movement", data.movementValue);
 
+        if (EditorGUI.EndChangeCheck())
+        {
+            EditorUtility.SetDirty(data);
+        }
+
         EditorGUILayout.BeginHorizontal();
         GUILayout.FlexibleSpace();
+
         if (GUILayout.Button("Save", GUILayout.Width(60)))
         {
             EditorUtility.SetDirty(data);

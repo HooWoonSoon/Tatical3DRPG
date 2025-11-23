@@ -25,7 +25,7 @@ MonoBehaviour:
   isProjectile: 0
   projectTilePrefab: {fileID: 0}
   initialElevationAngle: 0
-  spIcon: {fileID: 0}
+  MPIcon: {fileID: 0}
   requireMP: 1
   MPAmount: 10
   damageAmount: 0

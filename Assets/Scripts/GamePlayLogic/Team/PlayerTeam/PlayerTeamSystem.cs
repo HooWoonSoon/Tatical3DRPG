@@ -15,6 +15,7 @@ public class PlayerTeamSystem : TeamSystem
     public TeamStateMachine stateMachine;
     public PlayerTeamIdleState teamIdleState { get; private set; }
     public PlayerTeamActionState teamActionState { get; private set; }
+    public PlayerTeamDeployment teamDeploymentState { get; private set; } // Tempo fix
     public TeamSortPathFindingState teamSortPathFindingState { get; private set; }
 
     private void OnEnable()
@@ -22,6 +23,7 @@ public class PlayerTeamSystem : TeamSystem
         GameEvent.onLeaderChangedRequest += SetTeamFollowerLeader;
         GameEvent.onTeamSortExchange += SortTeamFollower;
         GameEvent.onTeamSortExchange += ClearAllHistory;
+        GameEvent.onStartDeployment += () => stateMachine.ChangeState(teamDeploymentState); // Tempo fix
     }
 
     private void OnDisable()
@@ -29,6 +31,7 @@ public class PlayerTeamSystem : TeamSystem
         GameEvent.onLeaderChangedRequest -= SetTeamFollowerLeader;
         GameEvent.onTeamSortExchange -= SortTeamFollower;
         GameEvent.onTeamSortExchange -= ClearAllHistory;
+        GameEvent.onStartDeployment -= () => stateMachine.ChangeState(teamDeploymentState); // Tempo fix
     }
 
     private void Awake()
@@ -38,6 +41,7 @@ public class PlayerTeamSystem : TeamSystem
         
         teamIdleState = new PlayerTeamIdleState(stateMachine, this);
         teamActionState = new PlayerTeamActionState(stateMachine, this);
+        teamDeploymentState = new PlayerTeamDeployment(stateMachine, this);
         teamSortPathFindingState = new TeamSortPathFindingState(stateMachine, this);
     }
 

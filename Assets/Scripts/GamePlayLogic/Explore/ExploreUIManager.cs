@@ -14,9 +14,21 @@ public class ExploreUIManager : MonoBehaviour
 
     private void Start()
     {
-        BattleUIManager.instance.OnBattleUIFinish += ()=> exploreStatePanel.SetActive(false);
-        MapDeploymentManager.instance.onStartDeployment += ()=> exploreStatePanel.SetActive(false);
+        GameEvent.OnBattleUIFinish += DisableExploreMachanine;
+        GameEvent.onStartDeployment += DisableExploreMachanine;
+        GameEvent.onEndBattle += EnableExploreMachanine;
+        EnableExploreMachanine();
+    }
+
+    private void EnableExploreMachanine()
+    {
         exploreStatePanel.SetActive(true);
+        PlayerTeamLinkUIManager.instance.ActivateTeamLinkUI(true);
+    }
+    private void DisableExploreMachanine()
+    {
+        exploreStatePanel.SetActive(false);
+        PlayerTeamLinkUIManager.instance.ActivateTeamLinkUI(false);
     }
 }
 

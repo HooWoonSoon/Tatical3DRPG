@@ -104,7 +104,7 @@ public class EnemyBattleState : EnemyBaseState
                 targetNode = null;
                 break;
             case BattlePhase.Thinking:
-                CameraMovement.instance.ChangeFollowTarget(character.transform);
+                CameraController.instance.ChangeFollowTarget(character.transform);
                 float startTime = Time.realtimeSinceStartup;
                 DecisionSystem decisionMaker = new DecisionSystem(character);
                 decisionMaker.GetResult(out currentSkill, out confrimMoveNode, out targetNode);
@@ -118,7 +118,7 @@ public class EnemyBattleState : EnemyBaseState
                 break;
             case BattlePhase.Move:
                 character.ShowDangerMovableAndTargetTilemap(confrimMoveNode);
-                CameraMovement.instance.ChangeFollowTarget(character.transform);
+                CameraController.instance.ChangeFollowTarget(character.transform);
                 break;
             case BattlePhase.SkillCast:
                 character.ShowSkillTargetTilemap();

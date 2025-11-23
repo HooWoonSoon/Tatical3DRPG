@@ -26,7 +26,6 @@ public class TacticsMapEditor : EditorWindow
     private string fbxExportPath = "MapModel.fbx";
     private string loadMapDataPath;
     private GameObject heatMapObject;
-    private List<TextMeshPro> textMeshPros = new List<TextMeshPro>();
     private CharacterBase character;
     private Material heatMaterial;
 
@@ -307,7 +306,6 @@ public class TacticsMapEditor : EditorWindow
         PathFinding pathFinding = new PathFinding(world);
 
         DestroyImmediate(heatMapObject);
-        textMeshPros.Clear();
 
         heatMapObject = new GameObject("HeatMapVisible");
         heatMapObject.transform.position = new Vector3(0, 0.55f, 0);
@@ -326,6 +324,7 @@ public class TacticsMapEditor : EditorWindow
         }
 
         Utils.CreateEmptyMeshArrays(dijsktraCostNode.Count, out Vector3[] vertices, out Vector2[] uvs, out int[] triangles);
+        List<TextMeshPro> textMeshPros = new List<TextMeshPro>();
         for (int i = 0; i < dijsktraCostNode.Count; i++)
         {
             int cost = dijsktraCostNode[i].dijkstraCost;
@@ -338,18 +337,48 @@ public class TacticsMapEditor : EditorWindow
             string text = cost.ToString();
             textMeshPros.Add(Utils.CreateWorldText(text, position + Vector3.zero, Quaternion.Euler(90, 0, 0), 5, Color.white, TextAlignmentOptions.Center));
         }
-        GameObject textParent = GameObject.Find("World_Text_Parent");
-        if (textParent != null) { textParent.transform.position = new Vector3(0, 0.6f, 0); }
-        textParent.transform.SetParent(heatMapObject.transform, true);
         mesh.vertices = vertices;
         mesh.uv = uvs;
         mesh.triangles = triangles;
+        GameObject combinedTextMesh = GetCombineTextMesh(textMeshPros);
+        combinedTextMesh.transform.SetParent(heatMapObject.transform, true);
+        combinedTextMesh.transform.localPosition = new Vector3(0, 0.1f, 0);
     }
 
     private void RemoveVisibleMapCost()
     {
         DestroyImmediate(heatMapObject);
-        textMeshPros.Clear();
+    }
+
+    private GameObject GetCombineTextMesh(List<TextMeshPro> textMeshPros)
+    {
+        List<CombineInstance> combineInstances = new List<CombineInstance>();
+        foreach (TextMeshPro textMeshPro in textMeshPros)
+        {
+            Mesh mesh = new Mesh();
+            textMeshPro.ForceMeshUpdate();
+            mesh = textMeshPro.mesh;
+
+            CombineInstance combineInstance = new CombineInstance();
+            combineInstance.mesh = mesh;
+            combineInstance.transform = textMeshPro.transform.localToWorldMatrix;
+            combineInstances.Add(combineInstance);
+        }
+        Mesh combinedTextMesh = new Mesh();
+        combinedTextMesh.CombineMeshes(combineInstances.ToArray(), true, true);
+        GameObject textMeshObject = new GameObject("Combined Text Mesh");
+        MeshFilter meshFilter = textMeshObject.AddComponent<MeshFilter>();
+        meshFilter.sharedMesh = combinedTextMesh;
+        MeshRenderer meshRenderer = textMeshObject.AddComponent<MeshRenderer>();
+        meshRenderer.sharedMaterial = textMeshPros[0].fontMaterial;
+
+        //  Remove individual text mesh objects
+        foreach (TextMeshPro textMeshPro in textMeshPros)
+        {
+            DestroyImmediate(textMeshPro.gameObject);
+        }
+
+        return textMeshObject;
     }
     #endregion
 

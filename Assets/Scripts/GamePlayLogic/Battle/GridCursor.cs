@@ -2,6 +2,8 @@
 
 public class GridCursor : Entity
 {
+    public Camera referenceCamera;
+
     [Header("Battle Cursor")]
     [SerializeField] private GameObject cursor;
     [SerializeField] private float heightOffset = 2.5f;
@@ -23,17 +25,42 @@ public class GridCursor : Entity
         if (activateCursor)
         {
             hasMoved = false;
-            HandleInput(KeyCode.W, Vector3Int.forward, 0.2f, 0.025f);
-            HandleInput(KeyCode.S, Vector3Int.back, 0.2f, 0.025f);
-            HandleInput(KeyCode.A, Vector3Int.left, 0.2f, 0.025f);
-            HandleInput(KeyCode.D, Vector3Int.right, 0.2f, 0.025f);
+
+            if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A) ||
+                Input.GetKeyDown(KeyCode.W) && Input.GetKeyDown(KeyCode.A))
+                HandleInput(Vector3Int.forward + Vector3Int.left, 0.2f, 0.04f);
+            else if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D) ||
+                Input.GetKeyDown(KeyCode.W) && Input.GetKeyDown(KeyCode.D))
+                HandleInput(Vector3Int.forward + Vector3Int.right, 0.2f, 0.04f);
+            else if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.S) ||
+                Input.GetKeyDown(KeyCode.A) && Input.GetKeyDown(KeyCode.S))
+                HandleInput(Vector3Int.left + Vector3Int.back, 0.2f, 0.04f);
+            else if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.S) ||
+                Input.GetKeyDown(KeyCode.D) && Input.GetKeyDown(KeyCode.S))
+                HandleInput(Vector3Int.right + Vector3Int.back, 0.2f, 0.04f);
+            else if (Input.GetKey(KeyCode.W) || Input.GetKeyDown(KeyCode.W))
+                HandleInput(Vector3Int.forward, 0.2f, 0.04f);
+            else if (Input.GetKey(KeyCode.S) || Input.GetKeyDown(KeyCode.S))
+                HandleInput(Vector3Int.back, 0.2f, 0.04f);
+            else if (Input.GetKey(KeyCode.A) || Input.GetKeyDown(KeyCode.A))
+                HandleInput(Vector3Int.left, 0.2f, 0.04f);
+            else if (Input.GetKey(KeyCode.D) || Input.GetKeyDown(KeyCode.D))
+                HandleInput(Vector3Int.right, 0.2f, 0.04f);
         }
     }
 
     private void TryMove(Vector3Int direction)
     {
+        Vector3Int gridDirection = direction;
+        if (CameraController.instance.cameraBody != null && !CameraController.instance.enableTacticalView)
+        {
+            Vector3 rotatedDirection = CameraController.instance.cameraBody.transform.TransformDirection(direction);
+            Vector3 normalizedDir = rotatedDirection.normalized;
+            gridDirection = Vector3Int.RoundToInt(normalizedDir);
+        }
+        
         Vector3Int nodePos = Utils.RoundXZFloorYInt(cursor.transform.position);
-        GameNode gameNode = world.GetHeightNodeWithCube(nodePos.x + direction.x, nodePos.z + direction.z);
+        GameNode gameNode = world.GetHeightNodeWithCube(nodePos.x + gridDirection.x, nodePos.z + gridDirection.z);
         if (gameNode != null)
         {
             cursor.transform.position = gameNode.GetGameNodeVector() + new Vector3(0, heightOffset);
@@ -47,14 +74,14 @@ public class GridCursor : Entity
         }
     }
 
-    private void HandleInput(KeyCode keyCode, Vector3Int direction, float initialTimer, float interval)
+    private void HandleInput(Vector3Int direction, float initialTimer, float interval)
     {
-        if (Input.GetKeyDown(keyCode))
+        if (Input.anyKeyDown)
         {
             keyPressTimer = 0;
             TryMove(direction);
         }
-        if (Input.GetKey(keyCode))
+        if (Input.anyKey)
         {
             keyPressTimer += Time.deltaTime;
             if (keyPressTimer > initialTimer)
@@ -80,7 +107,7 @@ public class GridCursor : Entity
         cursor.SetActive(true);
         Vector3Int position = targetNode.GetVectorInt();
         cursor.transform.position = position + new Vector3(0, heightOffset);
-        CameraMovement.instance.ChangeFollowTarget(cursor.transform);
+        CameraController.instance.ChangeFollowTarget(cursor.transform);
         CharacterBase character = targetNode.GetUnitGridCharacter();
         if (character != null)
         {

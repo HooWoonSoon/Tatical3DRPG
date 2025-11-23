@@ -22,7 +22,7 @@ public class EnemyCharacter : CharacterBase
         base.Start();
         stateMechine.Initialize(idleStateExplore);
 
-        MapDeploymentManager.instance.onStartDeployment += () =>
+        GameEvent.onStartDeployment += () =>
         {
             stateMechine.ChangeState(deploymentState);
         };

@@ -76,8 +76,6 @@ public class UnitDetectable : Entity
     /// <summary>
     /// Start from the unit center extend with 3D mahhatass range to obtain other unit detectable
     /// </summary>
-    /// <param name="mahhatassRange"></param>
-    /// <returns></returns>
     public UnitDetectable[] OverlapMahhatassRange(int mahhatassRange)
     {
         this.mahhatassRange = mahhatassRange;
@@ -108,6 +106,116 @@ public class UnitDetectable : Entity
         }
         return hits.ToArray();
     }
+
+    #region Check AABB Collision
+    public bool CheckBottomForward()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkBottom = centerPos.y - half.y;
+        float checkForward = centerPos.z + half.z;
+
+        if (world.CheckSolidNode(transform.position.x, checkBottom, checkForward))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckBottomBackward()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkBottom = centerPos.y - half.y;
+        float checkBackward = centerPos.z - half.z;
+
+        if (world.CheckSolidNode(transform.position.x, checkBottom, checkBackward))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckBottomRight()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkBottom = centerPos.y - half.y;
+        float checkRight = centerPos.x + half.x;
+
+        if (world.CheckSolidNode(checkRight, checkBottom, transform.position.z))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckBottomLeft()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkBottom = centerPos.y - half.y;
+        float checkLeft = centerPos.x - half.x;
+
+        if (world.CheckSolidNode(checkLeft, checkBottom, transform.position.z))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckUp()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkUp = centerPos.y + half.y;
+
+        if (world.CheckSolidNode(transform.position.x, checkUp, transform.position.z))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckUpForward()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkUp = centerPos.y + half.y;
+        float checkForward = centerPos.z + half.z;
+
+        if (world.CheckSolidNode(transform.position.x, checkUp, checkForward))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckUpBackward()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkUp = centerPos.y + half.y;
+        float checkBackward = centerPos.z - half.z;
+
+        if (world.CheckSolidNode(transform.position.x, checkUp, checkBackward))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckUpRight()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkUp = centerPos.y + half.y;
+        float checkRight = centerPos.x + half.x;
+
+        if (world.CheckSolidNode(checkRight, checkUp, transform.position.z))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckUpLeft()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkUp = centerPos.y + half.y;
+        float checkLeft = centerPos.x - half.x;
+
+        if (world.CheckSolidNode(checkLeft, checkUp, transform.position.z))
+            return true;
+        else
+            return false;
+    }
+    #endregion
 
     private void OnDrawGizmos()
     {

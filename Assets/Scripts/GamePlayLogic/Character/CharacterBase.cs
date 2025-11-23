@@ -49,29 +49,26 @@ public abstract class CharacterBase : Entity
     #region Orientation
     public void SetOrientation(Vector3 direction)
     {
+        if (direction == Vector3.zero) return;
         direction = Vector3Int.RoundToInt(direction);
 
-        if (direction == new Vector3(-1, 0, 0))
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
         {
-            orientation = Orientation.left;
-            SetTransfromOrientation(orientation);
+            if (direction.x < 0)
+                orientation = Orientation.left;
+            else
+                orientation = Orientation.right;
         }
-        else if (direction == new Vector3(1, 0, 0))
+        else
         {
-            orientation = Orientation.right;
-            SetTransfromOrientation(orientation);
+            if (direction.z < 0)
+                orientation = Orientation.back;
+            else
+                orientation = Orientation.forward;
         }
-        else if (direction == new Vector3(0, 0, -1))
-        {
-            orientation = Orientation.back;
-            SetTransfromOrientation(orientation);
-        }
-        else if (direction == new Vector3(0, 0, 1))
-        {
-            orientation = Orientation.forward;
-            SetTransfromOrientation(orientation);
-        }
+        SetTransfromOrientation(orientation);
     }
+
     public void SetTransfromOrientation(Orientation orientation, bool is2D = false)
     {
         this.orientation = orientation;
@@ -537,6 +534,10 @@ public abstract class CharacterBase : Entity
                 GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Purple);
             }
             GridTilemapVisual.instance.SetTilemapSprite(targetNode.GetVectorInt(), GameNode.TilemapSprite.TinyBlue);
+        }
+        else
+        {
+            ShowDangerAndMovableTileFromNode();
         }
     }
     public void ShowSkillTargetTilemap()

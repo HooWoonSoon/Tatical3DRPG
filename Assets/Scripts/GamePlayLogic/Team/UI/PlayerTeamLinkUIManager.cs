@@ -37,6 +37,8 @@ public class PlayerTeamLinkUIManager : MonoBehaviour
     [Header("Team UI Effect")]
     //[SerializeField] private float lerpSpeed = 5f;
     [SerializeField] private Vector2 UIAdjustedOffset = new Vector2(5, 0);
+
+    private bool activation = true;
     public static PlayerTeamLinkUIManager instance { get; private set; }
 
     private void Awake()
@@ -51,6 +53,7 @@ public class PlayerTeamLinkUIManager : MonoBehaviour
 
     private void Update()
     {
+        if (activation == false) { return; }
         //  Summary
         //      Always update the closest UIClass in order to sort and swap the UI
         TeamLinkUI closestUIClass = GetClosestUIClass();
@@ -315,6 +318,13 @@ public class PlayerTeamLinkUIManager : MonoBehaviour
     private void CameraToOptionCharacter(int index)
     {
         CharacterBase character = teamUIClasses[index].character;
-        CameraMovement.instance.ChangeFollowTarget(character.transform);
+        CameraController.instance.ChangeFollowTarget(character.transform);
     }
+
+    #region External Method
+    public void ActivateTeamLinkUI(bool active)
+    {
+        activation = active;
+    }
+    #endregion
 }

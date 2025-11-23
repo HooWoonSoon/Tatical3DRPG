@@ -95,6 +95,22 @@ public class PathFinding
                     }
                 }
 
+                Vector3Int offset = neighbourNode.GetVectorInt() - currentNode.GetVectorInt();
+                Vector3Int horizontalPos = new Vector3Int(neighbourNode.x + offset.x, neighbourNode.y, neighbourNode.z);
+                Vector3Int verticalPos = new Vector3Int(neighbourNode.x, neighbourNode.y, neighbourNode.z + offset.z);
+
+                world.loadedNodes.TryGetValue(horizontalPos, out GameNode horizontalNode); 
+                world.loadedNodes.TryGetValue(verticalPos, out GameNode verticalNode);
+
+                if (horizontalNode != null && verticalNode != null)
+                {
+                    if (!horizontalNode.isWalkable && !verticalNode.isWalkable)
+                    {
+                        closedList.Add(neighbourNode);
+                        continue;
+                    }
+                }
+
                 int tentativeGCost = currentNode.gCost + CalculateDistanceCost(currentNode, neighbourNode);
                 if (tentativeGCost < neighbourNode.gCost)
                 {
@@ -281,7 +297,7 @@ public class PathFinding
             Debug.LogWarning("Invalid start node position");
             return new List<GameNode>();
         }
-        foreach (GameNode gameNode in world.loadedNodes.Values.ToList())
+        foreach (GameNode gameNode in world.loadedNodes.Values)
         {
             if (!gameNode.isWalkable) { continue; }
             gameNode.dijkstraCost = int.MaxValue;
@@ -336,7 +352,7 @@ public class PathFinding
     {
         GameNode startNode = pathfinder.currentNode;
 
-        foreach (GameNode gameNode in world.loadedNodes.Values.ToList())
+        foreach (GameNode gameNode in world.loadedNodes.Values)
         {
             CharacterBase unit = gameNode.GetUnitGridCharacter();
 

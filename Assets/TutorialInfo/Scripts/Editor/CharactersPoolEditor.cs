@@ -22,6 +22,7 @@ public class CharactersPoolEditor : EditorWindow
 
     private CharacterDatabase database;
     private CharacterData selectedCharacterData;
+    private string updateName = "";
 
     private PanelState currentPanel = PanelState.CharacterPool;
 
@@ -184,12 +185,14 @@ public class CharactersPoolEditor : EditorWindow
                 GUILayout.BeginVertical("box", GUILayout.Width(215));
                 GUILayout.Label("Data List", EditorStyles.boldLabel);
 
-                if (GUILayout.Button("Create Character", EditorStyles.toolbarButton)) CreateData();
+                if (GUILayout.Button("Create New Character Data", EditorStyles.toolbarButton)) CreateData();
                 scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 
                 if (database != null && database.allCharacterDatas != null)
                 {
-                    var validList = database.allCharacterDatas.Where(d => d != null).ToList();
+                    var validList = database.allCharacterDatas.Where(d => d != null && 
+                    (string.IsNullOrEmpty(searchFilter)) || d.name.ToLower().Contains(searchFilter.ToLower())).
+                    ToList();
 
                     if (validList.Count == 0)
                     {
@@ -211,10 +214,24 @@ public class CharactersPoolEditor : EditorWindow
                 GUILayout.EndVertical();
 
                 GUILayout.BeginVertical("box");
+
+                GUILayout.BeginHorizontal();
+                GUILayout.Label("Scriptable Name", EditorStyles.boldLabel);
+                updateName = EditorGUILayout.TextField(updateName);
+
+                if (GUILayout.Button("Update Name"))
+                {
+                    AssetDatabase.RenameAsset(AssetDatabase.GetAssetPath(selectedCharacterData), updateName);
+                }
+                GUILayout.EndHorizontal();
+                EditorGUILayout.Space();
+
                 GUILayout.Label("Editor", EditorStyles.boldLabel);
 
                 if (selectedCharacterData != null)
+                {
                     CharacterEditorDrawer.DrawCharacterEditor(selectedCharacterData);
+                }
                 else
                     EditorGUILayout.HelpBox("Press Edit button to select data to edit", MessageType.Info);
 
@@ -283,10 +300,8 @@ public class CharactersPoolEditor : EditorWindow
         GUI.DrawTexture(imageRect, icon, ScaleMode.ScaleAndCrop);
 
         string nameToShow = "(Unnamed)";
-        if (data.characterName != null)
-        {
-            nameToShow = data.characterName;
-        }
+        nameToShow = character.name;
+        
         GUILayout.Label(nameToShow, EditorStyles.boldLabel);
 
         EditorGUILayout.BeginHorizontal();
@@ -323,7 +338,7 @@ public class CharactersPoolEditor : EditorWindow
         GUILayout.BeginHorizontal();
 
         GUILayout.BeginVertical();
-        GUILayout.Label("Name: " + data.characterName, EditorStyles.boldLabel);
+        GUILayout.Label("Name: " + data.name, EditorStyles.boldLabel);
         GUILayout.Label("Type: " + data.type);
         GUILayout.Label("Unit: " + data.unitType);
 
@@ -333,6 +348,7 @@ public class CharactersPoolEditor : EditorWindow
         if (GUILayout.Button("Edit", GUILayout.Width(50)))
         {
             selectedCharacterData = data;
+            updateName = data.name;
             GUI.FocusControl(null);
         }
         if (GUILayout.Button("Delete", GUILayout.Width(60)))

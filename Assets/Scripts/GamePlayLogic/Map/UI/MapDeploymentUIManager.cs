@@ -63,7 +63,7 @@ public class MapDeploymentUIManager : Entity
         characterDeploymentPanel.SetActive(false);
         startBattleNotificationPanel.SetActive(false);
         leaveBattlefieldNotifactionPanel.SetActive(false);
-        MapDeploymentManager.instance.onStartDeployment += ShowDeploymentUI;
+        GameEvent.onStartDeployment += ShowDeploymentUI;
         GridLayoutGroup layoutGroup = deploymentContent.GetComponent<GridLayoutGroup>();
         if (layoutGroup != null)
         {

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class BattleManager : Entity
@@ -19,9 +21,12 @@ public class BattleManager : Entity
 
     public bool isBattleStarted = false;
 
-    [Header("Cursor")]
+    [Header("Grid Gizmos")]
     public GridCursor gridCursor;
     private GameNode lastSelectedNode;
+
+    [Header("Path Line Gizmos")]
+    public PathRenderer pathRenderer;
 
     [Header("Orientation")]
     public BattleOrientationArrow orientationArrow;
@@ -162,9 +167,9 @@ public class BattleManager : Entity
         BattleUIManager.instance.PrepareBattleUI();
         CTTimeline.instance.SetJoinedBattleUnit(joinedBattleUnits);
         CTTimeline.instance.SetupTimeline();
-        BattleUIManager.instance.OnBattleUIFinish += () =>
+        GameEvent.OnBattleUIFinish += () =>
         {
-            Debug.Log("StartBattle");
+            GameEvent.onStartBattle?.Invoke();
             isBattleStarted = true;
         };
     }
@@ -295,10 +300,12 @@ public class BattleManager : Entity
 
     public void EndBattle()
     {
+        GameEvent.onEndBattle?.Invoke();
         isBattleStarted = false;
         battleTeams.Clear();
         joinedBattleUnits.Clear();
         GridTilemapVisual.instance.SetAllTileSprite(GameNode.TilemapSprite.None);
+        ActivateMoveCursorAndHide(false, true);
     }
 
     #region Cursor Gizmos
@@ -322,6 +329,31 @@ public class BattleManager : Entity
             return true;
         }
         return false;
+    }
+    #endregion
+
+    #region Path Line Gizmos
+    public void ShowPathLine(Vector3 start, Vector3 end)
+    {
+        if (pathRenderer == null) { Debug.LogWarning("Path Renderer is null!"); return; }
+        PathRoute pathRoute = pathFinding.GetPathRoute(start, end, 1, 1);
+        if (pathRoute == null)
+        {
+            Debug.LogWarning("PathRoute is null!");
+            pathRenderer.ClearPath();
+            return;
+        }
+        if (pathRoute.pathNodeVectorList == null || pathRoute.pathNodeVectorList.Count == 0)
+        {
+            Debug.LogWarning("PathNode Vector List is null or empty!");
+            pathRenderer.ClearPath();
+            return;
+        }
+        pathRenderer.RenderPath(pathRoute.pathNodeVectorList);
+    }
+    public void ClosePathLine()
+    {
+        pathRenderer.ClearPath();
     }
     #endregion
 
@@ -508,10 +540,6 @@ public class BattleManager : Entity
 
     public void CastSkill(CharacterBase selfCharacter, SkillData currentSkill, GameNode originNode, GameNode targetNode)
     {
-        int costMP = currentSkill.MPAmount;
-        CTTurnUIManager.instance.ExecuteMentalChange(selfCharacter, -costMP);
-        selfCharacter.currentMetal -= costMP;
-        
         if (selfCharacter == null)
         {
             Debug.LogError("CastSkill failed: selfCharacter is null");
@@ -530,12 +558,24 @@ public class BattleManager : Entity
             return;
         }
 
+        StartCoroutine(SkillEventCoroutine(currentSkill));
+        int costMP = currentSkill.MPAmount;
+        CTTurnUIManager.instance.ExecuteMentalChange(selfCharacter, -costMP);
+        selfCharacter.currentMetal -= costMP;
+        Vector3 direction = (targetNode.GetVector() - selfCharacter.transform.position);
+        selfCharacter.SetOrientation(direction);
+
         if (currentSkill.isProjectile)
         {
             CastSkillProjectile(selfCharacter, currentSkill, originNode, targetNode);
             if (originNode == null)
             {
                 Debug.LogError("CastSkill failed: originNode is null for projectile");
+                return;
+            }
+            if (targetNode == null)
+            {
+                Debug.LogError($"CastSkillProjectile Failed: targetNode == null  | skill={currentSkill.skillName}");
                 return;
             }
         }
@@ -570,7 +610,7 @@ public class BattleManager : Entity
         if (!currentSkill.isProjectile) { return; }
 
         GameObject projectilePrefab = Instantiate(currentSkill.projectTilePrefab, originNode.GetVector(), Quaternion.identity);
-        CameraMovement.instance.ChangeFollowTarget(projectilePrefab.transform);
+        CameraController.instance.ChangeFollowTarget(projectilePrefab.transform);
         Debug.Log($"Instantiate projectile {currentSkill.projectTilePrefab.name} at {originNode}");
         Projectile projectile = projectilePrefab.GetComponent<Projectile>();
 
@@ -588,6 +628,25 @@ public class BattleManager : Entity
                 projectile.LaunchToTarget(selfCharacter, currentSkill,
                     originNode.GetVector() + new Vector3(0, 1.5f, 0), targetPos);
         }
+    }
+    private IEnumerator SkillEventCoroutine(SkillData skill)
+    {   
+        if (skill.skillCastTime < 0)
+        {
+            Debug.Log("Skill Cast Time Issue! less than 0!");
+            yield return null;
+        }
+
+        float skillTime = skill.skillCastTime;
+        float elapsedTime = 0;
+        GameEvent.onSkillCastStart?.Invoke(skill);
+
+        while (elapsedTime < skillTime)
+        {
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+        GameEvent.onSkillCastEnd?.Invoke();
     }
 
     #region Preview Character
@@ -677,6 +736,5 @@ public class BattleManager : Entity
     }
     public List<TeamDeployment> GetBattleTeam() => battleTeams;
     public List<CharacterBase> GetBattleUnits() => joinedBattleUnits;
-
 }
 

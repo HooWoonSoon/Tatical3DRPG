@@ -9,4 +9,18 @@ public static class GameEvent
 
     //  Skill UI Related Event
     public static Action onListOptionChanged;
+
+    //  Battle Related Event
+    public static Action onStartBattle;
+    public static Action onEndBattle;
+
+    //  Battle UI Related Event
+    public static Action OnBattleUIFinish;
+
+    //  Deployment Related Event
+    public static Action onStartDeployment;
+    public static Action onEndDeployment;
+
+    public static Action<SkillData> onSkillCastStart;
+    public static Action onSkillCastEnd;
 }

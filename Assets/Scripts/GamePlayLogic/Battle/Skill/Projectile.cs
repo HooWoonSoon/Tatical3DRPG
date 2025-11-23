@@ -36,12 +36,18 @@ public class Projectile : Entity
 
             if (unitDetectable != null)
             {
+                if (unitDetectable.GetComponent<CharacterBase>() == null) { continue; }
                 Debug.Log($"Hit {unitDetectable.name}");
                 DoDamage(unitDetectable);
-                CameraMovement.instance.ChangeFollowTarget(shooter.transform);
+                CameraController.instance.ChangeFollowTarget(shooter.transform);
                 Destroy(gameObject);
                 return;
             }
+        }
+        if (CheckWorldCenterForward())
+        {
+            Debug.Log("Hit World");
+            Destroy(gameObject);
         }
     }
 
@@ -119,73 +125,42 @@ public class Projectile : Entity
     {
         velocity.y = Mathf.Max(velocity.y + gravity * Time.deltaTime, terminateGravity);
 
-        if (velocity.z > 0 && CheckBottomForward() || velocity.z < 0 && CheckBottomBackward())
+        if (velocity.z > 0 && unitDetectable.CheckBottomForward() || 
+            velocity.z < 0 && unitDetectable.CheckBottomBackward())
             velocity.z = 0;
-        if (velocity.x > 0 && CheckBottomRight() || velocity.x < 0 && CheckBottomLeft())
+        if (velocity.x > 0 && unitDetectable.CheckBottomRight() || 
+            velocity.x < 0 && unitDetectable.CheckBottomLeft())
             velocity.x = 0;
 
         if (velocity.y < 0)
             velocity.y = CheckGrounded(velocity.y);
-        else if (velocity.y > 0 || CheckUp())
+        else if (velocity.y > 0 || unitDetectable.CheckUp())
             velocity.y = CheckGrounded(velocity.y);
     }
-    public bool CheckBottomForward()
+    public bool CheckWorldCenterForward()
     {
         Vector3 half = unitDetectable.size * 0.5f;
-        Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkBottom = centerPos.y - half.y;
-        float checkForward = centerPos.z + half.z;
 
-        if (world.CheckSolidNode(transform.position.x, checkBottom, checkForward))
+        Vector3 localOffset = new Vector3(half.x, half.y, half.z);
+        Vector3 worldPoint = transform.TransformPoint(unitDetectable.center + localOffset);
+
+        if (world.CheckSolidNode(worldPoint.x, worldPoint.y, worldPoint.z))
+        {
+            velocity = Vector3.zero;
             return true;
+        }
         else
             return false;
     }
-    public bool CheckBottomBackward()
-    {
-        Vector3 half = unitDetectable.size * 0.5f;
-        Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkBottom = centerPos.y - half.y;
-        float checkBackward = centerPos.z - half.z;
 
-        if (world.CheckSolidNode(transform.position.x, checkBottom, checkBackward))
-            return true;
-        else
-            return false;
-    }
-    public bool CheckBottomRight()
+    public void OnDrawGizmos()
     {
+        if (unitDetectable == null) { return; }
         Vector3 half = unitDetectable.size * 0.5f;
-        Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkBottom = centerPos.y - half.y;
-        float checkRight = centerPos.x + half.x;
-
-        if (world.CheckSolidNode(checkRight, checkBottom, transform.position.z))
-            return true;
-        else
-            return false;
-    }
-    public bool CheckBottomLeft()
-    {
-        Vector3 half = unitDetectable.size * 0.5f;
-        Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkBottom = centerPos.y - half.y;
-        float checkLeft = centerPos.x - half.x;
-
-        if (world.CheckSolidNode(checkLeft, checkBottom, transform.position.z))
-            return true;
-        else
-            return false;
-    }
-    private bool CheckUp()
-    {
-        Vector3 half = unitDetectable.size * 0.5f;
-        Vector3 centerPos = transform.position + unitDetectable.center;
-        float checkUp = centerPos.y + half.y;
-
-        if (world.CheckSolidNode(transform.position.x, checkUp, transform.position.z))
-            return true;
-        else
-            return false;
+        Vector3 localCenter = unitDetectable.center;
+        Vector3 localOffset = new Vector3(half.x, half.y, half.z);
+        Vector3 worldPoint = transform.TransformPoint(localCenter + localOffset);
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(worldPoint, 0.1f);
     }
 }

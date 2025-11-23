@@ -19,9 +19,6 @@ public class MapDeploymentManager : Entity
     public Material previewMaterial;
     private GameObject previewCharacter;
 
-    public event Action onStartDeployment;
-    public event Action onEndDeployment;
-
     private bool enableEditing = false;
     public static MapDeploymentManager instance { get; private set;}
 
@@ -82,7 +79,7 @@ public class MapDeploymentManager : Entity
 
         CasualPutGridCursorAtLoadedMap();
 
-        onStartDeployment?.Invoke();
+        GameEvent.onStartDeployment?.Invoke();
     }
 
     //  Summary
@@ -239,6 +236,7 @@ public class MapDeploymentManager : Entity
         {
             GameNode node = deployableNodes[0];
             SetGridCursorAt(node);
+            Debug.Log($"Set Grid Cursor At {node.GetVector()}");
         }
         ActivateMoveCursorAndHide(false, true);
     }
@@ -259,7 +257,7 @@ public class MapDeploymentManager : Entity
         EnableEditingMode(false);
         DestroyPreviewModel();
         ActivateMoveCursorAndHide(false, true);
-        onEndDeployment?.Invoke();
+        GameEvent.onEndDeployment?.Invoke();
     }
 
 }

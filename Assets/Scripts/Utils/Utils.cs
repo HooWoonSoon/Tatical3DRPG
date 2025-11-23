@@ -104,15 +104,8 @@ public static class Utils
     }
     public static TextMeshPro CreateWorldText(string text, Vector3 localPosition, Quaternion quaternion, int fontSize, Color color, TextAlignmentOptions textAlignment, int sortingOrder = 0)
     {
-        GameObject parent = GameObject.Find("World_Text_Parent");
-        if (parent == null)
-        { 
-            parent = new GameObject("World_Text_Parent");
-            parent.transform.position = Vector3.zero;
-        }
         GameObject gameObject = new GameObject("World_Text", typeof(TextMeshPro));
         Transform transform = gameObject.transform;
-        transform.SetParent(parent.transform, false);
         transform.localPosition = localPosition;
         transform.rotation = quaternion;
 
@@ -359,6 +352,20 @@ public static class Utils
             yield return null;
         }
         image.fillAmount = targetPercent;
+    }
+    
+    public static IEnumerator UIFadeCoroutine(CanvasGroup canvasGroup, float startValue, float endValue, float duration)
+    {
+        canvasGroup.alpha = startValue;
+        float elapsedTime = 0f;
+        while (elapsedTime < duration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / duration;
+            canvasGroup.alpha = Mathf.Lerp(startValue, endValue, t);
+            yield return null;
+        }
+        canvasGroup.alpha = endValue;
     }
 
     public static IEnumerator TextColorInverseCorroutine(TextMeshProUGUI text, float duration)
