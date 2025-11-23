@@ -46,18 +46,15 @@ public class UnitDetectable : Entity
 
         Vector3[] corners = new Vector3[8]
         {
-        rotation * new Vector3(-half.x, -half.y, -half.z),
-        rotation * new Vector3( half.x, -half.y, -half.z),
-        rotation * new Vector3(-half.x,  half.y, -half.z),
-        rotation * new Vector3( half.x,  half.y, -half.z),
-        rotation * new Vector3(-half.x, -half.y,  half.z),
-        rotation * new Vector3( half.x, -half.y,  half.z),
-        rotation * new Vector3(-half.x,  half.y,  half.z),
-        rotation * new Vector3( half.x,  half.y,  half.z),
+            worldCenter + rotation * new Vector3(-half.x, -half.y, -half.z),
+            worldCenter + rotation * new Vector3( half.x, -half.y, -half.z),
+            worldCenter + rotation * new Vector3(-half.x,  half.y, -half.z),
+            worldCenter + rotation * new Vector3( half.x,  half.y, -half.z),
+            worldCenter + rotation * new Vector3(-half.x, -half.y,  half.z),
+            worldCenter + rotation * new Vector3( half.x, -half.y,  half.z),
+            worldCenter + rotation * new Vector3(-half.x,  half.y,  half.z),
+            worldCenter + rotation * new Vector3( half.x,  half.y,  half.z),
         };
-
-        for (int i = 0; i < 8; i++)
-            corners[i] += position;
 
         Vector3 min = corners[0];
         Vector3 max = corners[0];

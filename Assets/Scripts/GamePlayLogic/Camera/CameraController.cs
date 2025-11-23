@@ -51,6 +51,7 @@ public class CameraController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.P))
         {
+            if (enableTacticalView) return;
             isTargeting = true;
             isResetting = true;
         }
@@ -89,7 +90,7 @@ public class CameraController : MonoBehaviour
     }
     private void CameraResetAligment()
     {
-        if (!isResetting) return;
+        if (!isResetting || enableTacticalView) return;
 
         cameraBody.transform.localPosition = Vector3.Lerp(cameraBody.transform.localPosition, defaultZoom,
             Time.deltaTime * moveSpeed);
@@ -131,6 +132,7 @@ public class CameraController : MonoBehaviour
         }
 
         Vector3 rotatedDirection = pivotPoint.transform.TransformDirection(direction);
+        rotatedDirection.y = 0;
 
         if (rotatedDirection != Vector3.zero)
             transform.position += rotatedDirection * Time.deltaTime * moveSpeed;
@@ -147,12 +149,12 @@ public class CameraController : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.U))
         {
-            pivotPoint.localEulerAngles += new Vector3(0, 5, 0) * Time.deltaTime * rotationSpeed;
+            pivotPoint.localEulerAngles += new Vector3(0, 10, 0) * Time.deltaTime * rotationSpeed;
             generalPivotRotate = pivotPoint.localRotation;
         }
         else if (Input.GetKey(KeyCode.O))
         {
-            pivotPoint.localEulerAngles += new Vector3(0, -5, 0) * Time.deltaTime * rotationSpeed;
+            pivotPoint.localEulerAngles += new Vector3(0, -10, 0) * Time.deltaTime * rotationSpeed;
             generalPivotRotate = pivotPoint.localRotation;
         }
     }

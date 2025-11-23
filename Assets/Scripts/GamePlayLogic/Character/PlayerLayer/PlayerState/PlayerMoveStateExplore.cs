@@ -27,12 +27,12 @@ public class PlayerMoveStateExplore : PlayerBaseState
     {
         base.Update();
 
-        character.StepClimbUp(character.xInput, character.zInput, character.stepClimbHeight);
-        character.Move(character.xInput, character.zInput);
+        character.StepClimbUp(character.direction.x, character.direction.z, character.stepClimbHeight);
+        character.Move(character.direction);
         character.CalculateVelocity();
         character.YCoordinateAllignment();
 
-        if (character.xInput == 0 && character.zInput == 0)
+        if (character.direction == Vector3.zero)
         {
             stateMachine.ChangeState(character.idleStateExplore);
         }

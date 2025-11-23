@@ -228,7 +228,7 @@ public class PlayerTeamSystem : TeamSystem
         if (member.isLink == false || follower == null) return;
         GetFollowTargetDirection(member, follower, out Vector3 direciton);
 
-        member.SetMoveDirection(direciton.x, direciton.z);
+        member.SetMoveDirection(direciton);
     }
 
     /// <summary>

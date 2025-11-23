@@ -55,6 +55,7 @@ public class GridCursor : Entity
         if (CameraController.instance.cameraBody != null && !CameraController.instance.enableTacticalView)
         {
             Vector3 rotatedDirection = CameraController.instance.cameraBody.transform.TransformDirection(direction);
+            rotatedDirection.y = 0;
             Vector3 normalizedDir = rotatedDirection.normalized;
             gridDirection = Vector3Int.RoundToInt(normalizedDir);
         }

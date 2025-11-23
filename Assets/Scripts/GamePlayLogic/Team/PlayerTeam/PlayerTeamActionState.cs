@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using UnityEngine;
 
 public class PlayerTeamActionState : PlayerTeamState
 {
@@ -22,8 +23,8 @@ public class PlayerTeamActionState : PlayerTeamState
     {
         base.Update();
         
-        team.currentLeader.MovementInput(out float inputX, out float inputZ);
-        team.currentLeader.SetMoveDirection(inputX, inputZ);
+        team.currentLeader.MovementInput(out Vector3 direction);
+        team.currentLeader.SetMoveDirection(direction);
 
         bool anyMoving = false;
 
@@ -32,14 +33,14 @@ public class PlayerTeamActionState : PlayerTeamState
             var character = team.linkMembers[i].character;
             team.FollowWithNearIndexMember(character, team.linkMembers[i].targetToFollow);
 
-            if (character.xInput != 0 || character.zInput != 0)
+            if (character.direction != Vector3.zero)
             {
                 character.UpdateHistory();
                 anyMoving = true;
             }
         }
 
-        if (inputX != 0 || inputZ != 0)
+        if (direction != Vector3.zero)
         {
             anyMoving = true;
         }

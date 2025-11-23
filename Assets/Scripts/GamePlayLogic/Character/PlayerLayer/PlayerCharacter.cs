@@ -50,8 +50,8 @@ public class PlayerCharacter : CharacterBase
     private float stepProgress;
     private float targetStep;
     #endregion
-    public float xInput { get; private set; }
-    public float zInput { get; private set; }
+
+    public Vector3 direction { get; private set; }
 
     private void Awake()
     {
@@ -115,15 +115,22 @@ public class PlayerCharacter : CharacterBase
     }
     #endregion
 
-    public void SetMoveDirection(float xInput, float zInput)
+    public void SetMoveDirection(Vector3 direction)
     {
-        this.xInput = xInput;
-        this.zInput = zInput;
+        this.direction = direction;
     }
-    public void MovementInput(out float x, out float z)
+    public void MovementInput(out Vector3 direction)
     {
-        x = Input.GetAxis("Horizontal");
-        z = Input.GetAxis("Vertical");
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
+
+        direction = new Vector3(x, 0, z);
+        if (CameraController.instance.cameraBody != null && !CameraController.instance.enableTacticalView)
+        {
+            Vector3 rotatedDirection = CameraController.instance.cameraBody.transform.TransformDirection(direction);
+            rotatedDirection.y = 0;
+            direction = rotatedDirection.normalized;
+        }
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
@@ -138,15 +145,14 @@ public class PlayerCharacter : CharacterBase
     /// <summary>
     /// Moves the unit character based on the given input frequencies.
     /// </summary>
-    public void Move(float x, float z)
+    public void Move(Vector3 direction)
     {
-        if (x == 0 && z == 0)
+        if (direction == Vector3.zero)
         {
             //  No movement input
             isMoving = false;
         }
 
-        Vector3 direction = new Vector3(x, 0, z).normalized;
         SetOrientation(direction);
         isMoving = true;
 
@@ -208,8 +214,7 @@ public class PlayerCharacter : CharacterBase
     }
     public void ForceStopVelocity()
     {
-        xInput = 0;
-        zInput = 0;
+        direction = Vector3.zero;
         velocity = Vector3.zero;
     }
 

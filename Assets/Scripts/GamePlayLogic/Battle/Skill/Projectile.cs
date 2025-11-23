@@ -44,7 +44,8 @@ public class Projectile : Entity
                 return;
             }
         }
-        if (CheckWorldCenterForward())
+        if (CheckWorldRightUpForward() || CheckWorldRightDownForward()
+            || CheckWorldLeftUpForward() || CheckWorldLeftDownForward())
         {
             Debug.Log("Hit World");
             Destroy(gameObject);
@@ -137,11 +138,56 @@ public class Projectile : Entity
         else if (velocity.y > 0 || unitDetectable.CheckUp())
             velocity.y = CheckGrounded(velocity.y);
     }
-    public bool CheckWorldCenterForward()
+    public bool CheckWorldRightUpForward()
     {
         Vector3 half = unitDetectable.size * 0.5f;
 
         Vector3 localOffset = new Vector3(half.x, half.y, half.z);
+        Vector3 worldPoint = transform.TransformPoint(unitDetectable.center + localOffset);
+
+        if (world.CheckSolidNode(worldPoint.x, worldPoint.y, worldPoint.z))
+        {
+            velocity = Vector3.zero;
+            return true;
+        }
+        else
+            return false;
+    }
+    public bool CheckWorldRightDownForward()
+    {
+        Vector3 half = unitDetectable.size * 0.5f;
+
+        Vector3 localOffset = new Vector3(half.x, -half.y, half.z);
+        Vector3 worldPoint = transform.TransformPoint(unitDetectable.center + localOffset);
+
+        if (world.CheckSolidNode(worldPoint.x, worldPoint.y, worldPoint.z))
+        {
+            velocity = Vector3.zero;
+            return true;
+        }
+        else
+            return false;
+    }
+    public bool CheckWorldLeftUpForward()
+    {
+        Vector3 half = unitDetectable.size * 0.5f;
+
+        Vector3 localOffset = new Vector3(-half.x, half.y, half.z);
+        Vector3 worldPoint = transform.TransformPoint(unitDetectable.center + localOffset);
+
+        if (world.CheckSolidNode(worldPoint.x, worldPoint.y, worldPoint.z))
+        {
+            velocity = Vector3.zero;
+            return true;
+        }
+        else
+            return false;
+    }
+    public bool CheckWorldLeftDownForward()
+    {
+        Vector3 half = unitDetectable.size * 0.5f;
+
+        Vector3 localOffset = new Vector3(-half.x, -half.y, half.z);
         Vector3 worldPoint = transform.TransformPoint(unitDetectable.center + localOffset);
 
         if (world.CheckSolidNode(worldPoint.x, worldPoint.y, worldPoint.z))
@@ -158,9 +204,20 @@ public class Projectile : Entity
         if (unitDetectable == null) { return; }
         Vector3 half = unitDetectable.size * 0.5f;
         Vector3 localCenter = unitDetectable.center;
-        Vector3 localOffset = new Vector3(half.x, half.y, half.z);
-        Vector3 worldPoint = transform.TransformPoint(localCenter + localOffset);
+
+        Vector3[] corners = new Vector3[]
+        {
+            new Vector3(+half.x, +half.y, +half.z),
+            new Vector3(+half.x, -half.y, +half.z),
+            new Vector3(-half.x, +half.y, +half.z),
+            new Vector3(-half.x, -half.y, +half.z),
+        };
+
         Gizmos.color = Color.red;
-        Gizmos.DrawSphere(worldPoint, 0.1f);
+        foreach (var corner in corners)
+        {
+            Vector3 worldPoint = transform.TransformPoint(localCenter + corner);
+            Gizmos.DrawSphere(worldPoint, 0.1f);
+        }
     }
 }

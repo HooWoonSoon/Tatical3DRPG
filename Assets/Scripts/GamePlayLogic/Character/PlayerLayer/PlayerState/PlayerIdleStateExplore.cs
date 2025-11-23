@@ -28,7 +28,7 @@ public class PlayerIdleStateExplore : PlayerBaseState
         character.CalculateVelocity();
         character.YCoordinateAllignment();
 
-        if (character.xInput != 0 || character.zInput != 0)
+        if (character.direction != Vector3.zero)
         {
             stateMachine.ChangeState(character.moveStateExplore);
         }
