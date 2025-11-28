@@ -52,13 +52,8 @@ public class GridCursor : Entity
     private void TryMove(Vector3Int direction)
     {
         Vector3Int gridDirection = direction;
-        if (CameraController.instance.cameraBody != null && !CameraController.instance.enableTacticalView)
-        {
-            Vector3 rotatedDirection = CameraController.instance.cameraBody.transform.TransformDirection(direction);
-            rotatedDirection.y = 0;
-            Vector3 normalizedDir = rotatedDirection.normalized;
-            gridDirection = Vector3Int.RoundToInt(normalizedDir);
-        }
+        gridDirection = Vector3Int.RoundToInt(CameraController.instance.
+            GetCameraTransformDirection(direction));
         
         Vector3Int nodePos = Utils.RoundXZFloorYInt(cursor.transform.position);
         GameNode gameNode = world.GetHeightNodeWithCube(nodePos.x + gridDirection.x, nodePos.z + gridDirection.z);

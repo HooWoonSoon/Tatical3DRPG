@@ -8,8 +8,8 @@ public class MainUIManager : MonoBehaviour
 
     private void Start()
     {
-        GameEvent.onStartDeployment += () => isDeploymentPhase = true;
-        GameEvent.onEndDeployment += () => isDeploymentPhase = false;
+        GameEvent.onDeploymentStart += () => isDeploymentPhase = true;
+        GameEvent.onDeploymentEnd += () => isDeploymentPhase = false;
     }
 
     private void Update()

@@ -6,7 +6,7 @@ public class UnitDetectable : Entity
     public Vector3 center;
     public Vector3 size;
 
-    [SerializeField] private int mahhatassRange;
+    private int mahhatassRange;
 
     public static List<UnitDetectable> all = new List<UnitDetectable>();
 
@@ -39,6 +39,10 @@ public class UnitDetectable : Entity
         return hits.ToArray();
     }
 
+    public Bounds GetRotatedBoundSelf()
+    {
+        return GetRotatedBounds(transform.position, transform.rotation, center, size);
+    }
     private Bounds GetRotatedBounds(Vector3 position, Quaternion rotation, Vector3 center, Vector3 size)
     {
         Vector3 worldCenter = position + rotation * center;
@@ -68,7 +72,6 @@ public class UnitDetectable : Entity
         b.SetMinMax(min, max);
         return b;
     }
-
 
     /// <summary>
     /// Start from the unit center extend with 3D mahhatass range to obtain other unit detectable
@@ -153,6 +156,50 @@ public class UnitDetectable : Entity
         else
             return false;
     }
+    public bool CheckCenterForward()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkForward = centerPos.z + half.z;
+
+        if (world.CheckSolidNode(transform.position.x, transform.position.y, checkForward))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckCenterBackward()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkBackward = centerPos.z - half.z;
+
+        if (world.CheckSolidNode(transform.position.x, transform.position.y, checkBackward))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckCenterRight()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkRight = centerPos.x + half.x;
+
+        if (world.CheckSolidNode(checkRight, transform.position.y, transform.position.z))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckCenterLeft()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkRight = centerPos.x - half.x;
+
+        if (world.CheckSolidNode(checkRight, transform.position.y, transform.position.z))
+            return true;
+        else
+            return false;
+    }
     public bool CheckUp()
     {
         Vector3 half = size * 0.5f;
@@ -216,7 +263,7 @@ public class UnitDetectable : Entity
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.green;
+        Gizmos.color = new Color(0, 1, 0, 0.5f);
         Matrix4x4 oldMatrix = Gizmos.matrix;
         Gizmos.matrix = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
         Gizmos.DrawWireCube(center, size);

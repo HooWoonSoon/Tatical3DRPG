@@ -11,6 +11,8 @@ public class PlayerMoveStateExplore : PlayerBaseState
     public override void Enter()
     {
         base.Enter();
+        character.ForceStopVelocity();
+        character.YCoordinateAllignment();
     }
 
     public override void Exit()

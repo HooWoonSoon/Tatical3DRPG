@@ -18,8 +18,8 @@ MonoBehaviour:
   type: 0
   skillType: 0
   targetType: 2
-  skillRange: 6
-  occlusionRange: 2
+  skillRange: 7
+  occlusionRange: 4
   aoeRadius: 1
   isProjectile: 1
   projectTilePrefab: {fileID: 6351172539165178106, guid: cc2563b24ce269f44b26145380286a4d, type: 3}

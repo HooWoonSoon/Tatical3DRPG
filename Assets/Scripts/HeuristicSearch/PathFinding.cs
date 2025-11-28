@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using TMPro;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class PathFinding
 {
@@ -251,16 +250,16 @@ public class PathFinding
     }
 
     #region Dijkstra Region Search
-
     /// <summary>
     /// Get the coverange from input position then use the dijkstra algorithm
     /// to calculate the cost of each node check if the cost is lower than the
     /// movable range cost then add to the result list
     /// </summary>
-    public List<Vector3Int> GetCostDijkstraCoverangePos(Vector3 start, int movableRangeCost, int riseLimit, int lowerLimit)
+    public List<Vector3Int> GetCostDijkstraCoverangePos(Vector3 start, int heightCheck, 
+        int movableRangeCost, int riseLimit, int lowerLimit)
     {
         List<Vector3Int> result = new List<Vector3Int>();
-        List<GameNode> costNodes = GetCalculateDijkstraCostNode(start, riseLimit, lowerLimit);
+        List<GameNode> costNodes = GetCalculateDijkstraCostNodes(start, heightCheck, riseLimit, lowerLimit);
         foreach (GameNode node in costNodes)
         {
             if (node.dijkstraCost <= movableRangeCost)
@@ -270,10 +269,11 @@ public class PathFinding
         }
         return result;
     }
-    public List<GameNode> GetCostDijkstraCoverangeNodes(Vector3 start, int movableRangeCost, int riseLimit, int lowerLimit)
+    public List<GameNode> GetCostDijkstraCoverangeNodes(Vector3 start, int heightCheck, 
+        int movableRangeCost, int riseLimit, int lowerLimit)
     {
         List<GameNode> result = new List<GameNode>();
-        List<GameNode> costNodes = GetCalculateDijkstraCostNode(start, riseLimit, lowerLimit);
+        List<GameNode> costNodes = GetCalculateDijkstraCostNodes(start, heightCheck, riseLimit, lowerLimit);
         foreach (GameNode node in costNodes)
         {
             if (node.dijkstraCost <= movableRangeCost)
@@ -289,7 +289,8 @@ public class PathFinding
     /// to calculate the cost of each node till all the walkable node is calculated
     /// or the cost is over the 200 limit
     /// </summary>
-    public List<GameNode> GetCalculateDijkstraCostNode(Vector3 start, int riseLimit, int lowerLimit)
+    public List<GameNode> GetCalculateDijkstraCostNodes(Vector3 start, int heightCheck, 
+        int riseLimit, int lowerLimit)
     {
         GameNode startNode = world.GetNode(start);
         if (startNode == null)
@@ -307,7 +308,7 @@ public class PathFinding
 
         List<GameNode> openList = new List<GameNode> { startNode };
         List<GameNode> calcualtedNode = new List<GameNode> { startNode };
-
+        
         while (openList.Count > 0)
         {
             GameNode currentNode = openList[0];
@@ -316,6 +317,10 @@ public class PathFinding
             List<GameNode> neighbourNodes = GetNeighbourList(currentNode, riseLimit, lowerLimit);
             foreach (GameNode neighbourNode in neighbourNodes)
             {
+                if (!neighbourNode.isWalkable) { continue; }
+
+                if (!CheckIsStandableNode(neighbourNode, heightCheck)) { continue; }
+
                 int tentativeGCost = currentNode.dijkstraCost + CalculateSlopeCost(currentNode, neighbourNode);
 
                 //  Limit the searching range to avoid the long pathfinding time
@@ -332,10 +337,12 @@ public class PathFinding
                 }
             }
         }
+
         return calcualtedNode;
     }
 
-    public List<GameNode> GetCostDijkstraCoverangeNodes(CharacterBase pathfinder, int movableRangeCost, int riseLimit, int lowerLimit)
+    public List<GameNode> GetCostDijkstraCoverangeNodes(CharacterBase pathfinder, 
+        int movableRangeCost, int riseLimit, int lowerLimit)
     {
         List<GameNode> result = new List<GameNode>();
         List<GameNode> costNodes = GetCalculateDijkstraCostNode(pathfinder, riseLimit, lowerLimit);
@@ -348,7 +355,8 @@ public class PathFinding
         }
         return result;
     }
-    public List<GameNode> GetCalculateDijkstraCostNode(CharacterBase pathfinder, int riseLimit, int lowerLimit)
+    public List<GameNode> GetCalculateDijkstraCostNode(CharacterBase pathfinder, 
+        int riseLimit, int lowerLimit)
     {
         GameNode startNode = pathfinder.currentNode;
 
@@ -377,6 +385,8 @@ public class PathFinding
             foreach (GameNode neighbourNode in neighbourNodes)
             {
                 if (!neighbourNode.isWalkable) { continue; }
+
+                if (!CheckIsStandableNode(neighbourNode, 2)) { continue; }
 
                 Vector3Int offset = neighbourNode.GetVectorInt() - currentNode.GetVectorInt();
                 bool isDiagonal = Mathf.Abs(offset.x) + Mathf.Abs(offset.z) > 1;
@@ -443,6 +453,22 @@ public class PathFinding
         {
             return xCost + zCost;
         }
+    }
+
+    private bool CheckIsStandableNode(GameNode node, int heightCheck)
+    {
+        if (!node.isWalkable) { return false; }
+
+        for (int offset = 1; offset <= heightCheck; offset++)
+        {
+            GameNode above = world.GetNode(node.x, node.y + offset, node.z);
+            if (above != null && above.hasCube)
+            {
+                //Debug.Log($"Node at {above.GetVector()} is the obstacle from node {node.GetVector()}.");
+                return false;
+            }
+        }
+        return true;
     }
     #endregion
 }

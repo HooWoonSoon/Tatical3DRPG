@@ -2,16 +2,20 @@
 using UnityEngine;
 public class DecisionSystem
 {
+    private World world;
+
     public CharacterBase decisionMaker;
 
     private SkillData skill;
     private GameNode moveToNode;
     private GameNode skillTargetNode;
+
+    private float shootOffsetHeight = 1.5f;
     
-    public DecisionSystem(CharacterBase character)
+    public DecisionSystem(World world, CharacterBase character)
     {
+        this.world = world;
         decisionMaker = character;
-        MakeDecision();
     }
 
     public void MakeDecision()
@@ -40,6 +44,7 @@ public class DecisionSystem
             {
                 float score = 0;
                 List<CharacterBase> influenceCharacter = decisionMaker.GetSkillAttackableCharacter(skill, node);
+                Debug.Log($"Influence Character Count: {influenceCharacter.Count}");
 
                 if (influenceCharacter.Count == 1)
                 {
@@ -87,13 +92,26 @@ public class DecisionSystem
         GameNode bestNode = null;
 
         List<GameNode> optionNode = decisionMaker.GetSkillRangeFromNode(skill, originNode);
+
         foreach (GameNode node in optionNode)
         {
             float score = 0;
             CharacterBase targetCharacter = node.GetUnitGridCharacter();
+
             if (targetCharacter == decisionMaker) { continue; }
             if (targetCharacter != null)
             {
+                if (skill.isProjectile)
+                {
+                    Parabola parabola = new Parabola(world);
+                    UnitDetectable unit = parabola.GetParabolaHitUnit
+                        (originNode.GetVector() + new Vector3(0, shootOffsetHeight, 0), node.GetVector(), skill.initialElevationAngle);
+
+                    if (unit == null) { continue; }
+                    CharacterBase hitCharacter = unit.GetComponent<CharacterBase>();
+                    if (hitCharacter != targetCharacter) { continue; }
+                }
+
                 if (skill.damageAmount >= targetCharacter.currentHealth)
                 {
                     score += 50;

@@ -63,7 +63,7 @@ public class MapDeploymentUIManager : Entity
         characterDeploymentPanel.SetActive(false);
         startBattleNotificationPanel.SetActive(false);
         leaveBattlefieldNotifactionPanel.SetActive(false);
-        GameEvent.onStartDeployment += ShowDeploymentUI;
+        GameEvent.onDeploymentStart += ShowDeploymentUI;
         GridLayoutGroup layoutGroup = deploymentContent.GetComponent<GridLayoutGroup>();
         if (layoutGroup != null)
         {
@@ -220,9 +220,10 @@ public class MapDeploymentUIManager : Entity
         allowToggleDeploymentUI = true;
         enableDeployment = true;
         characterDeploymentPanel.SetActive(true);
-        characters = AvailableCharacterManager.instance.allCharacter;
+        characters = MapDeploymentManager.instance.allCharacter;
         foreach (CharacterBase character in characters)
         {
+            if (character == null) { continue; }
             CreateCharacterUI(character);
         }
         FocusOnCurrentCharacterUI();
@@ -267,7 +268,6 @@ public class MapDeploymentUIManager : Entity
     /// <summary>
     /// Record character into the deployment UI system
     /// </summary>
-    /// <param name="characters"></param>
     public void InsertCharactersInMap(List<CharacterBase> characters)
     {
         for (int i = 0; i < characters.Count; i++)

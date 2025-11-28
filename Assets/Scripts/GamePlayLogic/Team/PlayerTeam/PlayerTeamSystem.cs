@@ -23,7 +23,7 @@ public class PlayerTeamSystem : TeamSystem
         GameEvent.onLeaderChangedRequest += SetTeamFollowerLeader;
         GameEvent.onTeamSortExchange += SortTeamFollower;
         GameEvent.onTeamSortExchange += ClearAllHistory;
-        GameEvent.onStartDeployment += () => stateMachine.ChangeState(teamDeploymentState); // Tempo fix
+        GameEvent.onDeploymentStart += () => stateMachine.ChangeState(teamDeploymentState); // Tempo fix
     }
 
     private void OnDisable()
@@ -31,7 +31,7 @@ public class PlayerTeamSystem : TeamSystem
         GameEvent.onLeaderChangedRequest -= SetTeamFollowerLeader;
         GameEvent.onTeamSortExchange -= SortTeamFollower;
         GameEvent.onTeamSortExchange -= ClearAllHistory;
-        GameEvent.onStartDeployment -= () => stateMachine.ChangeState(teamDeploymentState); // Tempo fix
+        GameEvent.onDeploymentStart -= () => stateMachine.ChangeState(teamDeploymentState); // Tempo fix
     }
 
     private void Awake()

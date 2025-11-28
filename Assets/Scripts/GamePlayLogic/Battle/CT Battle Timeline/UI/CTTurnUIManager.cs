@@ -62,6 +62,7 @@ public class CTTurnUIManager : MonoBehaviour
     }
 
     [Header("Target Image")]
+    [SerializeField] private TextMeshProUGUI targetCharacterNameText;
     [SerializeField] private Image targetUnitImage;
     [SerializeField] private TextMeshProUGUI maxHeathText;
     [SerializeField] private TextMeshProUGUI currentHeathText;
@@ -319,6 +320,9 @@ public class CTTurnUIManager : MonoBehaviour
             Debug.LogWarning($"{character} turn image is missing");
             targetUnitImage.sprite = Utils.CreateGraySprite();
         }
+        
+        if (targetCharacterNameText != null)
+            targetCharacterNameText.text = character.data.characterName;
 
         if (maxHeathText != null)
             maxHeathText.text = character.data.health.ToString();

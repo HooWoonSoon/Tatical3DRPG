@@ -3,10 +3,11 @@
 public class EnemyCharacter : CharacterBase
 {
     public EnemyStateMachine stateMechine;
-
     public EnemyDeploymentState deploymentState { get; private set; }
     public EnemyBattleState battleState { get; private set; }
     public EnemyIdleStateExplore idleStateExplore { get; private set; }
+
+    public DecisionSystem decisionSystem;
 
     private void Awake()
     {
@@ -20,9 +21,10 @@ public class EnemyCharacter : CharacterBase
     protected override void Start()
     {
         base.Start();
+        decisionSystem = new DecisionSystem(world, this);
         stateMechine.Initialize(idleStateExplore);
 
-        GameEvent.onStartDeployment += () =>
+        GameEvent.onDeploymentStart += () =>
         {
             stateMechine.ChangeState(deploymentState);
         };

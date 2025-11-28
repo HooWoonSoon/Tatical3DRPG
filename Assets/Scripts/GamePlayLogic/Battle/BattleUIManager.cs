@@ -33,6 +33,7 @@ public class BattleUIManager : MonoBehaviour
 
     public void PrepareBattleUI()
     {
+        GameEvent.OnBattleUIStart?.Invoke();
         battleStatePanel.SetActive(true);
         battleStartDisplayUI.SetActive(true);
         cTTimelineUI.SetActive(true);

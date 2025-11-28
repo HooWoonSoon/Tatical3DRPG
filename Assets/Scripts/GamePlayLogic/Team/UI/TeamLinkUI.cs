@@ -22,31 +22,31 @@ public class TeamLinkUI
 
     #region Image
     public Vector2 rectPosition;
-    public GameObject imageObject;
-    private Image image;
+    public Image controlImage;
+    public Image characterIcon;
     #endregion
-
-    #region BroadCasting
-    private void BroadCastingLeaderChanged()
-    {
-        GameEvent.onLeaderChangedRequest?.Invoke();
-    }
-
-    private void BroadCastingTeamSortExchange()
-    {
-        GameEvent.onTeamSortExchange?.Invoke();
-    }
-    #endregion
+    public bool canDrag = false; 
 
     #region TeamLink UI Management
     public void Initialize(PlayerCharacter character, int index)
     {
         this.character = character;
-        imageObject = character.imageObject;
-        image = imageObject.GetComponent<Image>();
-        image.rectTransform.anchoredPosition = rectPosition;
+        controlImage.rectTransform.anchoredPosition = rectPosition;
+
+        if (characterIcon != null)
+        {
+            CharacterData data = character.data;
+            Sprite sprite = data.isometricIcon;
+            if (sprite != null)
+            {
+                characterIcon.sprite = sprite;
+            }
+        }
 
         Index = index;
+
+        if (character.unitState == UnitState.Active)
+            canDrag = true;
 
         LinkCharacter();
     }
@@ -54,12 +54,12 @@ public class TeamLinkUI
     public void UpdatePosition(Vector2 newPosition)
     {
         rectPosition = newPosition;
-        image.rectTransform.anchoredPosition = rectPosition;
+        controlImage.rectTransform.anchoredPosition = rectPosition;
     }
 
     public void AdjustOffsetToPosition(Vector2 newPosition)
     {
-        image.rectTransform.anchoredPosition += newPosition;
+        controlImage.rectTransform.anchoredPosition += newPosition;
     }
 
     public bool Swap(TeamLinkUI other)
@@ -81,9 +81,9 @@ public class TeamLinkUI
         }
 
         if (changed) 
-        { 
-            BroadCastingLeaderChanged();
-            BroadCastingTeamSortExchange();
+        {
+            GameEvent.onLeaderChangedRequest?.Invoke();
+            GameEvent.onTeamSortExchange?.Invoke();
         }
 
         return changed;
@@ -105,8 +105,8 @@ public class TeamLinkUI
 
     public void ResetPosition()
     {
-        if (image != null)
-            image.rectTransform.anchoredPosition = rectPosition;
+        if (controlImage != null)
+            controlImage.rectTransform.anchoredPosition = rectPosition;
     }
 
     public void UnlinkCharacter()
@@ -117,11 +117,6 @@ public class TeamLinkUI
     public void LinkCharacter()
     {
         character.isLink = true;
-    }
-
-    public bool CheckForUnitCharacter()
-    {
-        return character.isLink;
     }
     #endregion
 }

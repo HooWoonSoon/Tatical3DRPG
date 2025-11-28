@@ -17,12 +17,14 @@ public class CharactersPoolEditor : EditorWindow
     private Vector2 scrollPos;
     private Vector2 scrollPos2;
 
-    private CharacterPoolsManager manager;
+    private CharacterPools manager;
     private CharacterBase selectedCharacter;
 
     private CharacterDatabase database;
     private CharacterData selectedCharacterData;
     private string updateName = "";
+
+    private bool enabledCharacterConfiguration = false;
 
     private PanelState currentPanel = PanelState.CharacterPool;
 
@@ -51,7 +53,7 @@ public class CharactersPoolEditor : EditorWindow
 
     private void LoadCharacterPoolManager()
     {
-        manager = GameObject.Find("Characters Pool").GetComponent<CharacterPoolsManager>();
+        manager = GameObject.Find("Characters Pool").GetComponent<CharacterPools>();
         if (manager == null)
             Debug.LogWarning("Character pool not found. Make sure it's in Inpectors");
     }
@@ -114,24 +116,20 @@ public class CharactersPoolEditor : EditorWindow
         switch (currentPanel)
         {
             case PanelState.CharacterPool:
-
                 GUILayout.BeginHorizontal();
-                if (currentPanel == PanelState.CharacterPool)
+                if (GUILayout.Button("Refresh", GUILayout.Width(80), GUILayout.Height(25)))
                 {
-                    if (GUILayout.Button("Refresh", GUILayout.Width(80), GUILayout.Height(25)))
-                    {
-                        LoadBannerImage();
-                        LoadCharacterPoolManager();
-                        LoadCharacterDatabase();
-                    }
-                    if (GUILayout.Button("Create Characters Pool", GUILayout.Width(160), GUILayout.Height(25)))
-                    {
-                        CreateCharacterPool();
-                    }
-                    if (GUILayout.Button("Select Character Pool", GUILayout.Width(160), GUILayout.Height(25)))
-                    {
-                        if (manager != null) Selection.activeObject = manager;
-                    }
+                    LoadBannerImage();
+                    LoadCharacterPoolManager();
+                    LoadCharacterDatabase();
+                }
+                if (GUILayout.Button("Create Characters Pool", GUILayout.Width(160), GUILayout.Height(25)))
+                {
+                    CreateCharacterPool();
+                }
+                if (GUILayout.Button("Select Character Pool", GUILayout.Width(160), GUILayout.Height(25)))
+                {
+                    if (manager != null) Selection.activeObject = manager;
                 }
                 GUILayout.EndHorizontal();
 
@@ -146,21 +144,22 @@ public class CharactersPoolEditor : EditorWindow
                 scrollPos2 = EditorGUILayout.BeginScrollView(scrollPos2);
                 GUILayout.Label("Editor", EditorStyles.boldLabel);
 
-                if (selectedCharacter != null)
+                if (enabledCharacterConfiguration)
                 {
-                    CharacterEditorDrawer.DrawCharacterEditor(selectedCharacter);
-                    if (selectedCharacter.data != null)
-                    {
-                        CharacterEditorDrawer.DrawCharacterEditor(selectedCharacter.data);
-                    }
-                    else
-                    {
-                        EditorGUILayout.HelpBox("Missing character data", MessageType.Info);
-                    }
+                    CharacterConfigurationDrawer.DrawCharacterConfiguration(manager);
                 }
                 else
                 {
-                    EditorGUILayout.HelpBox("Press Edit button to select character to edit", MessageType.Info);
+                    if (selectedCharacter != null)
+                    {
+                        CharacterEditorDrawer.DrawCharacterEditor(selectedCharacter);
+                        if (selectedCharacter.data != null)
+                            CharacterEditorDrawer.DrawCharacterEditor(selectedCharacter.data);
+                        else
+                            EditorGUILayout.HelpBox("Missing character data", MessageType.Info);
+                    }
+                    else
+                        EditorGUILayout.HelpBox("Press Edit button to select character to edit", MessageType.Info);
                 }
                 GUILayout.EndScrollView();
 
@@ -245,7 +244,20 @@ public class CharactersPoolEditor : EditorWindow
     {
         GUILayout.BeginVertical("box", GUILayout.Width(215));
         GUILayout.Label("Character List", EditorStyles.boldLabel);
+        if (GUILayout.Button("New Character Configuration", EditorStyles.toolbarButton))
+        {
+            enabledCharacterConfiguration = !enabledCharacterConfiguration;
+        }
         scrollPos = GUILayout.BeginScrollView(scrollPos);
+
+        if (manager == null)
+        {
+            EditorGUILayout.HelpBox("Character pool manager is missing. Please create one.", MessageType.Info);
+            selectedCharacter = null;
+            GUILayout.EndScrollView();
+            GUILayout.EndVertical();
+            return;
+        }
 
         List<CharacterBase> allCharacterList = manager.allCharacter.ToList();
         List<CharacterBase> list = allCharacterList.Where
@@ -263,20 +275,20 @@ public class CharactersPoolEditor : EditorWindow
                 DrawCharacterCard(list[i]);
             }
         }
-        GUILayout.EndVertical();
         GUILayout.EndScrollView();
+        GUILayout.EndVertical();
     }
 
     private void CreateCharacterPool()
     {
         GameObject poolGameObject = GameObject.Find("Characters Pool");
         if (poolGameObject == null)
-            manager = new GameObject("Characters Pool").AddComponent<CharacterPoolsManager>();
+            manager = new GameObject("Characters Pool").AddComponent<CharacterPools>();
         else
         {
-            CharacterPoolsManager characterPoolsManager = poolGameObject.GetComponent<CharacterPoolsManager>();
+            CharacterPools characterPoolsManager = poolGameObject.GetComponent<CharacterPools>();
             if (characterPoolsManager == null)
-                manager = poolGameObject.AddComponent<CharacterPoolsManager>();
+                manager = poolGameObject.AddComponent<CharacterPools>();
         }
         Selection.activeObject = poolGameObject;
     }
@@ -332,6 +344,9 @@ public class CharactersPoolEditor : EditorWindow
         AssetDatabase.Refresh();
     }
 
+    /// <summary>
+    /// IMGUI to draw character data card
+    /// </summary>
     private void DrawDataCard(CharacterData data)
     {
         EditorGUILayout.BeginVertical("box");
@@ -353,6 +368,7 @@ public class CharactersPoolEditor : EditorWindow
         }
         if (GUILayout.Button("Delete", GUILayout.Width(60)))
         {
+            /// Confirm delete dialog, pop out warning
             if (EditorUtility.DisplayDialog("Delete Data", $"Are you sure you want to delete data: {data.name}?", "Yes", "No"))
             {
                 database.RemoveData(data);

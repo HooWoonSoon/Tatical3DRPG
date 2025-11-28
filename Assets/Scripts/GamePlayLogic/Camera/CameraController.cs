@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using Tatics.InputHelper;
 
 public class CameraController : MonoBehaviour
 {
@@ -27,6 +28,10 @@ public class CameraController : MonoBehaviour
 
     private bool isResetting = false;
 
+    public bool enableRotateAlignment = false;
+    private Quaternion rotateAlignmentTarget;
+    private bool isRotateAligmenting = false;
+
     public bool enableTacticalView = false;
     public static CameraController instance { get; private set; }
     private void Awake()
@@ -42,6 +47,7 @@ public class CameraController : MonoBehaviour
         GameEvent.onLeaderChanged += (CharacterBase newLeader) =>
         {
             ChangeFollowTarget(newLeader.transform);
+            isTargeting = true;
         };
 
         RecordPosAndAngle();
@@ -49,24 +55,28 @@ public class CameraController : MonoBehaviour
 
     public void Update()
     {
-        if (Input.GetKeyDown(KeyCode.P))
+        if (InputKeyHelper.GetKeyDownSolo(KeyCode.P))
         {
             if (enableTacticalView) return;
             isTargeting = true;
             isResetting = true;
         }
-        else if (Input.GetKeyDown(KeyCode.Escape))
+        else if (InputKeyHelper.GetKeyDownSolo(KeyCode.Escape))
         {
             isTargeting = true;
         }
-        else if (Input.GetKeyDown(KeyCode.T))
+        else if (InputKeyHelper.GetKeyDownSolo(KeyCode.T))
         {
             enableTacticalView = !enableTacticalView;
+            isTargeting = true;
             if (enableTacticalView)
             {
-                isTargeting = true;
                 RecordPosAndAngle();
             }
+        }
+        else if (InputKeyHelper.GetKeyCombo(KeyCode.LeftControl, KeyCode.T))
+        { 
+            enableRotateAlignment = !enableRotateAlignment;
         }
     }
 
@@ -75,6 +85,7 @@ public class CameraController : MonoBehaviour
         CameraResetAligment();
         MoveCamera();
         RotateCamera();
+        RoatateCameraAlignment();
         ZoomCamera();
         MoveCameraViewAlignment();
         TacticCameraViewAlignment();
@@ -110,22 +121,22 @@ public class CameraController : MonoBehaviour
     {
         Vector3 direction = Vector3.zero;
 
-        if (Input.GetKey(KeyCode.J))
+        if (InputKeyHelper.GetKeySolo(KeyCode.J))
         {
             isTargeting = false;
             direction = new Vector3(-1, 0, 0);
         }
-        if (Input.GetKey(KeyCode.L))
+        if (InputKeyHelper.GetKeySolo(KeyCode.L))
         {
             isTargeting = false;
             direction = new Vector3(1, 0, 0);
         }
-        if (Input.GetKey(KeyCode.I))
+        if (InputKeyHelper.GetKeySolo(KeyCode.I))
         {
             isTargeting = false;
             direction = new Vector3(0, 0, 1);
         }
-        if (Input.GetKey(KeyCode.K))
+        if (InputKeyHelper.GetKeySolo(KeyCode.K))
         {
             isTargeting = false;
             direction = new Vector3(0, 0, -1);
@@ -147,14 +158,49 @@ public class CameraController : MonoBehaviour
     }
     private void RotateCamera()
     {
-        if (Input.GetKey(KeyCode.U))
+        if (enableRotateAlignment) { return;}
+        if (InputKeyHelper.GetKeySolo(KeyCode.U))
         {
             pivotPoint.localEulerAngles += new Vector3(0, 10, 0) * Time.deltaTime * rotationSpeed;
             generalPivotRotate = pivotPoint.localRotation;
         }
-        else if (Input.GetKey(KeyCode.O))
+        else if (InputKeyHelper.GetKeySolo(KeyCode.O))
         {
             pivotPoint.localEulerAngles += new Vector3(0, -10, 0) * Time.deltaTime * rotationSpeed;
+            generalPivotRotate = pivotPoint.localRotation;
+        }
+    }
+    private void RoatateCameraAlignment()
+    {
+        if (!enableRotateAlignment) { return; }
+
+        float currentY = pivotPoint.localEulerAngles.y;
+        currentY = Mathf.Repeat(currentY, 360f);
+
+        float snappedY = Mathf.Round(currentY / 90f) * 90f;
+
+        if (InputKeyHelper.GetKeyDownSolo(KeyCode.U))
+        {
+            isRotateAligmenting = true;
+            rotateAlignmentTarget = Quaternion.Euler(0, snappedY + 90f, 0);
+        }
+        else if (InputKeyHelper.GetKeyDownSolo(KeyCode.O))
+        {
+            isRotateAligmenting = true;
+            rotateAlignmentTarget = Quaternion.Euler(0, snappedY - 90f, 0);
+        }
+
+        if (isRotateAligmenting)
+        {
+            pivotPoint.localRotation = Quaternion.Lerp(pivotPoint.localRotation, 
+                rotateAlignmentTarget, Time.deltaTime * moveSpeed);
+            generalPivotRotate = pivotPoint.localRotation;
+        }
+
+        if (Quaternion.Angle(pivotPoint.localRotation, rotateAlignmentTarget) <= 0.5f)
+        {
+            isRotateAligmenting = false;
+            pivotPoint.localRotation = rotateAlignmentTarget;
             generalPivotRotate = pivotPoint.localRotation;
         }
     }
@@ -162,13 +208,13 @@ public class CameraController : MonoBehaviour
     {
         if (enableTacticalView) { return; }
 
-        if (Input.GetKey(KeyCode.Minus))
+        if (InputKeyHelper.GetKeySolo(KeyCode.Minus))
         {
             if (cameraBody.transform.localPosition.y < maximunZoomIn.y || cameraBody.transform.localPosition.z > maximunZoomIn.z) { return; }
             cameraBody.transform.localPosition += new Vector3(0, -1, 1) * Time.deltaTime * moveSpeed;
             generalBodyPos = cameraBody.transform.localPosition;
         }
-        if (Input.GetKey(KeyCode.Equals))
+        if (InputKeyHelper.GetKeySolo(KeyCode.Equals))
         {
             if (cameraBody.transform.localPosition.y > maximunZoomOut.y || cameraBody.transform.localPosition.z < maximunZoomOut.z) { return; }
             cameraBody.transform.localPosition += new Vector3(0, 1, -1) * Time.deltaTime * moveSpeed;
@@ -204,7 +250,14 @@ public class CameraController : MonoBehaviour
         }
     }
 
-    
+
+    /// <summary>
+    /// Change camera follow target, the target would be followed by camera 
+    /// until another target is assigned.
+    /// </summary>
+    /// <param name="transform">
+    /// The Transform of the object that the camera should follow
+    /// </param>
     public void ChangeFollowTarget(Transform transform)
     {
         Debug.Log($"Change target {transform.name}");
@@ -212,12 +265,23 @@ public class CameraController : MonoBehaviour
         isTargeting = true;
     }
 
+    public Vector3 GetCameraTransformDirection(Vector3 direction)
+    {
+        if (cameraBody != null && !enableTacticalView)
+        {
+            Vector3 rotatedDirection = cameraBody.transform.TransformDirection(direction);
+            rotatedDirection.y = 0;
+            Vector3 normalizedDir = rotatedDirection.normalized;
+            return normalizedDir;
+        }
+        return direction;
+    }
     private void OnDrawGizmos()
     {
         if (pivotPoint != null)
         {
-            Gizmos.color = Color.red;
-            Gizmos.DrawSphere(pivotPoint.position, 0.2f);
+            Gizmos.color = new Color(1, 0, 0, 0.5f);
+            Gizmos.DrawSphere(pivotPoint.position, 0.1f);
         }
     }
 }

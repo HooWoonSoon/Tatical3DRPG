@@ -157,6 +157,43 @@ public class World
         return loadedNodes.ContainsKey(new Vector3Int(x, y, z));
     }
 
+    public bool CheckSolidNodeLine(Vector3 start, Vector3 end)
+    {
+        return CheckSolidNodeLine(start.x, start.y, start.z, end.x, end.y, end.z);
+    }
+
+    public bool CheckSolidNodeLine(float startX, float startY, float startZ,
+        float endX, float endY, float endZ)
+    {
+        Vector3 start = new Vector3(startX, startY, startZ);
+        Vector3 end = new Vector3(endX, endY, endZ);
+
+        Vector3 delta = end - start;
+        float distance = delta.magnitude;
+        
+        if (distance < 0.0001f) return false;
+
+        Vector3 direction = delta / distance;
+
+        float step = cellSize * 0.25f;
+        float current = 0f;
+
+        while (current <= distance)
+        {
+            Vector3 sample = start + direction * current;
+
+            if (CheckSolidNode(sample))
+                return true;
+
+            current += step;
+        }
+
+        if (CheckSolidNode(end))
+            return true;
+
+        return false;
+    }
+
     public bool CheckSolidNode(Vector3 position)
     {
         return CheckSolidNode(position.x, position.y, position.z);

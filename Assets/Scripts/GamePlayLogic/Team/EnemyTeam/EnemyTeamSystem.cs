@@ -102,7 +102,7 @@ public class EnemyTeamSystem : TeamSystem
 
     private void DetectedEntireTeamCharacter(CharacterBase character)
     {
-        UnitDetectable[] unitDetectable = character.detectable.OverlapMahhatassRange(5);
+        UnitDetectable[] unitDetectable = character.unitDetectable.OverlapMahhatassRange(5);
 
         foreach (UnitDetectable hit in unitDetectable)
         {

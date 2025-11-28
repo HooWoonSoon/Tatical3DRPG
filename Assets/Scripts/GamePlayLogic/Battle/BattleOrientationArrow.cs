@@ -18,42 +18,53 @@ public class BattleOrientationArrow : MonoBehaviour
     private void Update()
     {
         if (!activateArrow) { return; }
+
+        Vector3 direction = Vector3.zero;
+
         if (Input.GetKeyDown(KeyCode.W))
         {
-            HighlightOrientationArrow(Orientation.forward);
+            SetArrowOrientation(Vector3.forward);
         }
         else if (Input.GetKeyDown(KeyCode.A))
         {
-            HighlightOrientationArrow(Orientation.left);
+            SetArrowOrientation(Vector3.left);
         }
         else if (Input.GetKeyDown(KeyCode.D))
         {
-            HighlightOrientationArrow(Orientation.right);
+            SetArrowOrientation(Vector3.right);
         }
         else if (Input.GetKeyDown(KeyCode.S))
         {
-            HighlightOrientationArrow(Orientation.back);
+            SetArrowOrientation(Vector3.back);
         }
     }
 
-    public void ShowArrows(Orientation orientation, GameNode targetNode, float centerOffset = 1.2f)
+    private void SetArrowOrientation(Vector3 direction)
     {
-        arrows = new GameObject[] { frontArrow, leftArrow, rightArrow, backArrow };
-        Vector3 target = targetNode.GetVector();
-        currentOrientation = orientation;
+        Vector3 arrowDirection = Vector3.zero;
+        arrowDirection = Vector3Int.RoundToInt(CameraController.instance.
+            GetCameraTransformDirection(direction));
 
-        frontArrow.SetActive(true);
-        frontArrow.transform.position = target + new Vector3(0, 1f, centerOffset);
-        leftArrow.SetActive(true);
-        leftArrow.transform.position = target + new Vector3(-centerOffset, 1f, 0);
-        rightArrow.SetActive(true);
-        rightArrow.transform.position = target + new Vector3(centerOffset, 1f, 0);
-        backArrow.SetActive(true);
-        backArrow.transform.position = target + new Vector3(0, 1f, -centerOffset);
-        activateArrow = true;
+        if (arrowDirection == Vector3.forward)
+        {
+            currentOrientation = Orientation.forward;
+        }
+        else if (arrowDirection == Vector3.left)
+        {
+            currentOrientation = Orientation.left;
+        }
+        else if (arrowDirection == Vector3.right)
+        {
+            currentOrientation = Orientation.right;
+        }
+        else if (arrowDirection == Vector3.back)
+        {
+            currentOrientation = Orientation.back;
+        }
+        HighlightOrientationArrow(currentOrientation);
     }
 
-    public void HighlightOrientationArrow(Orientation orientation)
+    private void HighlightOrientationArrow(Orientation orientation)
     {
         foreach (var arrow in arrows)
         {
@@ -63,7 +74,6 @@ public class BattleOrientationArrow : MonoBehaviour
         }
 
         GameObject selectedArrow = null;
-        currentOrientation = orientation;
         switch (orientation)
         {
             case Orientation.forward:
@@ -88,6 +98,22 @@ public class BattleOrientationArrow : MonoBehaviour
         }
     }
 
+    public void ShowArrows(Orientation orientation, GameNode targetNode, float centerOffset = 1.2f)
+    {
+        arrows = new GameObject[] { frontArrow, leftArrow, rightArrow, backArrow };
+        Vector3 target = targetNode.GetVector();
+        currentOrientation = orientation;
+
+        frontArrow.SetActive(true);
+        frontArrow.transform.position = target + new Vector3(0, 1f, centerOffset);
+        leftArrow.SetActive(true);
+        leftArrow.transform.position = target + new Vector3(-centerOffset, 1f, 0);
+        rightArrow.SetActive(true);
+        rightArrow.transform.position = target + new Vector3(centerOffset, 1f, 0);
+        backArrow.SetActive(true);
+        backArrow.transform.position = target + new Vector3(0, 1f, -centerOffset);
+        activateArrow = true;
+    }
     public void HideAll()
     {
         foreach (var arrow in arrows)

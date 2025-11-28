@@ -7,12 +7,13 @@ using UnityEngine;
 public enum Orientation { right, left, forward, back }
 public enum UnitState { Active, Knockout, Dead }
 
+[RequireComponent(typeof(UnitDetectable))]
 public abstract class CharacterBase : Entity
 {
     public GameObject characterModel;
 
     public TeamDeployment currentTeam;
-    public UnitDetectable detectable;
+    public UnitDetectable unitDetectable;
 
     [Header("Character Information")]
     public SelfCanvasController selfCanvasController;
@@ -31,11 +32,10 @@ public abstract class CharacterBase : Entity
     public Orientation orientation = Orientation.right;
     public UnitState unitState = UnitState.Active;
 
-    public event Action<CharacterBase> OnUnitKnockout;
     protected override void Start()
     {
         base.Start();
-        detectable = GetComponent<UnitDetectable>();
+        unitDetectable = GetComponent<UnitDetectable>();
 
         currentHealth = data.health;
         currentMetal = data.mental;
@@ -131,6 +131,8 @@ public abstract class CharacterBase : Entity
 
     public void SetGridPos()
     {
+        if (world == null) return;
+
         GameNode nextGridNode = world.GetNode(Utils.RoundXZFloorYInt(transform.position));
 
         if (nextGridNode == currentNode || nextGridNode == null) { return; }
@@ -161,6 +163,7 @@ public abstract class CharacterBase : Entity
         transform.position = targetPos + new Vector3(0, offsetY, 0);
         //Debug.Log($"Set {this} to node {targetNode.GetVector()}");
         targetNode.SetUnitGridCharacter(this);
+        SetGridPos();
     }
 
     public abstract void SetAStarMovePos(Vector3 targetPosition);
@@ -295,18 +298,20 @@ public abstract class CharacterBase : Entity
 
     public void TakeDamage(int damage)
     {
-        selfCanvasController.ExecuteHealthChange(this, -damage);
+        if (selfCanvasController != null)
+            selfCanvasController.ExecuteHealthChange(this, -damage);
+
         currentHealth -= damage;
         UniversalUIManager.instance.CreateCountText(this, damage);
         TakeDamageEffect();
         if (currentHealth <= 0)
         {
             currentHealth = 0;
-            unitState = UnitState.Knockout;
             if (BattleManager.instance.isBattleStarted)
             {
-                OnUnitKnockout?.Invoke(this);
+                GameEvent.onBattleUnitKnockout?.Invoke(this);
             }
+            KnockOut();
         }
     }
     private void TakeDamageEffect()
@@ -327,6 +332,11 @@ public abstract class CharacterBase : Entity
     {
         currentHealth += heal;
         UniversalUIManager.instance.CreateCountText(this, heal);
+    }
+    private void KnockOut()
+    {
+        unitState = UnitState.Knockout;
+        gameObject.SetActive(false);
     }
 
     public bool IsYourTurn(CharacterBase character)
@@ -357,7 +367,7 @@ public abstract class CharacterBase : Entity
         List<Vector3Int> result = new List<Vector3Int>();
         Vector3Int selfPos = GetCharacterNodePos();
 
-        List<GameNode> coverage = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, size, 1, 1);
+        List<GameNode> coverage = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, 2, size, 1, 1);
         foreach (var node in coverage)
         {
             Vector3Int nodePos = node.GetVectorInt();
@@ -388,7 +398,7 @@ public abstract class CharacterBase : Entity
     {
         int selfRange = data.movementValue;
         Vector3Int selfPos = GetCharacterTranformToNodePos();
-        List<GameNode> selfRangeExtend = pathFinding.GetCalculateDijkstraCostNode(selfPos, 1, 1);
+        List<GameNode> selfRangeExtend = pathFinding.GetCalculateDijkstraCostNodes(selfPos, 2, 1, 1);
         List<GameNode> selfMovableNode = pathFinding.GetCostDijkstraCoverangeNodes(this, selfRange, 1, 1);
         HashSet<GameNode> selfMovableNodeSet = new HashSet<GameNode>(selfMovableNode);
         List<GameNode> conflictNode = new List<GameNode>();
@@ -448,11 +458,17 @@ public abstract class CharacterBase : Entity
 
         foreach (GameNode node in influenceNodes)
         {
-            if (node.character != null && node.character != this &&
-                node.character.currentTeam != currentTeam)
+            if (node.character == null) { continue; }
+            if (node.character == this) { continue; }
+            if (node.character.currentTeam == null)
             {
                 result.Add(node.character);
+                continue;
             }
+
+            if (node.character.currentTeam == currentTeam) continue;
+
+            result.Add(node.character);
         }
         return result.ToList();
     }

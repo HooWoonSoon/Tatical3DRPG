@@ -1,15 +1,19 @@
-﻿using System;
-using UnityEngine;
-public class ParabolaRenderer : MonoBehaviour
-{
-    public LineRenderer lineRenderer;
-    public static ParabolaRenderer instance { get; private set; }
+﻿using UnityEngine;
 
-    private void Start()
+public class ParabolaRenderer
+{
+    private World world;
+    public LineRenderer lineRenderer;
+
+    public ParabolaRenderer(World world, LineRenderer lineRenderer)
     {
-        if (lineRenderer == null) { GetComponent<LineRenderer>(); }
+        this.world = world;
+        this.lineRenderer = lineRenderer;
     }
 
+    /// <summary>
+    /// Draw and projectile parabola visual from start to target with given elevation angle
+    /// </summary>
     public void DrawProjectileVisual(Vector3 start, Vector3 target, int elevationAngle)
     {
         if (!CheckParabolaTarget(start, target)) 
@@ -17,10 +21,7 @@ public class ParabolaRenderer : MonoBehaviour
             ResetParabolaVisual();
             return; 
         }
-
         lineRenderer.enabled = true;
-
-        //Debug.Log("Draw Projectile Visual");
 
         Vector3 displacementXZ = new Vector3(target.x - start.x, 0, target.z - start.z);
         float distanceXZ = displacementXZ.magnitude;
@@ -42,8 +43,10 @@ public class ParabolaRenderer : MonoBehaviour
         float rotationY = Mathf.Atan2(displacementXZ.x, displacementXZ.z) * Mathf.Rad2Deg;
         Vector3 forwardDir = Quaternion.Euler(0, rotationY, 0) * Vector3.forward;
 
-        int segments = 50;
+        int segments = Mathf.Clamp((int)(distanceXZ * 8f), 50, 800);
+
         lineRenderer.positionCount = segments;
+        Vector3 previousPoint = start;
 
         for (int i = 0; i < segments; i++)
         {
@@ -56,9 +59,21 @@ public class ParabolaRenderer : MonoBehaviour
 
             Vector3 nextPoint = start + forwardDir * x + Vector3.up * y;
             lineRenderer.SetPosition(i, nextPoint);
+            if (world.CheckSolidNodeLine(previousPoint, nextPoint))
+            {
+                Debug.Log($"Hit Solid: {nextPoint}");
+                lineRenderer.positionCount = i + 1;
+                return;
+            }
+            previousPoint = nextPoint;
+        }
+        if (world.CheckSolidNode(target))
+        {
+            Debug.Log($"Hit Solid: {target}");
+            return;
         }
     }
-    
+
     private bool CheckParabolaTarget(Vector3 start, Vector3 end)
     {
         if (start == end) 

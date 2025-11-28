@@ -7,10 +7,13 @@ using System.Linq;
 
 public class MapDeploymentManager : Entity
 {
-    public TeamDeployment teamDeployment;
+    [Header("Deployable Character")]
+    public CharacterBase[] allCharacter;
+
     private List<GameNode> deployableNodes = new List<GameNode>();
     private Dictionary<CharacterBase, GameNode> occupiedNodes = new Dictionary<CharacterBase, GameNode>();
 
+    [Header("Deployment Gizmos")]
     [SerializeField] private GridCursor gridCursor;
     private GameNode lastNode;
 
@@ -79,7 +82,7 @@ public class MapDeploymentManager : Entity
 
         CasualPutGridCursorAtLoadedMap();
 
-        GameEvent.onStartDeployment?.Invoke();
+        GameEvent.onDeploymentStart?.Invoke();
     }
 
     //  Summary
@@ -257,7 +260,7 @@ public class MapDeploymentManager : Entity
         EnableEditingMode(false);
         DestroyPreviewModel();
         ActivateMoveCursorAndHide(false, true);
-        GameEvent.onEndDeployment?.Invoke();
+        GameEvent.onDeploymentEnd?.Invoke();
     }
 
 }

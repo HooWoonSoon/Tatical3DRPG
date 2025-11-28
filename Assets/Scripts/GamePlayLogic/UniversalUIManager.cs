@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
 using System.Collections;
+using Tatics.InputHelper;
 
 public class UniversalUIManager : MonoBehaviour
 {
@@ -8,6 +9,9 @@ public class UniversalUIManager : MonoBehaviour
 
     public CanvasGroup castSkillNoticeCanvasGroup;
     public TextMeshProUGUI castSkillNoticeText;
+
+    public GameObject UITipGameObject;
+    private bool forceEnableUITip = false;
     public static UniversalUIManager instance { get; private set; }
 
     private void Awake()
@@ -19,6 +23,13 @@ public class UniversalUIManager : MonoBehaviour
     {
         GameEvent.onSkillCastStart += (SkillData skill) => ShowSkillCastNotice(skill);
         GameEvent.onSkillCastEnd += CloseSkillCastNotice;
+        GameEvent.OnBattleUIStart += () => FocesEnableUITip(true);
+        GameEvent.onBattleEnd += () => FocesEnableUITip(false);
+    }
+
+    private void LateUpdate()
+    {
+        UITip();
     }
 
     public void CreateCountText(CharacterBase character, int value)
@@ -29,7 +40,6 @@ public class UniversalUIManager : MonoBehaviour
         StartCoroutine(UIFadeCoroutine(damangeTextUI, 1f, 0f, 1.5f, true));
         Debug.Log("Generated Text");
     }
-
     private IEnumerator UIFadeCoroutine(TextMeshProUGUI textUI, float startAlpha, float endAlpha, float duration, bool destroyOnComplete = false)
     {
         float elapsedTime = 0f;
@@ -48,6 +58,7 @@ public class UniversalUIManager : MonoBehaviour
         }
     }
 
+    #region Skill Cast Notice
     private void ShowSkillCastNotice(SkillData skill)
     {
         castSkillNoticeCanvasGroup.gameObject.SetActive(true);
@@ -57,7 +68,6 @@ public class UniversalUIManager : MonoBehaviour
             StartCoroutine(Utils.UIFadeCoroutine(castSkillNoticeCanvasGroup, 0, 1, 0.2f));
         }
     }
-
     private void CloseSkillCastNotice()
     {
         StartCoroutine(CloseSkillCastNoticeCoroutine());
@@ -66,6 +76,25 @@ public class UniversalUIManager : MonoBehaviour
     {
         yield return Utils.UIFadeCoroutine(castSkillNoticeCanvasGroup, 1, 0, 0.2f);
         castSkillNoticeCanvasGroup.gameObject.SetActive(false);
+    }
+    #endregion
+
+    private void FocesEnableUITip(bool enable)
+    {
+        forceEnableUITip = enable;
+        UITipGameObject.SetActive(enable);
+    }
+    private void UITip()
+    {
+        if (forceEnableUITip) { return; }
+        if (InputKeyHelper.GetKeyModifier(KeyCode.LeftControl))
+        { 
+            UITipGameObject.SetActive(true);
+        }
+        else
+        {
+            UITipGameObject.SetActive(false);
+        }
     }
 }
 

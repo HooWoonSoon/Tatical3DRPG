@@ -2,10 +2,10 @@
 using UnityEngine;
 using System.Collections;
 using System;
+using UnityEngine.UI;
 
 public class PlayerCharacter : CharacterBase
 {
-    public GameObject imageObject;
     public int index { get; set; }
 
     #region self path
@@ -29,7 +29,6 @@ public class PlayerCharacter : CharacterBase
 
     public PlayerStateMachine stateMechine;
     private Animator anim;
-    private UnitDetectable unitDetectable;
 
     public PlayerDeploymentState deploymentState { get; private set; }
     public PlayerBattleState battleState { get; private set; }
@@ -72,7 +71,7 @@ public class PlayerCharacter : CharacterBase
         stateMechine.Initialize(idleStateExplore);
         unitDetectable = GetComponent<UnitDetectable>();
 
-        GameEvent.onStartDeployment += () =>
+        GameEvent.onDeploymentStart += () =>
         {
             stateMechine.ChangeState(deploymentState);
         };
@@ -125,12 +124,7 @@ public class PlayerCharacter : CharacterBase
         float z = Input.GetAxis("Vertical");
 
         direction = new Vector3(x, 0, z);
-        if (CameraController.instance.cameraBody != null && !CameraController.instance.enableTacticalView)
-        {
-            Vector3 rotatedDirection = CameraController.instance.cameraBody.transform.TransformDirection(direction);
-            rotatedDirection.y = 0;
-            direction = rotatedDirection.normalized;
-        }
+        direction = CameraController.instance.GetCameraTransformDirection(direction);
 
         if (Input.GetKeyDown(KeyCode.LeftShift))
         {
@@ -177,9 +171,11 @@ public class PlayerCharacter : CharacterBase
             if (velocity.y < terminateGravity)
                 velocity.y = terminateGravity;
 
-            if (velocity.z > 0 && unitDetectable.CheckBottomForward() || velocity.z < 0 && unitDetectable.CheckBottomBackward())
+            if (velocity.z > 0 && unitDetectable.CheckBottomForward() ||
+                velocity.z < 0 && unitDetectable.CheckBottomBackward())
                 velocity.z = 0;
-            if (velocity.x > 0 && unitDetectable.CheckBottomRight() || velocity.x < 0 && unitDetectable.CheckBottomLeft())
+            if (velocity.x > 0 && unitDetectable.CheckBottomRight() || 
+                velocity.x < 0 && unitDetectable.CheckBottomLeft())
                 velocity.x = 0;
         }
 

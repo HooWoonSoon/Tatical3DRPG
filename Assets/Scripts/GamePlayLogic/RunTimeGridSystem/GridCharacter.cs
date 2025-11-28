@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class GridCharacter : Entity
 {
-    public List<CharacterBase> characters = new List<CharacterBase>();
+    public CharacterPools characterPools;
     private bool updateCharacter;
     public static GridCharacter instance { get; private set; }
 
@@ -23,7 +23,7 @@ public class GridCharacter : Entity
         if (updateCharacter)
         {
             ResetAllGridCharacter();
-            foreach (CharacterBase character in characters)
+            foreach (CharacterBase character in characterPools.allCharacter)
             {
                 UpdateGridCharacter(character);
             }

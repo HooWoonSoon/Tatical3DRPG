@@ -17,14 +17,14 @@ MonoBehaviour:
   description: Ultra close but high damage, physic attack
   type: 0
   skillType: 0
-  targetType: 2
+  targetType: 3
   skillRange: 2
   occlusionRange: 1
   aoeRadius: 1
   isProjectile: 1
   projectTilePrefab: {fileID: 6351172539165178106, guid: cc2563b24ce269f44b26145380286a4d, type: 3}
   initialElevationAngle: 30
-  spIcon: {fileID: 0}
+  MPIcon: {fileID: 0}
   requireMP: 1
   MPAmount: 10
   damageAmount: 100

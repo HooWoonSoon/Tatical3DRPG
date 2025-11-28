@@ -83,15 +83,7 @@ public class BattleManager : Entity
     public void SetJoinedBattleUnit(List<CharacterBase> joinedBattleUnits)
     {
         this.joinedBattleUnits = joinedBattleUnits;
-        SubcribeCharacterState(joinedBattleUnits);
-    }
-    private void SubcribeCharacterState(List<CharacterBase> joinedBattleUnits)
-    {
-        for (int i = 0; i < joinedBattleUnits.Count; i++)
-        {
-            joinedBattleUnits[i].OnUnitKnockout += HandleUnitKnockout;
-            Debug.Log($"Subscribed {joinedBattleUnits[i]}");
-        }
+        GameEvent.onBattleUnitKnockout += HandleUnitKnockout;
     }
     #endregion
     
@@ -169,7 +161,7 @@ public class BattleManager : Entity
         CTTimeline.instance.SetupTimeline();
         GameEvent.OnBattleUIFinish += () =>
         {
-            GameEvent.onStartBattle?.Invoke();
+            GameEvent.onBattleStart?.Invoke();
             isBattleStarted = true;
         };
     }
@@ -214,6 +206,8 @@ public class BattleManager : Entity
         onConfrimCallback = () =>
         {
             SetJoinedBattleUnit(allBattleCharacter);
+            string allJoined = string.Join("All Battle Character", allBattleCharacter.ConvertAll(c => c.ToString()));
+            Debug.Log(allJoined);
             PreapreBattleContent();
             confirmAction?.Invoke();
         };
@@ -300,12 +294,13 @@ public class BattleManager : Entity
 
     public void EndBattle()
     {
-        GameEvent.onEndBattle?.Invoke();
+        GameEvent.onBattleEnd?.Invoke();
         isBattleStarted = false;
         battleTeams.Clear();
         joinedBattleUnits.Clear();
         GridTilemapVisual.instance.SetAllTileSprite(GameNode.TilemapSprite.None);
         ActivateMoveCursorAndHide(false, true);
+        HideOrientationArrow();
     }
 
     #region Cursor Gizmos
@@ -473,9 +468,11 @@ public class BattleManager : Entity
     }
     private bool TryGetParabolaData(CharacterBase selfCharacter,
     GameNode originNode, GameNode targetNode, bool forceOffset,
-    out ParabolaRenderer parabola, out Vector3 originPos, out Vector3 targetPos)
+    out ParabolaRenderer parabolaRenderer, out Vector3 originPos, out Vector3 targetPos)
     {
-        parabola = null;
+        LineRenderer lineRenderer = selfCharacter.GetComponentInChildren<LineRenderer>();
+        parabolaRenderer = new ParabolaRenderer(world, lineRenderer);
+
         originPos = Vector3.zero;
         targetPos = Vector3.zero;
 
@@ -485,8 +482,7 @@ public class BattleManager : Entity
             return false;
         }
 
-        parabola = selfCharacter.GetComponentInChildren<ParabolaRenderer>();
-        if (parabola == null)
+        if (parabolaRenderer == null)
         {
             Debug.LogWarning("Missing Parabola Component in character");
             return false;
@@ -610,6 +606,7 @@ public class BattleManager : Entity
         if (!currentSkill.isProjectile) { return; }
 
         GameObject projectilePrefab = Instantiate(currentSkill.projectTilePrefab, originNode.GetVector(), Quaternion.identity);
+
         CameraController.instance.ChangeFollowTarget(projectilePrefab.transform);
         Debug.Log($"Instantiate projectile {currentSkill.projectTilePrefab.name} at {originNode}");
         Projectile projectile = projectilePrefab.GetComponent<Projectile>();

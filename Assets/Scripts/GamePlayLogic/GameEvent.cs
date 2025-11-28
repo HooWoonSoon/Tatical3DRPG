@@ -11,15 +11,19 @@ public static class GameEvent
     public static Action onListOptionChanged;
 
     //  Battle Related Event
-    public static Action onStartBattle;
-    public static Action onEndBattle;
+    public static Action onBattleStart;
+    public static Action onBattleEnd;
+    public static Action<CharacterBase> onBattleUnitKnockout;
 
     //  Battle UI Related Event
+    public static Action OnBattleUIStart;
     public static Action OnBattleUIFinish;
 
+    public static Action onMapSwitchedTrigger;
+
     //  Deployment Related Event
-    public static Action onStartDeployment;
-    public static Action onEndDeployment;
+    public static Action onDeploymentStart;
+    public static Action onDeploymentEnd;
 
     public static Action<SkillData> onSkillCastStart;
     public static Action onSkillCastEnd;

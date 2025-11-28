@@ -106,8 +106,8 @@ public class EnemyBattleState : EnemyBaseState
             case BattlePhase.Thinking:
                 CameraController.instance.ChangeFollowTarget(character.transform);
                 float startTime = Time.realtimeSinceStartup;
-                DecisionSystem decisionMaker = new DecisionSystem(character);
-                decisionMaker.GetResult(out currentSkill, out confrimMoveNode, out targetNode);
+                character.decisionSystem.MakeDecision();
+                character.decisionSystem.GetResult(out currentSkill, out confrimMoveNode, out targetNode);
                 //Debug.Log($"Decision Time: {Time.realtimeSinceStartup - startTime}");
 
                 if (confrimMoveNode != null)

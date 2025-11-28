@@ -43,6 +43,7 @@ public class TacticsMapEditor : EditorWindow
         bannerImage = AssetDatabase.LoadAssetAtPath<Texture2D>("Assets/EditorAssets/banner_MapEditor.png");
         if (bannerImage == null)
             Debug.LogWarning("Banner image not found. Make sure it's in EditorAssets folder.");
+
     }
 
     private void OnGUI()
@@ -143,10 +144,10 @@ public class TacticsMapEditor : EditorWindow
         if (mapEditorList == null)
         {
             mapEditorList = new GameObject("All Map").AddComponent<MapEditorList>();
-            mapEditorList.allMapList = new List<MapEditorLevelList>();
+            mapEditorList.mapList = new List<MapEditorLevelList>();
         }
 
-        GameObject newMapObject = new GameObject($"Map{mapEditorList.allMapList.Count}");
+        GameObject newMapObject = new GameObject($"Map{mapEditorList.mapList.Count}");
 
         Grid grid = newMapObject.AddComponent<Grid>();
         grid.cellSize = new Vector3(1, 1, 1);
@@ -316,7 +317,7 @@ public class TacticsMapEditor : EditorWindow
         mesh.name = "HeatMapMesh";
         meshFilter.mesh = mesh;
 
-        List<GameNode> dijsktraCostNode = pathFinding.GetCalculateDijkstraCostNode(character.transform.position, 1, 1);
+        List<GameNode> dijsktraCostNode = pathFinding.GetCalculateDijkstraCostNodes(character.transform.position, 2, 1, 1);
         if (dijsktraCostNode == null || dijsktraCostNode.Count == 0)
         {
             Debug.LogWarning("No nodes returned from pathfinding.");

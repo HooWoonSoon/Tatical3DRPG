@@ -9,6 +9,8 @@ public class PlayerIdleStateExplore : PlayerBaseState
     public override void Enter()
     {
         base.Enter();
+        character.ForceStopVelocity();
+        character.YCoordinateAllignment();
     }
 
     public override void Exit()

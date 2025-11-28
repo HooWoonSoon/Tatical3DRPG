@@ -3,16 +3,25 @@ using UnityEngine;
 
 public class MapEditorList : MonoBehaviour
 {
-    public List<MapEditorLevelList> allMapList;
+    public List<MapEditorLevelList> mapList;
+
+    public void OnEnable()
+    {
+        RefreshMapList();
+    }
 
     public void AddMap(MapEditorLevelList map)
     {
-        allMapList.Add(map);
-        ResetMapList();
+        mapList.Add(map);
+        mapList.RemoveAll(item => item == null);
     }
 
-    private void ResetMapList()
+    private void RefreshMapList()
     {
-        allMapList.RemoveAll(item => item == null);
+        mapList = new List<MapEditorLevelList>();
+        foreach (MapEditorLevelList map in mapList)
+        {
+            mapList.Add(map);
+        }
     }
 }

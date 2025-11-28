@@ -12,6 +12,7 @@ public class CharacterData : ScriptableObject
     public string characterName;
     public Sprite profile;
     public Sprite turnUISprite;
+    public Sprite isometricIcon;
     public TeamType type;
     public UnitType unitType;
 

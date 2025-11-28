@@ -52,6 +52,7 @@ public class MapSwitchTrigger : Entity
         previousDetected.RemoveWhere(item => item == null);
 
         HashSet<UnitDetectable> currentDetected = new HashSet<UnitDetectable>(unitDetectables);
+        bool leaderLeft = false;
 
         foreach (UnitDetectable unit in previousDetected)
         {
@@ -63,12 +64,12 @@ public class MapSwitchTrigger : Entity
                 if (playerCharacter.isLeader)
                 {
                     Debug.Log("Leader left range");
-                    return true;
+                    leaderLeft = true;
                 }
             }
         }
         previousDetected = currentDetected;
-        return false;
+        return leaderLeft;
     }
 
     private void OnDrawGizmos()

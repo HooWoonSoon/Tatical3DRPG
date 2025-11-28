@@ -13,13 +13,14 @@ MonoBehaviour:
   m_Name: Danem
   m_EditorClassIdentifier: 
   characterName: Danem
-  profile: {fileID: 0}
+  profile: {fileID: 21300000, guid: e2fef5d4fcc742e4fbd4489b9a4cd4d0, type: 3}
   turnUISprite: {fileID: 21300000, guid: b61bbc94bb7c1d24ab3ec56d516fab8f, type: 3}
+  isometricIcon: {fileID: 21300000, guid: e8f1b746a084b9141bb61be7ae90367d, type: 3}
   type: 0
   unitType: 0
-  health: 100
+  health: 200
   mental: 80
-  physicAttack: 0
+  physicAttack: 20
   magicAttack: 0
-  speed: 4
+  speed: 6
   movementValue: 4
