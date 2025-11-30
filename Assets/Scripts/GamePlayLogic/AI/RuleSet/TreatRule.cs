@@ -26,65 +26,27 @@ public class TreatRule : ScoreRuleBase
         int missingHealth = target.data.health - target.currentHealth;
         float targetHealthRatio = (float)target.currentHealth / target.data.health;
 
-        int score = 0;
+        if (missingHealth <= 0)
+            return -int.MaxValue;
 
-        if (targetHealthRatio <= 0.25f)
-        {
-            if (debugMode)
-                Debug.Log($"Skill: {skill.skillName} critical heal skill, " +
-                    $"low HP plus Score bonus: {scoreBonus}");
-            return scoreBonus;
-        }
-        else if (targetHealthRatio <= 0.5f)
-        {
-            score = Mathf.CeilToInt(scoreBonus * Mathf.Lerp(0.7f, 1f, targetHealthRatio));
+        int actualHeal = Mathf.Min(skill.healAmount, missingHealth);
 
-            if (debugMode)
-                Debug.Log($"Skill: {skill.skillName} heal skill, " +
-                    $"medial HP plus Score bonus: {score}");
-            return score;
-        }
-        else if (targetHealthRatio <= 0.75f)
-        {
-            score = Mathf.CeilToInt(scoreBonus * Mathf.Lerp(0.5f, 0.7f, targetHealthRatio));
-            
-            if (debugMode)
-                Debug.Log($"Skill: {skill.skillName} heal skill, " +
-                    $"high HP plus Score bonus: {score}");
-            return score;
-        }
-        else if (targetHealthRatio <= 1.0f)
-        {
-            int predictHeal = skill.healAmount;
-            int actualHeal = Mathf.Min(predictHeal, missingHealth);
+        float healFactor = (float)actualHeal / target.data.health;
+        float missingFactor = (float)missingHealth / target.data.health;
+        float priorityFactor = missingFactor * missingFactor;
 
-            float healRatio = (float)actualHeal / predictHeal;
-            float tempoScore = Mathf.CeilToInt(scoreBonus * Mathf.Lerp(0f, 0.5f, targetHealthRatio));
+        float maxMp = Mathf.Max(1f, character.data.mental);
+        float mpFactor = 1f - Mathf.Clamp01(skill.MPAmount / maxMp);
 
-            if (healRatio == 0)
-            {
-                Debug.Log($"Skill: {skill.skillName} heal skill, " +
-                    $"full HP overflow get Score bonus: -100");
-                return -100;
-            }
-            if (healRatio > 0)
-                score = Mathf.CeilToInt(tempoScore * healRatio);
+        float t = healFactor * priorityFactor * mpFactor;
 
-            float mpFactor;
-            if (skill.MPAmount > 0)
-                mpFactor = 1f / skill.MPAmount;
-            else
-                mpFactor = 1f;
+        int score = Mathf.RoundToInt(Mathf.Lerp(0f, scoreBonus, t));
 
-            score = Mathf.CeilToInt(score * mpFactor);
+        if (debugMode)
+            Debug.Log($"Skill: {skill.skillName} heal skill, " +
+              $"Get Score bonus: {score}");
 
-            if (debugMode)
-                Debug.Log($"Skill: {skill.skillName} heal skill, " +
-                    $"almost full HP plus Score bonus: {score}");
-
-            return score;
-        }
-        return 0;
+        return score;
     }
 }
 

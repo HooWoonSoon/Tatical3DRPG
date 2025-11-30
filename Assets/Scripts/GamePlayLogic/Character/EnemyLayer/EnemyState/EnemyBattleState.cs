@@ -118,8 +118,11 @@ public class EnemyBattleState : EnemyBaseState
                 character.SetSkillAndTarget(currentSkill, targetNode);
                 break;
             case BattlePhase.Move:
-                character.ShowDangerMovableAndTargetTilemap(confrimMoveNode);
-                CameraController.instance.ChangeFollowTarget(character.transform);
+                if (confrimMoveNode != null)
+                {
+                    character.ShowDangerMovableAndTargetTilemap(confrimMoveNode);
+                    CameraController.instance.ChangeFollowTarget(character.transform);
+                }
                 break;
             case BattlePhase.SkillCast:
                 if (currentSkill != null)

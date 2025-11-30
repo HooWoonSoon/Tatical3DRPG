@@ -1,4 +1,6 @@
-﻿public abstract class ScoreRuleBase : IScoreRule
+﻿using System.Collections.Generic;
+
+public abstract class ScoreRuleBase : IScoreRule
 {
     protected PathFinding pathFinding;
     protected int scoreBonus;
@@ -17,7 +19,7 @@
 
     public virtual int CalculateTargetScore(CharacterBase character) { return 0; }
     public virtual int CalculateMoveToTargetScore(CharacterBase character, 
-        CharacterBase targetCharacter, GameNode moveNode) { return 0; }
+        List<GameNode> targetAroundNodes, GameNode moveNode) { return 0; }
     public virtual int CalculateSkillScore(CharacterBase character, SkillData skill,
         GameNode moveNode, GameNode targetNode) { return 0; }
 }

@@ -133,7 +133,7 @@ public class PathFinding
         return ret;
     }
 
-    private int NodeDistance(GameNode a, GameNode b)
+    public int NodeDistance(GameNode a, GameNode b)
     {
         return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) + Mathf.Abs(a.z - b.z);
     }

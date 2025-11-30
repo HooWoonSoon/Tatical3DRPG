@@ -6,6 +6,13 @@ namespace Tactics.AI
 {
     public class DecisionSystem
     {
+        public enum Decision
+        {
+            OriginCastSkill,
+            Move,
+            MoveAndCastSkill
+        }
+
         List<IScoreRule> rules = new List<IScoreRule>();
         private World world;
         private PathFinding pathFinding;
@@ -32,68 +39,117 @@ namespace Tactics.AI
             rules.Add(new PrimaryTargetRule(pathfinding, 20, false));
 
             //  Move Rule
-            rules.Add(new UnitMoveRule(pathfinding, 5, true));
+            rules.Add(new UnitMoveRule(pathfinding, 20, true));
             
             //  SkillRule
-            rules.Add(new FatalHitRule(pathfinding, 50, false));
-            rules.Add(new HarmRule(pathfinding, 30, false));
-            rules.Add(new TreatRule(pathfinding, 30, false));
+            rules.Add(new FatalHitRule(pathfinding, 150, false));
+            rules.Add(new HarmRule(pathfinding, 100, false));
+            rules.Add(new TreatRule(pathfinding, 100, false));
         }
 
         public void MakeDecision()
         {
-            float moveBestScore = float.MinValue;
-            GameNode bestMoveNode = null;
-            EvaluateMoveTargetOption(ref moveBestScore, out bestMoveNode);
-
             float skillBestScore = float.MinValue;
-            SkillData bestSkill = null;
-            GameNode bestSkillMoveNode = null;
-            GameNode bestSkillTargetNode = null;
-            EvaluateSkillOption(ref skillBestScore, out bestSkill, 
-                out bestSkillMoveNode, out bestSkillTargetNode);
+            EvaluateOriginSkillOption(ref skillBestScore, out SkillData bestSkill,
+                out GameNode besSkillTargetNode);
 
-            if (bestSkill != null && skillBestScore > moveBestScore)
+            float moveAndSkillBestScore = float.MinValue;
+            EvaluateMoveAndSkillOption(ref moveAndSkillBestScore, 
+                out SkillData bestSkillMove, out GameNode bestSkillMoveNode, 
+                out GameNode bestSkillTargetNode);
+
+            float moveBestScore = float.MinValue;
+            EvaluateMoveTargetOption(ref moveBestScore, out GameNode bestMoveNode);
+
+            float ORIGIN_SKILL_BONUS = 0f;
+            float MOVE_SKILL_BONUS = 0f;
+            float MOVE_ONLY_BONUS = 0f;
+
+            float finalOriginSkillScore = skillBestScore + ORIGIN_SKILL_BONUS;
+            float finalMoveSkillScore = moveAndSkillBestScore + MOVE_SKILL_BONUS;
+            float finalMoveScore = moveBestScore + MOVE_ONLY_BONUS;
+
+            float bestFinalScore = finalOriginSkillScore;
+            Decision decision = Decision.OriginCastSkill;
+
+            if (finalMoveSkillScore > bestFinalScore)
             {
-                this.skill = bestSkill;
-                this.moveNode = bestSkillMoveNode;
-                this.skillTargetNode = bestSkillTargetNode;
-                if (debugMode)
-                    Debug.Log($"Decision: Use Skill {bestSkill.skillName} at {bestSkillTargetNode.GetNodeVectorInt()}");
+                bestFinalScore = finalMoveSkillScore;
+                decision = Decision.MoveAndCastSkill;
             }
-            else
+            if (finalMoveScore > bestFinalScore)
             {
-                this.skill = null;
-                this.moveNode = bestMoveNode;
+                bestFinalScore = finalMoveScore;
+                decision = Decision.Move;
+            }
+
+            if (decision == Decision.OriginCastSkill)
+            {
+                skill = bestSkill;
+                moveNode = null;
+                skillTargetNode = besSkillTargetNode;
+                if (debugMode)
+                    Debug.Log($"Decision: Use Skill {skill.skillName} " +
+                        $"at {skillTargetNode.GetNodeVectorInt()}");
+            }
+            else if (decision == Decision.MoveAndCastSkill)
+            {
+                skill = bestSkillMove;
+                moveNode = bestSkillMoveNode;
+                skillTargetNode = bestSkillTargetNode;
+                if (debugMode)
+                    Debug.Log($"Decision: Move to {moveNode.GetNodeVectorInt()}, " +
+                        $"Use Skill {skill.skillName} at {skillTargetNode.GetNodeVectorInt()}");
+            }
+            else if (decision == Decision.Move)
+            {
+                skill = null;
+                moveNode = bestMoveNode;
+                skillTargetNode = null;
                 if (debugMode && bestMoveNode != null)
-                    Debug.Log($"Decision: Move to {bestMoveNode.GetNodeVectorInt()}");
+                    Debug.Log($"Decision: Move to {moveNode.GetNodeVectorInt()}");
             }
         }
 
-        private void EvaluateMoveTargetOption(ref float bestScore, out GameNode bestNode)
+        private void EvaluateOriginSkillOption(ref float bestScore,
+            out SkillData bestSkill, out GameNode bestSkillTargetNode)
         {
-            bestNode = null;
-            CharacterBase primaryTarget = GetPrimaryTarget();
-            if (primaryTarget == null) return;
+            GameNode originNode = decisionMaker.currentNode;
 
-            List<GameNode> movableNodes = decisionMaker.GetMovableNode();
+            bestSkill = null;
+            bestSkillTargetNode = null;
 
-            foreach (var moveNode in movableNodes)
+            foreach (SkillData skill in decisionMaker.skillDatas)
             {
-                float totalScore = 0;
-
-                foreach (var rule in rules)
-                    totalScore += rule.CalculateMoveToTargetScore(decisionMaker, primaryTarget, moveNode);
-
-                if (totalScore > bestScore)
+                if (skill.isTargetTypeSkill)
                 {
-                    bestScore = totalScore;
-                    bestNode = moveNode;
+                    var skilltargetNodes = decisionMaker.GetSkillRangeFromNode(skill, originNode);
+                    foreach (var skillTargetNode in skilltargetNodes)
+                    {
+                        float totalScore = 0;
+
+                        if (!IsProjectileAchievableSingle(skill, originNode, skillTargetNode))
+                            continue;
+
+                        if (!IsValidSkillTargetNodeSingle(skill, skillTargetNode))
+                            continue;
+
+                        foreach (var rule in rules)
+                            totalScore += rule.CalculateSkillScore(decisionMaker, skill, originNode, skillTargetNode);
+
+                        if (totalScore > bestScore)
+                        {
+                            bestScore = totalScore;
+                            bestSkill = skill;
+                            bestSkillTargetNode = skillTargetNode;
+                        }
+                    }
                 }
             }
         }
-        private void EvaluateSkillOption(ref float bestScore, 
-            out SkillData bestSkill, out GameNode bestMoveNode, out GameNode bestSkillTargetNode)
+        private void EvaluateMoveAndSkillOption(ref float bestScore, 
+            out SkillData bestSkill, out GameNode bestMoveNode, 
+            out GameNode bestSkillTargetNode)
         {
             bestSkill = null;
             bestMoveNode = null;
@@ -103,7 +159,7 @@ namespace Tactics.AI
             {
                 if (skill.isTargetTypeSkill)
                 {
-                    List<GameNode> skillTargetableMovableNode = GetSkillAttackMovableNode(decisionMaker, skill);
+                    List<GameNode> skillTargetableMovableNode = GetSkillTargetableMovableNode(decisionMaker, skill);
 
                     if (debugMode)
                     {
@@ -132,8 +188,6 @@ namespace Tactics.AI
 
                             if (!IsValidSkillTargetNodeSingle(skill, skillTargetNode))
                                 continue;
-                            else
-                                totalScore += 1; // Basic valid target score
 
                             foreach (var rule in rules)
                                 totalScore += rule.CalculateSkillScore(decisionMaker, skill, moveNode, skillTargetNode);
@@ -150,6 +204,29 @@ namespace Tactics.AI
                 }
             }
         }
+        private void EvaluateMoveTargetOption(ref float bestScore, out GameNode bestNode)
+        {
+            bestNode = null;
+            CharacterBase primaryTarget = GetPrimaryTarget();
+            if (primaryTarget == null) return;
+            List<GameNode> targetAroundNodes = GetTargetAroundNodes(primaryTarget);
+
+            List<GameNode> movableNodes = decisionMaker.GetMovableNode();
+            foreach (var moveNode in movableNodes)
+            {
+                float totalScore = 0;
+
+                foreach (var rule in rules)
+                    totalScore += rule.CalculateMoveToTargetScore(decisionMaker, targetAroundNodes, moveNode);
+
+                if (totalScore > bestScore)
+                {
+                    bestScore = totalScore;
+                    bestNode = moveNode;
+                }
+            }
+        }
+        
         private CharacterBase GetPrimaryTarget()
         {
             float bestScore = float.MinValue;
@@ -170,6 +247,23 @@ namespace Tactics.AI
                 }
             }
             return primaryTarget;
+        }
+        private List<GameNode> GetTargetAroundNodes(CharacterBase targetCharacter)
+        {
+            List<GameNode> primaryTargetAroundNodes = new List<GameNode>();
+
+            int iteration = 1;
+            int maxIteration = 10;
+
+            while ((primaryTargetAroundNodes == null || primaryTargetAroundNodes.Count == 0) && iteration <= maxIteration)
+            {
+                primaryTargetAroundNodes = targetCharacter.GetCustomizedSizeMovableNodes(iteration, 0);
+                Debug.Log($"Iteration {iteration}, nodes count: {primaryTargetAroundNodes.Count}");
+                iteration++;
+            }
+
+            if (primaryTargetAroundNodes.Count != 0) return primaryTargetAroundNodes;
+            return null;
         }
 
         #region Skill Target Validation
@@ -240,7 +334,8 @@ namespace Tactics.AI
             return false;
         }
         #endregion
-        private List<GameNode> GetSkillAttackMovableNode(CharacterBase character, SkillData skill)
+
+        private List<GameNode> GetSkillTargetableMovableNode(CharacterBase character, SkillData skill)
         {
             List<GameNode> movableNodes = character.GetMovableNode();
             HashSet<GameNode> result = new HashSet<GameNode>();
@@ -308,7 +403,7 @@ namespace Tactics.AI
 
             foreach (SkillData skill in decisionMaker.skillDatas)
             {
-                List<GameNode> skillTargetableMovableNode = GetSkillAttackMovableNode(decisionMaker, skill);
+                List<GameNode> skillTargetableMovableNode = GetSkillTargetableMovableNode(decisionMaker, skill);
 
                 //Debug.Log($"Skill Node: {skillInflueneMovableNode.Count}");
                 if (skillTargetableMovableNode.Count == 0) continue;

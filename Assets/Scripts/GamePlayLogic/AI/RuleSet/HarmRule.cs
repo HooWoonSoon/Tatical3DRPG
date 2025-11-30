@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using static UnityEditor.PlayerSettings;
 public class HarmRule : ScoreRuleBase
 {
     public HarmRule(PathFinding pathFinding, int scoreBonus, bool debugMode) : base(pathFinding, scoreBonus, debugMode)
@@ -7,6 +8,8 @@ public class HarmRule : ScoreRuleBase
 
     public override int CalculateSkillScore(CharacterBase character, SkillData skill, GameNode moveNode, GameNode targetNode)
     {
+        if (skill == null) return 0;
+
         if (skill.skillType != SkillType.Acttack)
             return 0;
 
@@ -31,19 +34,20 @@ public class HarmRule : ScoreRuleBase
             if (debugMode)
                 Debug.Log($"Skill: {skill.skillName} damage skill," +
                     $" cannot deal damage to {target.data.characterName}, " +
-                    $" get Score bonus: -100");
+                    $" Get Score bonus: -100");
 
             return -100;
         }
-        float damageRatioScore = (float)actualDamage / target.data.health * scoreBonus;
 
-        float mpFactor;
-        if (skill.MPAmount > 0)
-            mpFactor = 1f / skill.MPAmount;
-        else
-            mpFactor = 1f;
+        float damageFactor = (float)actualDamage / target.data.health;
 
-        int score = Mathf.CeilToInt(damageRatioScore * mpFactor);
+        float mpCost = skill.MPAmount;
+        float maxMp = Mathf.Max(1f, character.data.mental);
+        float mpFactor = 1f - Mathf.Clamp01(mpCost / maxMp);
+
+        float t = damageFactor * mpFactor;
+
+        int score = Mathf.RoundToInt(Mathf.Lerp(0f, scoreBonus, t));
 
         if (debugMode)
             Debug.Log($"Skill: {skill.skillName} damage skill, " +
