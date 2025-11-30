@@ -4,15 +4,17 @@ using UnityEngine;
 public class Parabola
 {
     private World world;
+    private bool debugMode;
 
-    public Parabola(World world)
+    public Parabola(World world, bool debugMode = false)
     {
         this.world = world;
+        this.debugMode = debugMode;
     }
 
     public UnitDetectable GetParabolaHitUnit(GameNode start, GameNode target, int elevationAngle)
     {
-        return GetParabolaHitUnit(start.GetVector(), target.GetVector(), elevationAngle);
+        return GetParabolaHitUnit(start.GetNodeVector(), target.GetNodeVector(), elevationAngle);
     }
 
     public UnitDetectable GetParabolaHitUnit(Vector3 start, Vector3 target, int elevationAngle)
@@ -52,21 +54,24 @@ public class Parabola
             Vector3 nextPoint = start + forwardDir * x + Vector3.up * y;
             if (world.CheckSolidNodeLine(previousPoint, nextPoint))
             {
-                Debug.Log("Hit Solid");
+                if (debugMode)
+                    Debug.Log("Hit Solid");
                 return null;
             }
 
             UnitDetectable unit = GetHitUnitDetectable(nextPoint);
             if (unit != null)
             {
-                Debug.Log($"Hit Unit Detectable: {unit.name}");
+                if (debugMode)
+                    Debug.Log($"Hit Unit Detectable: {unit.name}");
                 return unit;
             }
             previousPoint = nextPoint;
         }
         if (world.CheckSolidNode(target))
         {
-            Debug.Log($"Hit Solid: {target}");
+            if (debugMode)
+                Debug.Log($"Hit Solid: {target}");
             return null;
         }
         return null;

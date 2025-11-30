@@ -47,11 +47,11 @@ public class GameNode
         fCost = gCost + hCost;
     }
 
-    public Vector3 GetVector()
+    public Vector3 GetNodeVector()
     {
         return new Vector3(x, y, z);
     }
-    public Vector3Int GetVectorInt()
+    public Vector3Int GetNodeVectorInt()
     {
         return new Vector3Int(x, y, z);
     }

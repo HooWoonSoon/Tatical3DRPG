@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using UnityEngine;
 
-namespace Tatics.InputHelper
+namespace Tactics.InputHelper
 {
     public static class InputKeyHelper
     {

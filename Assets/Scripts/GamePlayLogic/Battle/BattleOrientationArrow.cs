@@ -101,7 +101,7 @@ public class BattleOrientationArrow : MonoBehaviour
     public void ShowArrows(Orientation orientation, GameNode targetNode, float centerOffset = 1.2f)
     {
         arrows = new GameObject[] { frontArrow, leftArrow, rightArrow, backArrow };
-        Vector3 target = targetNode.GetVector();
+        Vector3 target = targetNode.GetNodeVector();
         currentOrientation = orientation;
 
         frontArrow.SetActive(true);

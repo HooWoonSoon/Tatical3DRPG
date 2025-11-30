@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using Tactics.AI;
 
 public class EnemyCharacter : CharacterBase
 {

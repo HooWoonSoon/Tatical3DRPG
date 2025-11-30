@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
+using Tactics.AI;
 
 public class EnemyBattleState : EnemyBaseState
 {
@@ -121,8 +122,11 @@ public class EnemyBattleState : EnemyBaseState
                 CameraController.instance.ChangeFollowTarget(character.transform);
                 break;
             case BattlePhase.SkillCast:
-                character.ShowSkillTargetTilemap();
-                BattleManager.instance.CastSkill(character, currentSkill, confrimMoveNode, targetNode);
+                if (currentSkill != null)
+                {
+                    character.ShowSkillTargetTilemap();
+                    BattleManager.instance.CastSkill(character, currentSkill, confrimMoveNode, targetNode);
+                }
                 break;
             case BattlePhase.End:
                 character.ResetVisualTilemap();

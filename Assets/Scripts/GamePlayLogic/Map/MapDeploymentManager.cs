@@ -46,7 +46,7 @@ public class MapDeploymentManager : Entity
             if (previewCharacter != null && gridCursor.currentNode != null)
             {
                 Vector3 offset = lasSelectedCharacter.transform.position - lasSelectedCharacter.GetCharacterTranformToNodePos();
-                previewCharacter.transform.position = gridCursor.currentNode.GetVector() + offset;
+                previewCharacter.transform.position = gridCursor.currentNode.GetNodeVector() + offset;
             }
         }
 
@@ -205,7 +205,7 @@ public class MapDeploymentManager : Entity
 
         Vector3 offset = character.transform.position - character.GetCharacterTranformToNodePos();
         previewCharacter = Instantiate(character.characterModel);
-        previewCharacter.transform.position = gridCursor.currentNode.GetVector() + offset;
+        previewCharacter.transform.position = gridCursor.currentNode.GetNodeVector() + offset;
 
         if (previewMaterial != null)
         {
@@ -239,7 +239,7 @@ public class MapDeploymentManager : Entity
         {
             GameNode node = deployableNodes[0];
             SetGridCursorAt(node);
-            Debug.Log($"Set Grid Cursor At {node.GetVector()}");
+            Debug.Log($"Set Grid Cursor At {node.GetNodeVector()}");
         }
         ActivateMoveCursorAndHide(false, true);
     }

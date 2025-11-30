@@ -150,7 +150,7 @@ public abstract class CharacterBase : Entity
         { 
             Debug.LogWarning("not recorded character current node");
         }
-        return currentNode.GetVectorInt();
+        return currentNode.GetNodeVectorInt();
     }
     public GameNode GetCharacterTransformToNode()
     {
@@ -159,7 +159,7 @@ public abstract class CharacterBase : Entity
 
     public void SetSelfToNode(GameNode targetNode, float offsetY = 0.5f)
     {
-        Vector3 targetPos = targetNode.GetVector();
+        Vector3 targetPos = targetNode.GetNodeVector();
         transform.position = targetPos + new Vector3(0, offsetY, 0);
         //Debug.Log($"Set {this} to node {targetNode.GetVector()}");
         targetNode.SetUnitGridCharacter(this);
@@ -182,7 +182,7 @@ public abstract class CharacterBase : Entity
     public PathRoute GetPathRoute(GameNode targetNode)
     {
         Vector3 selfPos = GetCharacterTranformToNodePos();
-        Vector3 targetPos = targetNode.GetVector();
+        Vector3 targetPos = targetNode.GetNodeVector();
 
         PathRoute pathRoute = pathFinding.GetPathRoute(selfPos, targetPos, 1, 1);
         if (pathRoute == null)
@@ -195,7 +195,7 @@ public abstract class CharacterBase : Entity
         return new PathRoute
         {
             character = this,
-            targetPosition = targetNode.GetVectorInt(),
+            targetPosition = targetNode.GetNodeVectorInt(),
             pathNodeVectorList = pathVectorList,
             pathIndex = 0
         };
@@ -346,6 +346,17 @@ public abstract class CharacterBase : Entity
         return false;
     }
 
+    public List<CharacterBase> GetMapCharacterExceptSelf()
+    {
+        List<CharacterBase> characters = new List<CharacterBase>();
+        foreach (GameNode node in world.loadedNodes.Values)
+        {
+            CharacterBase nodeCharacter = node.character;
+            if (nodeCharacter != null && nodeCharacter != this)
+                characters.Add(nodeCharacter);
+        }
+        return characters;
+    }
     public List<CharacterBase> GetOppositeCharacter()
     {
         List<CharacterBase> oppositeCharacter = new List<CharacterBase>();
@@ -362,7 +373,7 @@ public abstract class CharacterBase : Entity
         }
         return oppositeCharacter;
     }
-    public List<Vector3Int> GetUnlimitedMovablePos(int size, HashSet<Vector3Int> occupiedPos)
+    public List<Vector3Int> GetCustomizedSizeMovablePos(int size, HashSet<Vector3Int> occupiedPos)
     {
         List<Vector3Int> result = new List<Vector3Int>();
         Vector3Int selfPos = GetCharacterNodePos();
@@ -370,15 +381,22 @@ public abstract class CharacterBase : Entity
         List<GameNode> coverage = pathFinding.GetCostDijkstraCoverangeNodes(selfPos, 2, size, 1, 1);
         foreach (var node in coverage)
         {
-            Vector3Int nodePos = node.GetVectorInt();
+            Vector3Int nodePos = node.GetNodeVectorInt();
 
             if (node.character == null || node.character == this
                 && !occupiedPos.Contains(nodePos))
             {
-                result.Add(node.GetVectorInt());
+                result.Add(node.GetNodeVectorInt());
             }
         }
         return result;
+    }
+    public List<GameNode> GetCustomizedSizeMovableNodes(int size, int occlusion)
+    {
+        List<GameNode> sizeRangeNode = pathFinding.GetCostDijkstraCoverangeNodes(this, size, 1, 1);
+        List<GameNode> occlusionRangeNode = pathFinding.GetCostDijkstraCoverangeNodes(this, occlusion, 1, 1);
+        sizeRangeNode.RemoveAll(n => occlusionRangeNode.Contains(n));
+        return sizeRangeNode;
     }
     public List<GameNode> GetMovableNode()
     {
@@ -423,26 +441,6 @@ public abstract class CharacterBase : Entity
         return conflictNode;
     }
 
-    public List<GameNode> GetSkillAttackMovableNode(SkillData skill)
-    {
-        List<GameNode> movableNodes = GetMovableNode();
-        HashSet<GameNode> result = new HashSet<GameNode>();
-
-        foreach (GameNode moveNode in movableNodes)
-        {
-            List<GameNode> influenceNodes = skill.GetInflueneNode(world, moveNode);
-            foreach (GameNode node in influenceNodes)
-            {
-                if (node.character != null && node.character != this && 
-                    node.character.currentTeam != currentTeam)
-                {
-                    result.Add(moveNode);
-                    break;
-                }
-            }
-        }
-        return result.ToList();
-    }
     public List<GameNode> GetSkillRangeFromNode(SkillData skill, GameNode gameNode)
     {
         return skill.GetInflueneNode(world, gameNode);
@@ -450,27 +448,6 @@ public abstract class CharacterBase : Entity
     private List<GameNode> GetSkillRangeFromNode(SkillData skill)
     {
         return skill.GetInflueneNode(world, world.GetNode(GetCharacterTranformToNodePos()));
-    }
-    public List<CharacterBase> GetSkillAttackableCharacter(SkillData skill, GameNode gameNode)
-    {
-        HashSet<CharacterBase> result = new HashSet<CharacterBase>();
-        List<GameNode> influenceNodes = skill.GetInflueneNode(world, gameNode);
-
-        foreach (GameNode node in influenceNodes)
-        {
-            if (node.character == null) { continue; }
-            if (node.character == this) { continue; }
-            if (node.character.currentTeam == null)
-            {
-                result.Add(node.character);
-                continue;
-            }
-
-            if (node.character.currentTeam == currentTeam) continue;
-
-            result.Add(node.character);
-        }
-        return result.ToList();
     }
 
     #region Visual Tilemap
@@ -485,7 +462,7 @@ public abstract class CharacterBase : Entity
         List<GameNode> movableNode = GetMovableNode();
         foreach (GameNode node in movableNode)
         {
-            Vector3Int position = node.GetVectorInt();
+            Vector3Int position = node.GetNodeVectorInt();
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
         }
     }
@@ -495,43 +472,16 @@ public abstract class CharacterBase : Entity
         List<GameNode> selfMovableNode = GetMovableNode();
         foreach (GameNode node in selfMovableNode)
         {
-            Vector3Int nodePos = node.GetVectorInt();
+            Vector3Int nodePos = node.GetNodeVectorInt();
             GridTilemapVisual.instance.SetTilemapSprite(nodePos, GameNode.TilemapSprite.Blue);
         }
         List<GameNode> dangerNode = GetConflictNode();
         foreach (GameNode rangeNode in dangerNode)
         {
-            Vector3Int rangeNodePos = rangeNode.GetVectorInt();
+            Vector3Int rangeNodePos = rangeNode.GetNodeVectorInt();
             GridTilemapVisual.instance.SetTilemapSprite(rangeNodePos, GameNode.TilemapSprite.Purple);
         }
     }
-    //public void ShowDangerAndMovableTile()
-    //{
-    //    ResetVisualTilemap();
-    //    List<CharacterBase> characters = GetOppositeCharacter();
-    //    int selfRange = data.movementValue;
-
-    //    HashSet<Vector3Int> coverage = new HashSet<Vector3Int>();
-    //    List<Vector3Int> reachableRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(transform.position), selfRange, 1, 1);
-    //    foreach (Vector3Int position in reachableRange)
-    //    {
-    //        GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
-    //    }
-    //    for (int i = 0; i < characters.Count; i++)
-    //    {
-    //        int oppositeRange = characters[i].data.movementValue;
-    //        List<Vector3Int> coverageRange = pathFinding.GetCostDijkstraCoverangePos(Utils.RoundXZFloorYInt(characters[i].transform.position), oppositeRange, 1, 1);
-    //        foreach (var pos in coverageRange)
-    //        {
-    //            if (reachableRange.Contains(pos))
-    //            {
-    //                coverage.Add(pos); 
-    //                GridTilemapVisual.instance.SetTilemapSprite(pos, GameNode.TilemapSprite.Purple);
-    //            }
-    //        }
-    //    }
-    //}
-
     public void ShowDangerMovableAndTargetTilemap(GameNode targetNode)
     {
         ResetVisualTilemap();
@@ -540,16 +490,16 @@ public abstract class CharacterBase : Entity
         {
             foreach (GameNode gameNode in movableNode)
             {
-                Vector3Int position = gameNode.GetVectorInt();
+                Vector3Int position = gameNode.GetNodeVectorInt();
                 GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
             }
             List<GameNode> conflictNode = GetConflictNode();
             foreach (GameNode gameNode in conflictNode)
             {
-                Vector3Int position = gameNode.GetVectorInt();
+                Vector3Int position = gameNode.GetNodeVectorInt();
                 GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Purple);
             }
-            GridTilemapVisual.instance.SetTilemapSprite(targetNode.GetVectorInt(), GameNode.TilemapSprite.TinyBlue);
+            GridTilemapVisual.instance.SetTilemapSprite(targetNode.GetNodeVectorInt(), GameNode.TilemapSprite.TinyBlue);
         }
         else
         {
@@ -560,7 +510,7 @@ public abstract class CharacterBase : Entity
     {
         if (currentSkillTargetNode == null) { return; }
         ShowSkillTilemap();
-        Vector3Int position = currentSkillTargetNode.GetVectorInt();
+        Vector3Int position = currentSkillTargetNode.GetNodeVectorInt();
         GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
     }
     public void ShowSkillTargetTilemap(GameNode originNode, GameNode targetNode, SkillData skill)
@@ -569,7 +519,7 @@ public abstract class CharacterBase : Entity
         List<GameNode> skillRangeNodes = GetSkillRangeFromNode(currentSkill, originNode);
         if (skillRangeNodes.Contains(targetNode))
         {
-            Vector3Int position = targetNode.GetVectorInt();
+            Vector3Int position = targetNode.GetNodeVectorInt();
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
         }
     }
@@ -579,7 +529,7 @@ public abstract class CharacterBase : Entity
         List<GameNode> skillRangeNodes = GetSkillRangeFromNode(currentSkill, originNode);
         if (skillRangeNodes.Contains(targetNode))
         {
-            Vector3Int position = targetNode.GetVectorInt();
+            Vector3Int position = targetNode.GetNodeVectorInt();
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
             return targetNode;
         }
@@ -592,7 +542,7 @@ public abstract class CharacterBase : Entity
         List<GameNode> influenceNodes = GetSkillRangeFromNode(currentSkill);
         foreach (GameNode node in influenceNodes)
         {
-            Vector3Int position = node.GetVectorInt();
+            Vector3Int position = node.GetNodeVectorInt();
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.TinyBlue);
         }
     }
@@ -603,7 +553,7 @@ public abstract class CharacterBase : Entity
         List<GameNode> influenceNodes = GetSkillRangeFromNode(skill, gameNode);
         foreach (GameNode node in influenceNodes)
         {
-            Vector3Int position = node.GetVectorInt();
+            Vector3Int position = node.GetNodeVectorInt();
             GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.TinyBlue);
         }
     }

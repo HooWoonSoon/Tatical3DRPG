@@ -67,7 +67,7 @@ public class PlayerTeamSystem : TeamSystem
         {
             GameNode hitNode = Utils.GetRaycastHitNode(world.loadedNodes);
             if (hitNode == null) { return; }
-            Vector3Int targetPosition = hitNode.GetVectorInt();
+            Vector3Int targetPosition = hitNode.GetNodeVectorInt();
             if (targetPosition == new Vector3Int(-1, -1, -1)) return;
 
             character.SetAStarMovePos(targetPosition);
@@ -294,7 +294,7 @@ public class PlayerTeamSystem : TeamSystem
             Vector3Int fromPosition = Utils.RoundXZFloorYInt(linkMembers[i].character.transform.position);
             GameNode currentNode = linkMembers[i].character.currentNode;
             if (currentNode != null)
-                fromPosition = currentNode.GetVectorInt();
+                fromPosition = currentNode.GetNodeVectorInt();
 
             if (IsWithinFollowRange(fromPosition, lastTargetPosition))
             {
@@ -380,7 +380,7 @@ public class PlayerTeamSystem : TeamSystem
 
         GameNode hitNode = Utils.GetRaycastHitNode(world.loadedNodes);
         if (hitNode == null) { return; }
-        Vector3Int targetPosition = hitNode.GetVectorInt();
+        Vector3Int targetPosition = hitNode.GetNodeVectorInt();
         if (targetPosition == new Vector3Int(-1, -1, -1)) return;
 
         Gizmos.color = new Color(1, 0, 0, 0.5f);

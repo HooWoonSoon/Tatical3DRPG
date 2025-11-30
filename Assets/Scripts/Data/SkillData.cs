@@ -18,7 +18,8 @@ public class SkillData : ScriptableObject
     public string description;
     public AbilityType type;
     public SkillType skillType;
-    public SkillTargetType targetType;
+    public bool isTargetTypeSkill;
+    public SkillTargetType skillTargetType;
     public int skillRange;
     public int occlusionRange;
     public int aoeRadius = 1; // If not aoe skill, set to 1
@@ -42,8 +43,8 @@ public class SkillData : ScriptableObject
     public List<GameNode> GetInflueneNode(World world, GameNode origin)
     {
         List<GameNode> result = new List<GameNode>();
-        List<GameNode> coverange = world.GetManhattas3DGameNode(origin.GetVectorInt(), skillRange);
-        List<GameNode> occulusion = world.GetManhattas3DGameNode(origin.GetVectorInt(), occlusionRange);
+        List<GameNode> coverange = world.GetManhattas3DGameNode(origin.GetNodeVectorInt(), skillRange);
+        List<GameNode> occulusion = world.GetManhattas3DGameNode(origin.GetNodeVectorInt(), occlusionRange);
         foreach (GameNode node in coverange)
         {
             if (occulusion.Contains(node)) continue;

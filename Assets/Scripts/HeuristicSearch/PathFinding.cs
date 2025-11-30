@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Experimental.GraphView;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PathFinding
@@ -27,6 +27,12 @@ public class PathFinding
 
         GameNode startNode = world.GetNode(startWorldX, startWorldY, startWorldZ);
         GameNode endNode = world.GetNode(endWorldX, endWorldY, endWorldZ);
+
+        if (NodeDistance(startNode, endNode) > 200) 
+        {
+            Debug.Log("Pathfinding distance too long");
+            return ret;
+        }
 
         CharacterBase pathfinder = startNode.GetUnitGridCharacter();
         if (pathfinder == null) { Debug.LogWarning("Non_character execute find path"); }
@@ -94,7 +100,7 @@ public class PathFinding
                     }
                 }
 
-                Vector3Int offset = neighbourNode.GetVectorInt() - currentNode.GetVectorInt();
+                Vector3Int offset = neighbourNode.GetNodeVectorInt() - currentNode.GetNodeVectorInt();
                 Vector3Int horizontalPos = new Vector3Int(neighbourNode.x + offset.x, neighbourNode.y, neighbourNode.z);
                 Vector3Int verticalPos = new Vector3Int(neighbourNode.x, neighbourNode.y, neighbourNode.z + offset.z);
 
@@ -125,6 +131,11 @@ public class PathFinding
         }
         // Out of nodes on the openList 
         return ret;
+    }
+
+    private int NodeDistance(GameNode a, GameNode b)
+    {
+        return Mathf.Abs(a.x - b.x) + Mathf.Abs(a.y - b.y) + Mathf.Abs(a.z - b.z);
     }
 
     /// <summary>
@@ -248,6 +259,14 @@ public class PathFinding
         //Debug.Log(pathLog);
         return new PathRoute(processedPath, start);
     }
+    public int GetNodesBetweenCost(GameNode startNode, GameNode endNode, int riseLimit, int lowerLimit)
+    {
+        Vector3 start = startNode.GetNodeVector();
+        Vector3 end = endNode.GetNodeVector();
+        SetProcessPath(start, end, riseLimit, lowerLimit);
+        if (processedPath.Count == 0) { Debug.Log("No path"); return int.MaxValue; }
+        return processedPath.Count;
+    }
 
     #region Dijkstra Region Search
     /// <summary>
@@ -293,6 +312,11 @@ public class PathFinding
         int riseLimit, int lowerLimit)
     {
         GameNode startNode = world.GetNode(start);
+        return GetCalculateDijkstraCostNodes(startNode, heightCheck, riseLimit, lowerLimit);
+    }
+    public List<GameNode> GetCalculateDijkstraCostNodes(GameNode startNode, int heightCheck,
+    int riseLimit, int lowerLimit)
+    {
         if (startNode == null)
         {
             Debug.LogWarning("Invalid start node position");
@@ -308,7 +332,7 @@ public class PathFinding
 
         List<GameNode> openList = new List<GameNode> { startNode };
         List<GameNode> calcualtedNode = new List<GameNode> { startNode };
-        
+
         while (openList.Count > 0)
         {
             GameNode currentNode = openList[0];
@@ -345,7 +369,7 @@ public class PathFinding
         int movableRangeCost, int riseLimit, int lowerLimit)
     {
         List<GameNode> result = new List<GameNode>();
-        List<GameNode> costNodes = GetCalculateDijkstraCostNode(pathfinder, riseLimit, lowerLimit);
+        List<GameNode> costNodes = GetCalculateDijkstraCostNodes(pathfinder, riseLimit, lowerLimit);
         foreach (GameNode node in costNodes)
         {
             if (node.dijkstraCost <= movableRangeCost)
@@ -355,7 +379,13 @@ public class PathFinding
         }
         return result;
     }
-    public List<GameNode> GetCalculateDijkstraCostNode(CharacterBase pathfinder, 
+
+    public void CalculateDijkstraCostNodes(CharacterBase pathfinder,
+    int riseLimit, int lowerLimit)
+    {
+        GetCalculateDijkstraCostNodes(pathfinder, riseLimit, lowerLimit);
+    }
+    public List<GameNode> GetCalculateDijkstraCostNodes(CharacterBase pathfinder, 
         int riseLimit, int lowerLimit)
     {
         GameNode startNode = pathfinder.currentNode;
@@ -388,7 +418,7 @@ public class PathFinding
 
                 if (!CheckIsStandableNode(neighbourNode, 2)) { continue; }
 
-                Vector3Int offset = neighbourNode.GetVectorInt() - currentNode.GetVectorInt();
+                Vector3Int offset = neighbourNode.GetNodeVectorInt() - currentNode.GetNodeVectorInt();
                 bool isDiagonal = Mathf.Abs(offset.x) + Mathf.Abs(offset.z) > 1;
                 if (isDiagonal) 
                 { 

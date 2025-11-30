@@ -156,46 +156,102 @@ public class UnitDetectable : Entity
         else
             return false;
     }
-    public bool CheckCenterForward()
+    public bool CheckCenterForwardCenter()
     {
         Vector3 half = size * 0.5f;
         Vector3 centerPos = transform.position + center;
         float checkForward = centerPos.z + half.z;
 
-        if (world.CheckSolidNode(transform.position.x, transform.position.y, checkForward))
+        if (world.CheckSolidNode(transform.position.x, centerPos.y, checkForward))
             return true;
         else
             return false;
     }
-    public bool CheckCenterBackward()
+    public bool CheckCenterBackwardCenter()
     {
         Vector3 half = size * 0.5f;
         Vector3 centerPos = transform.position + center;
         float checkBackward = centerPos.z - half.z;
 
-        if (world.CheckSolidNode(transform.position.x, transform.position.y, checkBackward))
+        if (world.CheckSolidNode(transform.position.x, centerPos.y, checkBackward))
             return true;
         else
             return false;
     }
-    public bool CheckCenterRight()
+    public bool CheckCenterRightCenter()
     {
         Vector3 half = size * 0.5f;
         Vector3 centerPos = transform.position + center;
         float checkRight = centerPos.x + half.x;
 
-        if (world.CheckSolidNode(checkRight, transform.position.y, transform.position.z))
+        if (world.CheckSolidNode(checkRight, centerPos.y, transform.position.z))
             return true;
         else
             return false;
     }
-    public bool CheckCenterLeft()
+    public bool CheckCenterLeftCenter()
     {
         Vector3 half = size * 0.5f;
         Vector3 centerPos = transform.position + center;
         float checkRight = centerPos.x - half.x;
 
-        if (world.CheckSolidNode(checkRight, transform.position.y, transform.position.z))
+        if (world.CheckSolidNode(checkRight, centerPos.y, transform.position.z))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckCenterForwardBothCorner()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkForward = centerPos.z + half.z;
+        float checkRight = centerPos.x + half.x;
+        float checkLeft = centerPos.x - half.x;
+
+        if (world.CheckSolidNode(checkRight, centerPos.y, checkForward) ||
+            world.CheckSolidNode(checkLeft, centerPos.y, checkForward))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckCenterBackwardConer()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkBackward = centerPos.z - half.z;
+        float checkRight = centerPos.x + half.x;
+        float checkLeft = centerPos.x - half.x;
+
+        if (world.CheckSolidNode(checkRight, centerPos.y, checkBackward) ||
+            world.CheckSolidNode(checkLeft, centerPos.y, checkBackward))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckCenterRightCorner()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkRight = centerPos.x + half.x;
+        float checkForward = centerPos.z + half.z;
+        float checkBackward = centerPos.z - half.z;
+
+        if (world.CheckSolidNode(checkRight, centerPos.y, checkForward) ||
+            world.CheckSolidNode(checkRight, centerPos.y, checkBackward))
+            return true;
+        else
+            return false;
+    }
+    public bool CheckCenterLeftCorner()
+    {
+        Vector3 half = size * 0.5f;
+        Vector3 centerPos = transform.position + center;
+        float checkLeft = centerPos.x - half.x;
+        float checkForward = centerPos.z + half.z;
+        float checkBackward = centerPos.z - half.z;
+
+        if (world.CheckSolidNode(checkLeft, centerPos.y, checkForward) ||
+            world.CheckSolidNode(checkLeft, centerPos.y, checkBackward))
             return true;
         else
             return false;

@@ -105,7 +105,7 @@ public class GridCharacter : Entity
             if (node.character != null)
             {
                 Gizmos.color = new Color(0, 0, 0, 0.5f);
-                Gizmos.DrawCube(node.GetVector() + Vector3.up, Vector3.one);
+                Gizmos.DrawCube(node.GetNodeVector() + Vector3.up, Vector3.one);
             }
         }
     }

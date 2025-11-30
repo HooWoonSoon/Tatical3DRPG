@@ -17,14 +17,15 @@ MonoBehaviour:
   description: The melee attack, use sword attack the single unit.
   type: 0
   skillType: 0
-  targetType: 2
+  isTargetTypeSkill: 1
+  skillTargetType: 2
   skillRange: 2
   occlusionRange: 1
   aoeRadius: 1
   isProjectile: 0
   projectTilePrefab: {fileID: 0}
   initialElevationAngle: 0
-  spIcon: {fileID: 0}
+  MPIcon: {fileID: 0}
   requireMP: 0
   MPAmount: 0
   damageAmount: 15

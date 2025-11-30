@@ -23,4 +23,4 @@ MonoBehaviour:
   physicAttack: 0
   magicAttack: 20
   speed: 30
-  movementValue: 4
+  movementValue: 2

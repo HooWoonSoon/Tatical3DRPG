@@ -112,7 +112,7 @@ public class BattleManager : Entity
             Vector3Int unitPosition = character.GetCharacterNodePos();
             while (iteration <= 16 && !found)
             {
-                List<Vector3Int> optionPos = character.GetUnlimitedMovablePos(iteration, occupiedPos);
+                List<Vector3Int> optionPos = character.GetCustomizedSizeMovablePos(iteration, occupiedPos);
                 List<Vector3Int> sortPos = Utils.SortTargetRangeByDistance(unitPosition, optionPos);
 
                 for (int i = 0; i < sortPos.Count; i++)
@@ -385,7 +385,7 @@ public class BattleManager : Entity
             Debug.LogWarning($"CurrentSkill is null! Character = {character.name}");
             return false;
         }
-        switch (currentSkill.targetType)
+        switch (currentSkill.skillTargetType)
         {
             case SkillTargetType.Self:
                 return targetCharacter == character;
@@ -491,8 +491,8 @@ public class BattleManager : Entity
         if (originNode == null)
             originNode = selfCharacter.GetCharacterTransformToNode();
 
-        originPos = originNode.GetVector();
-        targetPos = targetNode.GetVector();
+        originPos = originNode.GetNodeVector();
+        targetPos = targetNode.GetNodeVector();
 
         CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
         if (targetCharacter != null)
@@ -558,7 +558,7 @@ public class BattleManager : Entity
         int costMP = currentSkill.MPAmount;
         CTTurnUIManager.instance.ExecuteMentalChange(selfCharacter, -costMP);
         selfCharacter.currentMetal -= costMP;
-        Vector3 direction = (targetNode.GetVector() - selfCharacter.transform.position);
+        Vector3 direction = (targetNode.GetNodeVector() - selfCharacter.transform.position);
         selfCharacter.SetOrientation(direction);
 
         if (currentSkill.isProjectile)
@@ -605,13 +605,13 @@ public class BattleManager : Entity
     {
         if (!currentSkill.isProjectile) { return; }
 
-        GameObject projectilePrefab = Instantiate(currentSkill.projectTilePrefab, originNode.GetVector(), Quaternion.identity);
+        GameObject projectilePrefab = Instantiate(currentSkill.projectTilePrefab, originNode.GetNodeVector(), Quaternion.identity);
 
         CameraController.instance.ChangeFollowTarget(projectilePrefab.transform);
         Debug.Log($"Instantiate projectile {currentSkill.projectTilePrefab.name} at {originNode}");
         Projectile projectile = projectilePrefab.GetComponent<Projectile>();
 
-        Vector3 targetPos = targetNode.GetVector();
+        Vector3 targetPos = targetNode.GetNodeVector();
         CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
         if (targetCharacter != null)
             targetPos = targetCharacter.transform.position + new Vector3(0, 1.5f, 0);
@@ -623,7 +623,7 @@ public class BattleManager : Entity
                     selfCharacter.transform.position + new Vector3(0, 1.5f, 0), targetPos);
             else
                 projectile.LaunchToTarget(selfCharacter, currentSkill,
-                    originNode.GetVector() + new Vector3(0, 1.5f, 0), targetPos);
+                    originNode.GetNodeVector() + new Vector3(0, 1.5f, 0), targetPos);
         }
     }
     private IEnumerator SkillEventCoroutine(SkillData skill)
@@ -661,7 +661,7 @@ public class BattleManager : Entity
         if (lastSelectedNode.character != null) { return; }
         Vector3 offset = character.transform.position - character.GetCharacterTranformToNodePos();
         previewCharacter = Instantiate(character.characterModel);
-        previewCharacter.transform.position = lastSelectedNode.GetVector() + offset;
+        previewCharacter.transform.position = lastSelectedNode.GetNodeVector() + offset;
         if (previewMaterial != null)
         {
             MeshRenderer[] renderers = previewCharacter.GetComponentsInChildren<MeshRenderer>();

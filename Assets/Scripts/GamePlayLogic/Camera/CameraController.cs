@@ -1,6 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
-using Tatics.InputHelper;
+using Tactics.InputHelper;
 
 public class CameraController : MonoBehaviour
 {
@@ -85,7 +85,7 @@ public class CameraController : MonoBehaviour
         CameraResetAligment();
         MoveCamera();
         RotateCamera();
-        RoatateCameraAlignment();
+        RotateCameraAlignment();
         ZoomCamera();
         MoveCameraViewAlignment();
         TacticCameraViewAlignment();
@@ -170,7 +170,7 @@ public class CameraController : MonoBehaviour
             generalPivotRotate = pivotPoint.localRotation;
         }
     }
-    private void RoatateCameraAlignment()
+    private void RotateCameraAlignment()
     {
         if (!enableRotateAlignment) { return; }
 
@@ -249,7 +249,6 @@ public class CameraController : MonoBehaviour
             cameraBody.transform.localRotation = Quaternion.Lerp(currentBodyRotation, generalBodyRotate, Time.deltaTime * moveSpeed);
         }
     }
-
 
     /// <summary>
     /// Change camera follow target, the target would be followed by camera 

@@ -177,6 +177,13 @@ public class PlayerCharacter : CharacterBase
             if (velocity.x > 0 && unitDetectable.CheckBottomRight() || 
                 velocity.x < 0 && unitDetectable.CheckBottomLeft())
                 velocity.x = 0;
+
+            if (velocity.x > 0 && unitDetectable.CheckCenterRightCorner() ||
+                velocity.x < 0 && unitDetectable.CheckCenterLeftCorner())
+                velocity.x = 0;
+            if (velocity.z > 0 && unitDetectable.CheckCenterForwardBothCorner() ||
+                velocity.z < 0 && unitDetectable.CheckCenterBackwardConer())
+                velocity.z = 0;
         }
 
         if (velocity.y < 0)
@@ -308,7 +315,6 @@ public class PlayerCharacter : CharacterBase
         transform.position = new Vector3(transform.position.x, targetY, transform.position.z);
     }
 
-
     #region A * Target
     public override void SetAStarMovePos(Vector3 targetPosition)
     {
@@ -317,7 +323,7 @@ public class PlayerCharacter : CharacterBase
     }
     public override void SetAStarMovePos(Vector3Int targetPosition)
     {
-        Vector3Int startPosition = currentNode.GetVectorInt();
+        Vector3Int startPosition = currentNode.GetNodeVectorInt();
         PathRoute route = pathFinding.GetPathRoute(startPosition, targetPosition, 1, 1);
         List<Vector3> pathVectorList = route.pathNodeVectorList;
         if (pathVectorList.Count != 0)
@@ -404,6 +410,12 @@ public class PlayerCharacter : CharacterBase
         Vector3 bottomBackwardPos = new Vector3(transform.position.x, centerPos.y - half.y, centerPos.z - half.z);
         Vector3 bottomRightPos = new Vector3(centerPos.x + half.x, centerPos.y - half.y, transform.position.z);
         Vector3 bottomLeftPos = new Vector3(centerPos.x - half.x, centerPos.y - half.y, transform.position.z);
+
+        Vector3 centerForwardRightPos = new Vector3(centerPos.x + half.x, centerPos.y, centerPos.z + half.z);
+        Vector3 centerForwardLeftPos = new Vector3(centerPos.x - half.x, centerPos.y, centerPos.z + half.z);
+        Vector3 centerBackwardRightPos = new Vector3(centerPos.x + half.x, centerPos.y, centerPos.z - half.z);
+        Vector3 centerBackwardLeftPos = new Vector3(centerPos.x - half.x, centerPos.y, centerPos.z - half.z);
+
         Vector3 upPos = new Vector3(transform.position.x, centerPos.y + half.y, transform.position.z);
         Vector3 upForwardPos = new Vector3(transform.position.x, centerPos.y + half.y, centerPos.z + half.z);
         Vector3 upBackwardPos = new Vector3(transform.position.x, centerPos.y + half.y, centerPos.z - half.z);
@@ -414,6 +426,12 @@ public class PlayerCharacter : CharacterBase
         Gizmos.DrawSphere(bottomBackwardPos, 0.1f);
         Gizmos.DrawSphere(bottomRightPos, 0.1f);
         Gizmos.DrawSphere(bottomLeftPos, 0.1f);
+
+        Gizmos.DrawSphere(centerForwardRightPos, 0.1f);
+        Gizmos.DrawSphere(centerForwardLeftPos, 0.1f);
+        Gizmos.DrawSphere(centerBackwardRightPos, 0.1f);
+        Gizmos.DrawSphere(centerBackwardLeftPos, 0.1f);
+
         Gizmos.DrawSphere(upPos, 0.1f);
         Gizmos.DrawSphere(upForwardPos, 0.1f);
         Gizmos.DrawSphere(upBackwardPos, 0.1f);

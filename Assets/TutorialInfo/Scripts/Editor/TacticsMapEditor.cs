@@ -10,7 +10,7 @@ using TMPro;
 
 public class Heatmap
 {
-    public const int HEATMAP_MAX_VALUE = 45;
+    public const int HEATMAP_MAX_VALUE = 30;
     public const int HEATMAP_MIN_VALUE = 0;
 }
 
@@ -28,6 +28,7 @@ public class TacticsMapEditor : EditorWindow
     private GameObject heatMapObject;
     private CharacterBase character;
     private Material heatMaterial;
+    private Material movableHeatMaterial;
 
     private Vector2 scrollPos;
 
@@ -109,6 +110,9 @@ public class TacticsMapEditor : EditorWindow
 
         heatMaterial = (Material)EditorGUILayout.ObjectField("Heat Map Material", heatMaterial, typeof(Material), false);
         heatMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Black_Red_Yellow_Green.mat");
+
+        movableHeatMaterial = (Material)EditorGUILayout.ObjectField("Movable Heat Map Material", movableHeatMaterial, typeof(Material), false);
+        movableHeatMaterial = AssetDatabase.LoadAssetAtPath<Material>("Assets/Materials/Black_Blue_Darkblue_Purple.mat");
 
         character = (CharacterBase)EditorGUILayout.ObjectField("Character", character, typeof(CharacterBase), true);
         if (GUILayout.Button("Show Movable Cost Map"))
@@ -308,30 +312,54 @@ public class TacticsMapEditor : EditorWindow
 
         DestroyImmediate(heatMapObject);
 
-        heatMapObject = new GameObject("HeatMapVisible");
-        heatMapObject.transform.position = new Vector3(0, 0.55f, 0);
-        MeshFilter meshFilter = heatMapObject.AddComponent<MeshFilter>();
-        MeshRenderer meshRenderer = heatMapObject.AddComponent<MeshRenderer>();
-        meshRenderer.material = heatMaterial;
-        Mesh mesh = new Mesh();
-        mesh.name = "HeatMapMesh";
-        meshFilter.mesh = mesh;
+        List<GameNode> dijsktraCostNodes = pathFinding.GetCalculateDijkstraCostNodes(character.transform.position, 2, 1, 1);
 
-        List<GameNode> dijsktraCostNode = pathFinding.GetCalculateDijkstraCostNodes(character.transform.position, 2, 1, 1);
-        if (dijsktraCostNode == null || dijsktraCostNode.Count == 0)
+        List<GameNode> movableNodes = new List<GameNode>();
+        if (character.data != null)
+        {
+            int movableRange = character.data.movementValue;
+            foreach (var dijsktraCostNode in dijsktraCostNodes)
+            {
+                if (dijsktraCostNode.dijkstraCost <= movableRange)
+                {
+                    movableNodes.Add(dijsktraCostNode);
+                }
+            }
+        }
+
+        dijsktraCostNodes.RemoveAll(n => movableNodes.Contains(n));
+
+        if (dijsktraCostNodes == null || dijsktraCostNodes.Count == 0)
         {
             Debug.LogWarning("No nodes returned from pathfinding.");
             return;
         }
 
-        Utils.CreateEmptyMeshArrays(dijsktraCostNode.Count, out Vector3[] vertices, out Vector2[] uvs, out int[] triangles);
-        List<TextMeshPro> textMeshPros = new List<TextMeshPro>();
-        for (int i = 0; i < dijsktraCostNode.Count; i++)
-        {
-            int cost = dijsktraCostNode[i].dijkstraCost;
+        heatMapObject = GenerateHeatMap("HeatMapVisible", dijsktraCostNodes, heatMaterial);
+        GameObject movableMapObject = GenerateHeatMap("MovableMapVisible", 
+            movableNodes, movableHeatMaterial);
+        movableMapObject.transform.SetParent(heatMapObject.transform, true);
+    }
+    private GameObject GenerateHeatMap(string objectName, List<GameNode> nodes, 
+        Material heatMaterial)
+    {
+        GameObject heatMapObject = new GameObject($"{objectName}");
+        heatMapObject.transform.position = new Vector3(0, 0.55f, 0);
+        MeshFilter meshFilter = heatMapObject.AddComponent<MeshFilter>();
+        MeshRenderer meshRenderer = heatMapObject.AddComponent<MeshRenderer>();
+        meshRenderer.material = heatMaterial;
+        Mesh mesh = new Mesh();
+        mesh.name = $"{objectName}";
+        meshFilter.mesh = mesh;
 
-            float heatMapNornalizeValue = (float)cost / Heatmap.HEATMAP_MAX_VALUE;
-            Vector3 position = dijsktraCostNode[i].GetVector();
+        Utils.CreateEmptyMeshArrays(nodes.Count, out Vector3[] vertices, out Vector2[] uvs, out int[] triangles);
+        List<TextMeshPro> textMeshPros = new List<TextMeshPro>();
+        for (int i = 0; i < nodes.Count; i++)
+        {
+            int cost = nodes[i].dijkstraCost;
+
+            float heatMapNornalizeValue = 1 - (float)cost / Heatmap.HEATMAP_MAX_VALUE;
+            Vector3 position = nodes[i].GetNodeVector();
             Vector2 heatMapUV = new Vector2(heatMapNornalizeValue, 0);
             Utils.AddToMeshArrays(vertices, uvs, triangles, i, position, 0f, new Vector3(1, 0, 1), heatMapUV, heatMapUV);
 
@@ -344,6 +372,8 @@ public class TacticsMapEditor : EditorWindow
         GameObject combinedTextMesh = GetCombineTextMesh(textMeshPros);
         combinedTextMesh.transform.SetParent(heatMapObject.transform, true);
         combinedTextMesh.transform.localPosition = new Vector3(0, 0.1f, 0);
+
+        return heatMapObject;
     }
 
     private void RemoveVisibleMapCost()

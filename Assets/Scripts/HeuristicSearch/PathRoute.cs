@@ -19,7 +19,7 @@ public class PathRoute
         pathNodeVectorList = new List<Vector3>();
 
         foreach (GameNode pathNode in pathNodeList)
-            pathNodeVectorList.Add(pathNode.GetVector() + new Vector3(0, offset, 0));
+            pathNodeVectorList.Add(pathNode.GetNodeVector() + new Vector3(0, offset, 0));
         if (pathNodeVectorList.Count > 0)
         {
             pathIndex = 0;

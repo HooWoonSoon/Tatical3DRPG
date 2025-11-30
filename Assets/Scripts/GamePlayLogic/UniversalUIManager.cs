@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using TMPro;
 using System.Collections;
-using Tatics.InputHelper;
+using Tactics.InputHelper;
 
 public class UniversalUIManager : MonoBehaviour
 {

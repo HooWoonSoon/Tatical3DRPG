@@ -18,8 +18,9 @@ MonoBehaviour:
     range
   type: 1
   skillType: 1
-  targetType: 3
-  skillRange: 3
+  isTargetTypeSkill: 1
+  skillTargetType: 1
+  skillRange: 4
   occlusionRange: 0
   aoeRadius: 1
   isProjectile: 0

@@ -18,7 +18,11 @@ public static class SkillEditorDrawer
         data.type = allowedTypes[newIndex];
 
         data.skillType = (SkillType)EditorGUILayout.EnumPopup("Skill Type", data.skillType);
-        data.targetType = (SkillTargetType)EditorGUILayout.EnumPopup("Target Type", data.targetType);
+        
+        data.isTargetTypeSkill = EditorGUILayout.Toggle("Is Target Type Skill", data.isTargetTypeSkill);
+        if (data.isTargetTypeSkill)
+            data.skillTargetType = (SkillTargetType)EditorGUILayout.EnumPopup("Target Type", data.skillTargetType);
+
         data.skillRange = EditorGUILayout.IntField("Skill Range", data.skillRange);
         data.occlusionRange = EditorGUILayout.IntField("Range Occulsion From Center", data.occlusionRange);
         if (data.occlusionRange > data.skillRange)
@@ -66,13 +70,13 @@ public static class SkillEditorDrawer
 
     private static void DrawProjectileSection(SkillData data)
     {
-        if (data.targetType == SkillTargetType.Self)
+        if (data.skillTargetType == SkillTargetType.Self)
         {
             data.skillRange = 1;
         }
-        else if (data.targetType == SkillTargetType.Our ||
-            data.targetType == SkillTargetType.Both ||
-            data.targetType == SkillTargetType.Opposite)
+        else if (data.skillTargetType == SkillTargetType.Our ||
+            data.skillTargetType == SkillTargetType.Both ||
+            data.skillTargetType == SkillTargetType.Opposite)
         {
             data.isProjectile = EditorGUILayout.Toggle("Is Projectile", data.isProjectile);
             if (data.isProjectile)

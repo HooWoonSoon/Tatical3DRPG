@@ -101,7 +101,7 @@ public class GridCursor : Entity
         activateCursor = true;
 
         cursor.SetActive(true);
-        Vector3Int position = targetNode.GetVectorInt();
+        Vector3Int position = targetNode.GetNodeVectorInt();
         cursor.transform.position = position + new Vector3(0, heightOffset);
         CameraController.instance.ChangeFollowTarget(cursor.transform);
         CharacterBase character = targetNode.GetUnitGridCharacter();

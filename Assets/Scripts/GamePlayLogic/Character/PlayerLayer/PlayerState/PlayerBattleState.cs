@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using static UnityEditor.Hardware.DevDeviceList;
 
@@ -65,7 +66,7 @@ public class PlayerBattleState : PlayerBaseState
                 if (BattleManager.instance.IsSelectedNodeChange())
                 {
                     GameNode selectedNode = BattleManager.instance.GetSelectedGameNode();
-                    BattleManager.instance.ShowPathLine(character.GetCharacterNodePos(), selectedNode.GetVector());
+                    BattleManager.instance.ShowPathLine(character.GetCharacterNodePos(), selectedNode.GetNodeVector());
                     character.ShowDangerMovableAndTargetTilemap(selectedNode);
                 }
 
@@ -155,7 +156,7 @@ public class PlayerBattleState : PlayerBaseState
                 if (BattleManager.instance.IsSelectedNodeChange())
                 {
                     GameNode selectedNode = BattleManager.instance.GetSelectedGameNode();
-                    BattleManager.instance.ShowPathLine(character.GetCharacterNodePos(), selectedNode.GetVector());
+                    BattleManager.instance.ShowPathLine(character.GetCharacterNodePos(), selectedNode.GetNodeVector());
                     character.ShowDangerMovableAndTargetTilemap(selectedNode);
                 }
                 if (Input.GetKeyDown(KeyCode.Return))
