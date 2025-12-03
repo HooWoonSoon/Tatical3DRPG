@@ -38,6 +38,8 @@ public class BattleManager : Entity
 
     public event Action onConfrimCallback;
     public event Action onCancelCallback;
+
+    public bool debugMode = false;
     public static BattleManager instance { get; private set; }
 
     private void Awake()
@@ -98,7 +100,7 @@ public class BattleManager : Entity
         }
         for (int i = 0; i < pathRoutes.Count; i++)
         {
-            pathRoutes[i].character.SetPathRoute(pathRoutes[i]);
+            pathRoutes[i].pathFinder.SetPathRoute(pathRoutes[i]);
         }
     }
     private List<PathRoute> GetBattleUnitRefinePath()
@@ -120,13 +122,13 @@ public class BattleManager : Entity
                     Vector3Int target = sortPos[i];
                     if (occupiedPos.Contains(target)) { continue; }
 
-                    PathRoute route = pathFinding.GetPathRoute(unitPosition, target, 1, 1);
+                    PathRoute route = pathFinding.GetPathRoute(unitPosition, target, character, 1, 1);
                     if (route == null || route.pathNodeVectorList == null || route.pathNodeVectorList.Count == 0)
                         continue;
 
                     pathRoutes.Add(new PathRoute
                     {
-                        character = character,
+                        pathFinder = character,
                         targetPosition = sortPos[i],
                         pathNodeVectorList = new List<Vector3>(route.pathNodeVectorList),
                         pathIndex = 0
@@ -206,8 +208,11 @@ public class BattleManager : Entity
         onConfrimCallback = () =>
         {
             SetJoinedBattleUnit(allBattleCharacter);
-            string allJoined = string.Join("All Battle Character", allBattleCharacter.ConvertAll(c => c.ToString()));
-            Debug.Log(allJoined);
+            if (debugMode)
+            {
+                string allJoined = string.Join("All Battle Character", allBattleCharacter.ConvertAll(c => c.ToString()));
+                Debug.Log(allJoined);
+            }
             PreapreBattleContent();
             confirmAction?.Invoke();
         };
@@ -260,7 +265,8 @@ public class BattleManager : Entity
                             allyTeamStatus[team] = TeamStatus.Defeated;
                         break;
                 }
-                Debug.Log($"{team} has lost the battle!");
+                if (debugMode)
+                    Debug.Log($"{team} has lost the battle!");
             }
         }
 
@@ -273,7 +279,8 @@ public class BattleManager : Entity
 
     public void BattleVictory()
     {
-        Debug.Log("Battle Victory");
+        if (debugMode)
+            Debug.Log("Battle Victory");
         ActivateMoveCursorAndHide(false, true);
         HideOrientationArrow();
         CTTimeline.instance.EndTimeline();
@@ -289,7 +296,8 @@ public class BattleManager : Entity
     }
     public void BattleDefeat()
     {
-        Debug.Log("Battle Defeat");
+        if (debugMode)
+            Debug.Log("Battle Defeat");
     }
 
     public void EndBattle()
@@ -328,10 +336,13 @@ public class BattleManager : Entity
     #endregion
 
     #region Path Line Gizmos
-    public void ShowPathLine(Vector3 start, Vector3 end)
+    public void ShowPathLine(CharacterBase character, Vector3 start, Vector3 end)
     {
-        if (pathRenderer == null) { Debug.LogWarning("Path Renderer is null!"); return; }
-        PathRoute pathRoute = pathFinding.GetPathRoute(start, end, 1, 1);
+        if (pathRenderer == null) 
+        { 
+            Debug.LogWarning("Path Renderer is null!"); return; 
+        }
+        PathRoute pathRoute = pathFinding.GetPathRoute(start, end, character, 1, 1);
         if (pathRoute == null)
         {
             Debug.LogWarning("PathRoute is null!");
@@ -608,7 +619,7 @@ public class BattleManager : Entity
         GameObject projectilePrefab = Instantiate(currentSkill.projectTilePrefab, originNode.GetNodeVector(), Quaternion.identity);
 
         CameraController.instance.ChangeFollowTarget(projectilePrefab.transform);
-        Debug.Log($"Instantiate projectile {currentSkill.projectTilePrefab.name} at {originNode}");
+        Debug.Log($"Instantiate projectile {currentSkill.projectTilePrefab.name} at {originNode.GetNodeVector()}");
         Projectile projectile = projectilePrefab.GetComponent<Projectile>();
 
         Vector3 targetPos = targetNode.GetNodeVector();

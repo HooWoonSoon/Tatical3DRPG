@@ -2,11 +2,11 @@
 using UnityEngine;
 public class UnitMoveRule : ScoreRuleBase
 {
-    public UnitMoveRule(PathFinding pathFinding, int scoreBonus, bool debugMode) : base(pathFinding, scoreBonus, debugMode)
+    public UnitMoveRule(List<IScoreSubRule> scoreSubRules, PathFinding pathFinding, int scoreBonus, bool debugMode) : base(scoreSubRules, pathFinding, scoreBonus, debugMode)
     {
     }
 
-    public override int CalculateMoveToTargetScore(CharacterBase character, 
+    public override float CalculateMoveToTargetScore(CharacterBase character, 
         List<GameNode> targetAroundNodes, GameNode moveNode)
     {
         CharacterData data = character.data;
@@ -14,9 +14,6 @@ public class UnitMoveRule : ScoreRuleBase
         if (data == null) return 0;
         if (targetAroundNodes == null || targetAroundNodes.Count == 0) return 0;
         if (moveNode == null) return 0;
-
-        if (debugMode)
-            Debug.Log("Execute Unit Move Rule");
 
         if (targetAroundNodes == null || targetAroundNodes.Count == 0)
             return 0;
@@ -26,7 +23,9 @@ public class UnitMoveRule : ScoreRuleBase
 
         foreach (var targetNode in targetAroundNodes)
         {
-            int cost = pathFinding.GetNodesBetweenCost(moveNode, targetNode, 2, 0); // heightCheck=2, riseLimit=0示例
+            int cost = pathFinding.GetNodesBetweenCost(moveNode, 
+                targetNode, character, 1, 1);
+
             if (cost < bestCost)
             {
                 bestCost = cost;
@@ -42,10 +41,17 @@ public class UnitMoveRule : ScoreRuleBase
         }
 
         float distanceFactor = 1f / (1f + bestCost);        
-        int score = Mathf.RoundToInt(Mathf.Lerp(0f, scoreBonus, distanceFactor));
+        float score = Mathf.Lerp(0f, scoreBonus, distanceFactor);
 
-        Debug.Log($"{character.data.characterName}, MoveNode: {moveNode.GetNodeVectorInt()}, " +
-            $"TargetNode: {bestTargetNode.GetNodeVectorInt()}, get Score bonus: {score}");
+        if (debugMode)
+            Debug.Log(
+                $"<color=black>[UnitMoveRule]</color> " +
+                $"{character.data.characterName}, " +
+                $"StartNode: {character.currentNode.GetNodeVectorInt()} " +
+                $"MoveNode: {moveNode.GetNodeVectorInt()}," +
+                $"Route actual cost: {bestCost} " +
+                $"TargetNode: {bestTargetNode.GetNodeVectorInt()}, " +
+                $"get Score bonus: {score}");
         return score;
     }
 }

@@ -12,6 +12,8 @@ public class UniversalUIManager : MonoBehaviour
 
     public GameObject UITipGameObject;
     private bool forceEnableUITip = false;
+    
+    public bool debugMode = false;
     public static UniversalUIManager instance { get; private set; }
 
     private void Awake()
@@ -38,7 +40,8 @@ public class UniversalUIManager : MonoBehaviour
         TextMeshProUGUI damangeTextUI = Utils.CreateCanvasText(damageText, universalPanel.transform, character.transform.position + new Vector3(0, 1, 0), 35, Color.white, TextAlignmentOptions.Center);
         StartCoroutine(UIFadeCoroutine(damangeTextUI, 0f, 1f, 0.2f, false));
         StartCoroutine(UIFadeCoroutine(damangeTextUI, 1f, 0f, 1.5f, true));
-        Debug.Log("Generated Text");
+        if (debugMode)
+            Debug.Log("Generated Text");
     }
     private IEnumerator UIFadeCoroutine(TextMeshProUGUI textUI, float startAlpha, float endAlpha, float duration, bool destroyOnComplete = false)
     {

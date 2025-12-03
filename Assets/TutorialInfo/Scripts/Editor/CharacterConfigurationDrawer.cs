@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Playables;
 using UnityEngine;
 public static class CharacterConfigurationDrawer
 {
@@ -19,7 +20,6 @@ public static class CharacterConfigurationDrawer
         if (characterPoolsManager == null)
         {
             EditorGUILayout.HelpBox("Missing character pool manager", MessageType.Info);
-            EditorGUILayout.EndScrollView();
             return;
         }
 
@@ -101,44 +101,73 @@ public static class CharacterConfigurationDrawer
 
         GUILayout.Space(10);
         if (GUILayout.Button("Generate Character"))
-        { 
-            if (selectedTeamType == TeamType.Player)
-            {
-                if (CheckAllInputValid())
-                {
-                    GameObject characterObject = new GameObject($"{gameObjectName}");
-                    characterObject.SetActive(false);
-                    characterObject.transform.SetParent(characterPoolsManager.transform, false);
-
-                    GameObject modelInstance = null;
-                    if (PrefabUtility.IsPartOfPrefabAsset(characterPreferance))
-                    {
-                        modelInstance = (GameObject)PrefabUtility.InstantiatePrefab(characterPreferance);
-                    }
-                    else
-                    {
-                        modelInstance = Object.Instantiate(characterPreferance);
-                    }
-
-                    modelInstance.transform.SetParent(characterObject.transform, false);
-
-                    UnitDetectable unitDetectable = characterObject.AddComponent<UnitDetectable>();
-
-                    PlayerCharacter playerCharacter = characterObject.AddComponent<PlayerCharacter>();
-                    playerCharacter.unitDetectable = unitDetectable;
-                    playerCharacter.characterModel = characterPreferance;
-                    playerCharacter.data = selectedData;
-                    playerCharacter.skillDatas = configuraSkills;
-                    
-                    LineRenderer lineRenderer = characterObject.AddComponent<LineRenderer>();
-                    lineRenderer.widthCurve = AnimationCurve.Constant(0f, 1f, 0.05f);
-                }
-            }
+        {
+            GenerateCharacter(characterPoolsManager);
         }
         EditorGUILayout.EndVertical();
         EditorGUILayout.EndScrollView();
     }
 
+    private static void GenerateCharacter(CharacterPools characterPoolsManager)
+    {
+        if (CheckAllInputValid())
+        {
+            GameObject characterObject = new GameObject($"{gameObjectName}");
+            characterObject.SetActive(false);
+            characterObject.transform.SetParent(characterPoolsManager.transform, false);
+
+            GameObject modelInstance = null;
+            if (PrefabUtility.IsPartOfPrefabAsset(characterPreferance))
+            {
+                modelInstance = (GameObject)PrefabUtility.InstantiatePrefab(characterPreferance);
+            }
+            else
+            {
+                modelInstance = Object.Instantiate(characterPreferance);
+            }
+
+            modelInstance.transform.SetParent(characterObject.transform, false);
+
+            UnitDetectable unitDetectable = characterObject.AddComponent<UnitDetectable>();
+
+            if (selectedTeamType == TeamType.Player)
+            {
+                PlayerCharacter playerCharacter = characterObject.AddComponent<PlayerCharacter>();
+                playerCharacter.unitDetectable = unitDetectable;
+                playerCharacter.characterModel = characterPreferance;
+                playerCharacter.data = selectedData;
+                playerCharacter.skillDatas = configuraSkills;
+            }
+            else if (selectedTeamType == TeamType.Opposite)
+            {
+                EnemyCharacter enemyCharacter = characterObject.AddComponent<EnemyCharacter>();
+                enemyCharacter.unitDetectable = unitDetectable;
+                enemyCharacter.characterModel = characterPreferance;
+                enemyCharacter.data = selectedData;
+                enemyCharacter.skillDatas = configuraSkills;
+            }
+            LineRenderer lineRenderer = characterObject.AddComponent<LineRenderer>();
+            lineRenderer.widthCurve = AnimationCurve.Constant(0f, 1f, 0.05f);
+            CharacterBase characterBase = characterObject.GetComponent<CharacterBase>();
+            if (characterBase != null)
+            {
+                characterPoolsManager.AddCharacter(characterBase);
+            }
+
+            ConfrimGenerateDialog();
+        }
+    }
+    private static void ConfrimGenerateDialog()
+    {
+        if (selectedTeamType == TeamType.Player 
+            || selectedTeamType == TeamType.Opposite)
+        {
+            EditorUtility.DisplayDialog(
+                "Generate Success", 
+                $"Generate Character {gameObjectName}", 
+                "Okay");
+        }
+    }
     private static bool CheckAllInputValid()
     {
         if (string.IsNullOrEmpty(gameObjectName))

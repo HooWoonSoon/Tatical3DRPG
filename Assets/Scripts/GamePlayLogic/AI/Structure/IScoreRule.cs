@@ -4,9 +4,14 @@ public interface IScoreRule
 {
     int ScoreBonus { get; }
     bool DebugMode { get; }
-    int CalculateTargetScore(CharacterBase character);
-    int CalculateMoveToTargetScore(CharacterBase character, 
+    float CalculateTargetScore(CharacterBase selfCharacter, 
+        CharacterBase candidateCharacter);
+    float CalculateMoveToTargetScore(CharacterBase character, 
         List<GameNode> targetAroundNodes, GameNode moveNode);
-    int CalculateSkillScore(CharacterBase character, SkillData skill,
+    float CalculateMoveScore(CharacterBase character,
+        List<GameNode> confiltNode, List<CharacterBase> opposites,
+        List<GameNode> supportNode, List<CharacterBase> teammate,
+        GameNode moveNode);
+    float CalculateSkillScore(CharacterBase character, SkillData skill,
         GameNode moveNode, GameNode targetNode);
 }

@@ -19,8 +19,9 @@ public class PathFinding
     /// Input the world position to the pathfinding function,
     /// the pathfinding receive the world position and just check for the grid world position without interaction with the chunk
     /// </summary>
-    private List<GameNode> FindPath(int startWorldX, int startWorldY, int startWorldZ, int endWorldX, int endWorldY, int endWorldZ,
-        int riseLimit, int lowerLimit)
+    private List<GameNode> FindPath(int startWorldX, int startWorldY, int startWorldZ, 
+        int endWorldX, int endWorldY, int endWorldZ,
+        CharacterBase pathFinder, int riseLimit, int lowerLimit)
     {
         float startTime = Time.realtimeSinceStartup;
         List<GameNode> ret = new List<GameNode>();
@@ -34,8 +35,7 @@ public class PathFinding
             return ret;
         }
 
-        CharacterBase pathfinder = startNode.GetUnitGridCharacter();
-        if (pathfinder == null) { Debug.LogWarning("Non_character execute find path"); }
+        if (pathFinder == null) { Debug.LogWarning("Non_character execute find path"); }
 
         openList = new List<GameNode> { startNode };
         closedList = new HashSet<GameNode>();
@@ -76,10 +76,10 @@ public class PathFinding
                 }
 
                 CharacterBase neighbourCharacter = neighbourNode.GetUnitGridCharacter();
-                if (pathfinder != null && neighbourCharacter != null)
+                if (pathFinder != null && neighbourCharacter != null)
                 {
                     //  pathfinder has no team, cannot pass through any character
-                    if (pathfinder.currentTeam == null)
+                    if (pathFinder.currentTeam == null)
                     {
                         closedList.Add(neighbourNode);
                         continue;
@@ -93,7 +93,7 @@ public class PathFinding
                     }
 
                     //  cannot pass through different team character
-                    if (pathfinder.currentTeam.teamType != neighbourCharacter.currentTeam.teamType)
+                    if (pathFinder.currentTeam.teamType != neighbourCharacter.currentTeam.teamType)
                     {
                         closedList.Add(neighbourNode);
                         continue;
@@ -232,7 +232,8 @@ public class PathFinding
         return neighbourList;
     }
 
-    public void SetProcessPath(Vector3 currentPosition, Vector3 targetPosition, int riseLimit, int lowerLimit)
+    public void SetProcessPath(Vector3 currentPosition, Vector3 targetPosition, 
+        CharacterBase pathFinder, int riseLimit, int lowerLimit)
     {   
         float startTime = Time.realtimeSinceStartup;
 
@@ -246,24 +247,26 @@ public class PathFinding
             return;
         }
 
-        processedPath = FindPath(startX, startY, startZ, endX, endY, endZ, riseLimit, lowerLimit);
+        processedPath = FindPath(startX, startY, startZ, endX, endY, endZ, pathFinder, riseLimit, lowerLimit);
 
         float endTime = Time.realtimeSinceStartup;
         //Debug.Log($"Set process path completed in {endTime - startTime:F4} seconds");
     }
-    public PathRoute GetPathRoute(Vector3 start, Vector3 end, int riseLimit, int lowerLimit)
+    public PathRoute GetPathRoute(Vector3 start, Vector3 end, 
+        CharacterBase pathFinder, int riseLimit, int lowerLimit)
     {
-        SetProcessPath(start, end, riseLimit, lowerLimit);
-        if (processedPath.Count == 0) { Debug.Log("No path"); return null; }
+        SetProcessPath(start, end, pathFinder, riseLimit, lowerLimit);
+        if (processedPath.Count == 0) return null;
         //string pathLog = string.Join(" -> ", processedPath.ConvertAll(p => p.GetVector().ToString()));
         //Debug.Log(pathLog);
         return new PathRoute(processedPath, start);
     }
-    public int GetNodesBetweenCost(GameNode startNode, GameNode endNode, int riseLimit, int lowerLimit)
+    public int GetNodesBetweenCost(GameNode startNode, GameNode endNode, 
+        CharacterBase pathFinder, int riseLimit, int lowerLimit)
     {
         Vector3 start = startNode.GetNodeVector();
         Vector3 end = endNode.GetNodeVector();
-        SetProcessPath(start, end, riseLimit, lowerLimit);
+        SetProcessPath(start, end, pathFinder, riseLimit, lowerLimit);
         if (processedPath.Count == 0) { Debug.Log("No path"); return int.MaxValue; }
         return processedPath.Count;
     }

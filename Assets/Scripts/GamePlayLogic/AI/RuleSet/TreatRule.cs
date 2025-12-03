@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 public class TreatRule : ScoreRuleBase
 {
-    public TreatRule(PathFinding pathFinding, int scoreBonus, bool debugMode) : base(pathFinding, scoreBonus, debugMode)
+    public TreatRule(List<IScoreSubRule> scoreSubRules, PathFinding pathFinding, int scoreBonus, bool debugMode) : base(scoreSubRules, pathFinding, scoreBonus, debugMode)
     {
     }
 
-    public override int CalculateSkillScore(CharacterBase character, SkillData skill, GameNode moveNode, GameNode targetNode)
+    public override float CalculateSkillScore(CharacterBase character, SkillData skill, GameNode moveNode, GameNode targetNode)
     {
         //  No Join the Rule
         if (skill == null) 
@@ -15,14 +16,6 @@ public class TreatRule : ScoreRuleBase
 
         CharacterBase target = targetNode.character;
 
-        if (debugMode)
-        {
-            Debug.Log("Execute Treat Rule");
-            if (target != null)
-                Debug.Log($"{character.data.characterName} consider to heal " +
-                    $"{target.data.characterName} with skill: {skill.skillName}");
-        }
-
         int missingHealth = target.data.health - target.currentHealth;
         float targetHealthRatio = (float)target.currentHealth / target.data.health;
 
@@ -31,20 +24,26 @@ public class TreatRule : ScoreRuleBase
 
         int actualHeal = Mathf.Min(skill.healAmount, missingHealth);
 
-        float healFactor = (float)actualHeal / target.data.health;
+        float healFactor = (float)actualHeal / skill.healAmount;
         float missingFactor = (float)missingHealth / target.data.health;
-        float priorityFactor = missingFactor * missingFactor;
+        float priorityFactor = Mathf.Max(0.19f, missingFactor * healFactor);
 
+        float mpCost = skill.MPAmount;
         float maxMp = Mathf.Max(1f, character.data.mental);
-        float mpFactor = 1f - Mathf.Clamp01(skill.MPAmount / maxMp);
+        float mpFactor = 1f - Mathf.Lerp(0, 0.4f, mpCost / maxMp);
 
-        float t = healFactor * priorityFactor * mpFactor;
+        float t = priorityFactor * mpFactor;
 
-        int score = Mathf.RoundToInt(Mathf.Lerp(0f, scoreBonus, t));
+        float score = Mathf.Lerp(0f, scoreBonus, t);
 
         if (debugMode)
-            Debug.Log($"Skill: {skill.skillName} heal skill, " +
-              $"Get Score bonus: {score}");
+            Debug.Log(
+                $"<color=#00BFFF>[TreatRule]</color> " +
+                $"{character.data.characterName}, " +
+                $"<b>{skill.skillName}</b> heal skill, " +
+                $"deal heal to {target.data.characterName}," +
+                $"at Target Node {targetNode.GetNodeVectorInt()} " +
+                $"plus Score bonus: {score}");
 
         return score;
     }

@@ -9,6 +9,7 @@ public class EnemyCharacter : CharacterBase
     public EnemyIdleStateExplore idleStateExplore { get; private set; }
 
     public DecisionSystem decisionSystem;
+    public bool debugMode = false;
 
     private void Awake()
     {

@@ -272,7 +272,7 @@ public class PlayerTeamSystem : TeamSystem
             teamPathRoutes = teamSortRoute;
             for (int i = 0; i < teamSortRoute.Count; i++)
             {
-                teamSortRoute[i].character.SetPathRoute(teamSortRoute[i]);
+                teamSortRoute[i].pathFinder.SetPathRoute(teamSortRoute[i]);
             }
             for (int i = 0; i < linkMembers.Count; i++)
             {
@@ -291,8 +291,9 @@ public class PlayerTeamSystem : TeamSystem
 
         for (int i = 1; i < linkMembers.Count; i++)
         {
-            Vector3Int fromPosition = Utils.RoundXZFloorYInt(linkMembers[i].character.transform.position);
-            GameNode currentNode = linkMembers[i].character.currentNode;
+            CharacterBase character =linkMembers[i].character;
+            Vector3Int fromPosition = Utils.RoundXZFloorYInt(character.transform.position);
+            GameNode currentNode = character.currentNode;
             if (currentNode != null)
                 fromPosition = currentNode.GetNodeVectorInt();
 
@@ -304,7 +305,7 @@ public class PlayerTeamSystem : TeamSystem
                 teamPathRoute.Add(new PathRoute
                 {
                     targetRangeList = unitRange,
-                    character = linkMembers[i].character,
+                    pathFinder = character,
                 });
             }
             else
@@ -313,7 +314,7 @@ public class PlayerTeamSystem : TeamSystem
                 return null;
             }
 
-            bool foundPath = IsClosestTargetExist(fromPosition, teamPathRoute[i - 1]);
+            bool foundPath = IsClosestTargetExist(character, fromPosition, teamPathRoute[i - 1]);
             if (!foundPath)
             {
                 Debug.Log($"No path found from {fromPosition} to {lastTargetPosition} break!");
@@ -328,7 +329,7 @@ public class PlayerTeamSystem : TeamSystem
     {
         return Vector3.Distance(fromPosition, targetPosition) <= maxDistance;
     }
-    private bool IsClosestTargetExist(Vector3Int fromPosition, PathRoute pathRoute)
+    private bool IsClosestTargetExist(CharacterBase character, Vector3Int fromPosition, PathRoute pathRoute)
     {
         if (pathRoute.targetRangeList == null || pathRoute.targetRangeList.Count == 0)
             return false;
@@ -337,7 +338,7 @@ public class PlayerTeamSystem : TeamSystem
 
         for (int i = 0; i < sortedTarget.Count; i++)
         {
-            PathRoute route = pathFinding.GetPathRoute(fromPosition, sortedTarget[i], 1, 1);
+            PathRoute route = pathFinding.GetPathRoute(fromPosition, sortedTarget[i], character, 1, 1);
             if (route == null) { return false; }
             List<Vector3> pathVectorList = route.pathNodeVectorList;
 

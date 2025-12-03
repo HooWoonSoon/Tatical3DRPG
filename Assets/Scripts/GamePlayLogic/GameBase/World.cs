@@ -157,6 +157,35 @@ public class World
         return loadedNodes.ContainsKey(new Vector3Int(x, y, z));
     }
 
+    public bool CheckSolidNodeBound(Bounds bounds)
+    {
+        int minX = Mathf.FloorToInt((bounds.min.x + cellSize * 0.5f) / cellSize);
+        int minY = Mathf.FloorToInt((bounds.min.y + cellSize * 0.5f) / cellSize);
+        int minZ = Mathf.FloorToInt((bounds.min.z + cellSize * 0.5f) / cellSize);
+
+        int maxX = Mathf.FloorToInt((bounds.max.x + cellSize * 0.5f) / cellSize);
+        int maxY = Mathf.FloorToInt((bounds.max.y + cellSize * 0.5f) / cellSize);
+        int maxZ = Mathf.FloorToInt((bounds.max.z + cellSize * 0.5f) / cellSize);
+
+        for (int x = minX; x <= maxX; x++)
+        {
+            for (int y = minY; y <= maxY; y++)
+            {
+                for (int z = minZ; z <= maxZ; z++)
+                {
+                    Vector3Int pos = new Vector3Int(x, y, z);
+                    if (loadedNodes.TryGetValue(pos, out GameNode node))
+                    {
+                        if (node.hasCube)
+                            return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     public bool CheckSolidNodeLine(Vector3 start, Vector3 end)
     {
         return CheckSolidNodeLine(start.x, start.y, start.z, end.x, end.y, end.z);

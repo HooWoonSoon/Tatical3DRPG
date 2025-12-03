@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class PathRoute
 {
-    public CharacterBase character;
+    public CharacterBase pathFinder;
     public List<Vector3Int> targetRangeList;
 
     public List<Vector3> pathNodeVectorList;
@@ -35,6 +35,6 @@ public class PathRoute
         }
 
         string pathLog = string.Join(" -> ", pathNodeVectorList.ConvertAll(p => p.ToString()));
-        Debug.Log($"{character} to PathTarget: {targetPosition},  PathRoute: {pathLog}");
+        Debug.Log($"{pathFinder} to PathTarget: {targetPosition},  PathRoute: {pathLog}");
     }
 }

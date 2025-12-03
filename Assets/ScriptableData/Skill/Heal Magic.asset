@@ -30,5 +30,5 @@ MonoBehaviour:
   requireMP: 1
   MPAmount: 10
   damageAmount: 0
-  healAmount: 10
+  healAmount: 25
   skillCastTime: 1

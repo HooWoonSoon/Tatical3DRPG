@@ -32,7 +32,7 @@ public class SelfCanvasController : MonoBehaviour
         healtUI.type = Image.Type.Filled;
         healtUI.fillMethod = Image.FillMethod.Horizontal;
         healtUI.fillAmount = percentage;
-        Debug.Log($"Current percent: {percentage}");
+        //Debug.Log($"Current percent: {percentage}");
     }
 
     public void ExecuteHealthChange(CharacterBase character, int value)

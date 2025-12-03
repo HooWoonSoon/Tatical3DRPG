@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
+﻿    using System.Collections.Generic;
+    using UnityEngine;
+using UnityEngine.UIElements;
+using static Unity.Cinemachine.IInputAxisOwner.AxisDescriptor;
 
 public class Parabola
 {
@@ -12,13 +14,15 @@ public class Parabola
         this.debugMode = debugMode;
     }
 
-    public UnitDetectable GetParabolaHitUnit(GameNode start, GameNode target, int elevationAngle)
+    public List<UnitDetectable> GetParabolaHitUnit(UnitDetectable projectileDetectable, GameNode start, GameNode target, int elevationAngle)
     {
-        return GetParabolaHitUnit(start.GetNodeVector(), target.GetNodeVector(), elevationAngle);
+        return GetParabolaHitUnit(projectileDetectable, start.GetNodeVector(), target.GetNodeVector(), elevationAngle);
     }
 
-    public UnitDetectable GetParabolaHitUnit(Vector3 start, Vector3 target, int elevationAngle)
+    public List<UnitDetectable> GetParabolaHitUnit(UnitDetectable projectileDetectable, Vector3 start, Vector3 target, int elevationAngle)
     {
+        List<UnitDetectable> hits = new List<UnitDetectable>();
+
         Vector3 displacementXZ = new Vector3(target.x - start.x, 0, target.z - start.z);
         float distanceXZ = displacementXZ.magnitude;
         float heightDifference = target.y - start.y;
@@ -52,43 +56,76 @@ public class Parabola
             float y = velocity * Mathf.Sin(angleRad) * time + 0.5f * -9.81f * time * time;
 
             Vector3 nextPoint = start + forwardDir * x + Vector3.up * y;
-            if (world.CheckSolidNodeLine(previousPoint, nextPoint))
-            {
-                if (debugMode)
-                    Debug.Log("Hit Solid");
-                return null;
-            }
 
-            UnitDetectable unit = GetHitUnitDetectable(nextPoint);
-            if (unit != null)
+            Vector3 direction = nextPoint - previousPoint;
+            Vector3 center = projectileDetectable.center;
+            Vector3 size = projectileDetectable.size;
+            if (direction != Vector3.zero)
             {
-                if (debugMode)
-                    Debug.Log($"Hit Unit Detectable: {unit.name}");
-                return unit;
+                Quaternion rotation = Quaternion.LookRotation(direction);
+                Bounds projectileBound = projectileDetectable.GetRotatedBounds(nextPoint, rotation, center, size);
+
+                if (world.CheckSolidNodeBound(projectileBound))
+                {
+                    if (debugMode)
+                        Debug.Log("Hit Solid");
+                }
+
+                UnitDetectable unit = GetHitUnitDetectable(projectileBound);
+                if (unit != null && !hits.Contains(unit))
+                {
+                    hits.Add(unit);
+                }
             }
             previousPoint = nextPoint;
         }
-        if (world.CheckSolidNode(target))
-        {
-            if (debugMode)
-                Debug.Log($"Hit Solid: {target}");
-            return null;
-        }
-        return null;
+        return hits;
     }
 
-    private UnitDetectable GetHitUnitDetectable(Vector3 position)
+    //private UnitDetectable GetHitUnitDetectable(Vector3 position)
+    //{
+    //    List<UnitDetectable> unitDetectables = UnitDetectable.all;
+
+    //    foreach (UnitDetectable unit in unitDetectables)
+    //    {
+    //        Bounds selfBound = unit.GetRotatedBoundSelf();
+    //        if (selfBound.Contains(position))
+    //        {
+    //            return unit;
+    //        }
+    //    }
+    //    return null;
+    //}
+
+    public UnitDetectable GetHitUnitDetectable(Bounds bounds)
     {
+        Vector3[] positions =
+        {
+            new Vector3(bounds.min.x, bounds.min.y, bounds.min.z),
+            new Vector3(bounds.max.x, bounds.min.y, bounds.min.z),
+            new Vector3(bounds.min.x, bounds.max.y, bounds.min.z),
+            new Vector3(bounds.min.x, bounds.min.y, bounds.max.z),
+            new Vector3(bounds.max.x, bounds.max.y, bounds.min.z),
+            new Vector3(bounds.max.x, bounds.min.y, bounds.max.z),
+            new Vector3(bounds.min.x, bounds.max.y, bounds.max.z),
+            new Vector3(bounds.max.x, bounds.max.y, bounds.max.z)
+        };
+
         List<UnitDetectable> unitDetectables = UnitDetectable.all;
 
         foreach (UnitDetectable unit in unitDetectables)
         {
             Bounds selfBound = unit.GetRotatedBoundSelf();
-            if (selfBound.Contains(position))
+
+            foreach (Vector3 position in positions)
             {
-                return unit;
+                if (selfBound.Contains(position))
+                {
+                    return unit;
+                }
             }
         }
         return null;
     }
+
 }

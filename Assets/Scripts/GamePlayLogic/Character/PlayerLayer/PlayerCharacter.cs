@@ -50,6 +50,8 @@ public class PlayerCharacter : CharacterBase
     private float targetStep;
     #endregion
 
+    public bool debugMode = false;
+
     public Vector3 direction { get; private set; }
 
     private void Awake()
@@ -324,13 +326,13 @@ public class PlayerCharacter : CharacterBase
     public override void SetAStarMovePos(Vector3Int targetPosition)
     {
         Vector3Int startPosition = currentNode.GetNodeVectorInt();
-        PathRoute route = pathFinding.GetPathRoute(startPosition, targetPosition, 1, 1);
+        PathRoute route = pathFinding.GetPathRoute(startPosition, targetPosition, this, 1, 1);
         List<Vector3> pathVectorList = route.pathNodeVectorList;
         if (pathVectorList.Count != 0)
         {
             PathRoute pathRoute = new PathRoute
             {
-                character = this,
+                pathFinder = this,
                 targetPosition = targetPosition,
                 pathNodeVectorList = pathVectorList,
                 pathIndex = 0

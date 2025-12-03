@@ -13,9 +13,9 @@ public class BattleUIManager : MonoBehaviour
     public GameObject battleEndDisplayUI;
 
     [Header("Battle Set Skill UI")]
-    public GameObject actionOptionPanel;
     public GameObject skillUI;
     public GameObject cTTimelineUI;
+
     public static BattleUIManager instance { get; private set; }
     private void Awake()
     {
@@ -26,7 +26,6 @@ public class BattleUIManager : MonoBehaviour
     {
         battleStatePanel.SetActive(false);
         battleStartDisplayUI.SetActive(false);
-        actionOptionPanel.SetActive(false);
         skillUI.SetActive(false);
         cTTimelineUI.SetActive(false);
     }
@@ -80,11 +79,6 @@ public class BattleUIManager : MonoBehaviour
         skillUI.SetActive(false);
     }
 
-    public void ActivateActionPanel(bool active)
-    {
-        actionOptionPanel.SetActive(active);
-    }
-
     public void ActiveAllCharacterInfoTip(bool active)
     {
         foreach (var character in BattleManager.instance.GetBattleUnits())
@@ -110,4 +104,8 @@ public class BattleUIManager : MonoBehaviour
             }
         }
     }
+
+    public void SwitchActionPanel() => BattleManager.instance.gridCursor.SwitchActionPanel();
+    public void SwitchInfoPanel() => BattleManager.instance.gridCursor.SwitchInfoPanel();
+    public void OffCursorPanel() => BattleManager.instance.gridCursor.OffPanel();
 }

@@ -28,6 +28,6 @@ MonoBehaviour:
   MPIcon: {fileID: 0}
   requireMP: 0
   MPAmount: 0
-  damageAmount: 15
+  damageAmount: 25
   healAmount: 0
   skillCastTime: 1

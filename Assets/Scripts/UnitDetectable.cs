@@ -43,7 +43,7 @@ public class UnitDetectable : Entity
     {
         return GetRotatedBounds(transform.position, transform.rotation, center, size);
     }
-    private Bounds GetRotatedBounds(Vector3 position, Quaternion rotation, Vector3 center, Vector3 size)
+    public Bounds GetRotatedBounds(Vector3 position, Quaternion rotation, Vector3 center, Vector3 size)
     {
         Vector3 worldCenter = position + rotation * center;
         Vector3 half = size * 0.5f;

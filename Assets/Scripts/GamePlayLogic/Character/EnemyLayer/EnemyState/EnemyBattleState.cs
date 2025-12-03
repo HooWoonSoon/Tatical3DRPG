@@ -2,20 +2,24 @@
 using UnityEngine;
 using Tactics.AI;
 
+public enum AgentBattlePhase
+{
+    Ready, Wait, Thinking, Move, SkillCast,
+    ReleaseMoveThinking,
+    ReleaseSkillThinking,
+    End
+}
 public class EnemyBattleState : EnemyBaseState
 {
-    public enum BattlePhase
-    {
-        Ready, Wait, Thinking, Move, SkillCast,
-        End
-    }
-
-    private BattlePhase currentPhase;
+    private AgentBattlePhase currentPhase;
     private float phaseStartTime;
     private GameNode confrimMoveNode;
 
     private GameNode targetNode;
     private SkillData currentSkill;
+
+    private bool movedConfirmed = false;
+    private bool skillCastConfirmed = false;
 
     public EnemyBattleState(EnemyStateMachine stateMachine, EnemyCharacter character) : base(stateMachine, character)
     {
@@ -25,7 +29,7 @@ public class EnemyBattleState : EnemyBaseState
     {
         base.Enter();
         character.ResetVisualTilemap();
-        currentPhase = BattlePhase.Ready;
+        currentPhase = AgentBattlePhase.Ready;
     }
 
     public override void Exit()
@@ -40,71 +44,104 @@ public class EnemyBattleState : EnemyBaseState
 
         switch (currentPhase)
         {
-            case BattlePhase.Ready:
+            case AgentBattlePhase.Ready:
                 character.PathToTarget();
                 if (character.pathRoute == null)
                 {
-                    ChangePhase(BattlePhase.Wait);
+                    ChangePhase(AgentBattlePhase.Wait);
                 }
                 break;
-            case BattlePhase.Wait:
+            case AgentBattlePhase.Wait:
                 if (character.IsYourTurn(character))
                 {
-                    ChangePhase(BattlePhase.Thinking);
+                    ChangePhase(AgentBattlePhase.Thinking);
                 }
                 break;
-            case BattlePhase.Thinking:
+            case AgentBattlePhase.Thinking:
                 if (phaseStartTime > 0.5f)
                 {
-                    ChangePhase(BattlePhase.Move);
+                    if (character.pathRoute != null)
+                        ChangePhase(AgentBattlePhase.Move);
+                    else if (character.currentSkill != null)
+                        ChangePhase(AgentBattlePhase.SkillCast);
+                    else
+                        ChangePhase(AgentBattlePhase.End);
                 }
                 break;
-            case BattlePhase.Move:
+            case AgentBattlePhase.ReleaseMoveThinking:
+                if (phaseStartTime > 0.5f)
+                {
+                    if (character.pathRoute != null)
+                        ChangePhase(AgentBattlePhase.Move);
+                    else
+                        ChangePhase(AgentBattlePhase.End);
+                }
+                break;
+            case AgentBattlePhase.Move:
                 character.PathToTarget();
                 if (character.pathRoute == null)
                 {
-                    if (character.currentSkill != null)
-                        ChangePhase(BattlePhase.SkillCast);
+                    movedConfirmed = true;
+                    if (!skillCastConfirmed && currentSkill != null)
+                        ChangePhase(AgentBattlePhase.SkillCast);
+                    else if (!skillCastConfirmed && currentSkill == null)
+                        ChangePhase(AgentBattlePhase.ReleaseSkillThinking);
                     else
-                        ChangePhase(BattlePhase.End);                
+                        ChangePhase(AgentBattlePhase.End);
                 }
                 break;
-            case BattlePhase.SkillCast:
+            case AgentBattlePhase.ReleaseSkillThinking:
+                if (phaseStartTime > 0.5)
+                {
+                    if (currentSkill != null)
+                        ChangePhase(AgentBattlePhase.SkillCast);
+                    else
+                        ChangePhase(AgentBattlePhase.End);
+                }
+                break;
+            case AgentBattlePhase.SkillCast:
                 if (phaseStartTime > character.currentSkill.skillCastTime)
                 {
-                    ChangePhase(BattlePhase.End);
+                    skillCastConfirmed = true;
+                    if (!movedConfirmed)
+                        ChangePhase(AgentBattlePhase.ReleaseMoveThinking);
+                    else
+                        ChangePhase(AgentBattlePhase.End);
                 }
                 break;
-            case BattlePhase.End:
+            case AgentBattlePhase.End:
                 if (phaseStartTime > 0.5f)
                 {
                     BattleManager.instance.OnLoadNextTurn();
-                    ChangePhase(BattlePhase.Wait);
+                    ChangePhase(AgentBattlePhase.Wait);
                 }
                 break;
         }
     }
 
-    public void ChangePhase(BattlePhase newPhase)
+    public void ChangePhase(AgentBattlePhase newPhase)
     {
         currentPhase = newPhase;
         phaseStartTime = 0;
         EnterPhase(newPhase);
-        Debug.Log($"{character} enter to {newPhase}");
+        if (character.debugMode)
+            Debug.Log($"{character} enter to {newPhase}");
     }
 
-    public void EnterPhase(BattlePhase phase)
+    public void EnterPhase(AgentBattlePhase phase)
     {
         switch (phase)
         {
-            case BattlePhase.Ready:
+            case AgentBattlePhase.Ready:
                 break;
-            case BattlePhase.Wait:
+            case AgentBattlePhase.Wait:
                 confrimMoveNode = null;
                 currentSkill = null;
                 targetNode = null;
+                movedConfirmed = false;
+                skillCastConfirmed = false;
                 break;
-            case BattlePhase.Thinking:
+            case AgentBattlePhase.Thinking:
                 CameraController.instance.ChangeFollowTarget(character.transform);
                 float startTime = Time.realtimeSinceStartup;
                 character.decisionSystem.MakeDecision();
@@ -117,21 +154,30 @@ public class EnemyBattleState : EnemyBaseState
                 }
                 character.SetSkillAndTarget(currentSkill, targetNode);
                 break;
-            case BattlePhase.Move:
+            case AgentBattlePhase.ReleaseMoveThinking:
+                character.decisionSystem.MakeDecision(true, false);
+                character.decisionSystem.GetResult(out currentSkill, out confrimMoveNode, out targetNode);
+
+                if (confrimMoveNode != null)
+                {
+                    character.SetPathRoute(confrimMoveNode);
+                }
+                break;
+            case AgentBattlePhase.Move:
                 if (confrimMoveNode != null)
                 {
                     character.ShowDangerMovableAndTargetTilemap(confrimMoveNode);
                     CameraController.instance.ChangeFollowTarget(character.transform);
                 }
                 break;
-            case BattlePhase.SkillCast:
+            case AgentBattlePhase.SkillCast:
                 if (currentSkill != null)
                 {
                     character.ShowSkillTargetTilemap();
                     BattleManager.instance.CastSkill(character, currentSkill, confrimMoveNode, targetNode);
                 }
                 break;
-            case BattlePhase.End:
+            case AgentBattlePhase.End:
                 character.ResetVisualTilemap();
                 break;
         }

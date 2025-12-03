@@ -1,12 +1,12 @@
-﻿using UnityEngine;
-using static UnityEditor.PlayerSettings;
+﻿using System.Collections.Generic;
+using UnityEngine;
 public class HarmRule : ScoreRuleBase
 {
-    public HarmRule(PathFinding pathFinding, int scoreBonus, bool debugMode) : base(pathFinding, scoreBonus, debugMode)
+    public HarmRule(List<IScoreSubRule> scoreSubRules, PathFinding pathFinding, int scoreBonus, bool debugMode) : base(scoreSubRules, pathFinding, scoreBonus, debugMode)
     {
     }
 
-    public override int CalculateSkillScore(CharacterBase character, SkillData skill, GameNode moveNode, GameNode targetNode)
+    public override float CalculateSkillScore(CharacterBase character, SkillData skill, GameNode moveNode, GameNode targetNode)
     {
         if (skill == null) return 0;
 
@@ -15,13 +15,6 @@ public class HarmRule : ScoreRuleBase
 
         CharacterBase target = targetNode.character;
         if (target == null) return 0;
-
-        if (debugMode)
-        {
-            Debug.Log("Execute Harm Rule");
-            Debug.Log($"{character.data.characterName} consider to use " +
-                $"{skill.skillName} damage on {target.data.characterName}");
-        }
 
         int damage = skill.damageAmount;
         int missingHealth = target.currentHealth;
@@ -40,18 +33,26 @@ public class HarmRule : ScoreRuleBase
         }
 
         float damageFactor = (float)actualDamage / target.data.health;
+        float priorityFactor = Mathf.Max(0.2f, damageFactor);
 
         float mpCost = skill.MPAmount;
         float maxMp = Mathf.Max(1f, character.data.mental);
-        float mpFactor = 1f - Mathf.Clamp01(mpCost / maxMp);
+        float mpFactor = 1f - Mathf.Lerp(0, 0.4f, mpCost / maxMp);
 
-        float t = damageFactor * mpFactor;
+        float t = priorityFactor * mpFactor;
 
-        int score = Mathf.RoundToInt(Mathf.Lerp(0f, scoreBonus, t));
+        float score = Mathf.Lerp(0f, scoreBonus, t);
+
+        foreach (var rule in scoreSubRules)
+            score += rule.CalculateScore(character, skill, moveNode, targetNode);
 
         if (debugMode)
-            Debug.Log($"Skill: {skill.skillName} damage skill, " +
-                $"deal damage to {target.data.characterName}, " + 
+            Debug.Log(
+                $"<color=red>[HarmRule]</color> " +
+                $"{character.data.characterName}, " +
+                $"<b>{skill.skillName}</b> damage skill, " +
+                $"deal damage to {target.data.characterName}" +
+                $"at Target Node {targetNode.GetNodeVectorInt()}, " + 
                 $"plus Score bonus: {score}");
 
         return score;

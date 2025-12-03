@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public enum Orientation { right, left, forward, back }
@@ -184,7 +182,7 @@ public abstract class CharacterBase : Entity
         Vector3 selfPos = GetCharacterTranformToNodePos();
         Vector3 targetPos = targetNode.GetNodeVector();
 
-        PathRoute pathRoute = pathFinding.GetPathRoute(selfPos, targetPos, 1, 1);
+        PathRoute pathRoute = pathFinding.GetPathRoute(selfPos, targetPos, this, 1, 1);
         if (pathRoute == null)
         {
             Debug.Log("No route has found");
@@ -194,7 +192,7 @@ public abstract class CharacterBase : Entity
         List<Vector3> pathVectorList = pathRoute.pathNodeVectorList;
         return new PathRoute
         {
-            character = this,
+            pathFinder = this,
             targetPosition = targetNode.GetNodeVectorInt(),
             pathNodeVectorList = pathVectorList,
             pathIndex = 0
@@ -208,24 +206,24 @@ public abstract class CharacterBase : Entity
         {
             Vector3 nextPathPosition = pathRoute.pathNodeVectorList[pathRoute.pathIndex];
 
-            Vector3 currentPos = pathRoute.character.transform.position;
+            Vector3 currentPos = pathRoute.pathFinder.transform.position;
             Vector3 direction = (nextPathPosition - currentPos).normalized;
 
             float heightDifferent = nextPathPosition.y - currentPos.y;
             if (Mathf.Abs(heightDifferent) > 0.1f)
             {
                 Vector3 heightPos = new Vector3(currentPos.x, currentPos.y + heightDifferent, currentPos.z);
-                pathRoute.character.transform.position = Vector3.MoveTowards(currentPos, heightPos, moveSpeed * 2 * Time.deltaTime);
-                currentPos = pathRoute.character.transform.position;
+                pathRoute.pathFinder.transform.position = Vector3.MoveTowards(currentPos, heightPos, moveSpeed * 2 * Time.deltaTime);
+                currentPos = pathRoute.pathFinder.transform.position;
             }
 
             SetOrientation(direction);
 
-            pathRoute.character.transform.position = Vector3.MoveTowards(currentPos, nextPathPosition, moveSpeed * Time.deltaTime);
+            pathRoute.pathFinder.transform.position = Vector3.MoveTowards(currentPos, nextPathPosition, moveSpeed * Time.deltaTime);
 
-            if (Vector3.Distance(pathRoute.character.transform.position, nextPathPosition) <= 0.1f)
+            if (Vector3.Distance(pathRoute.pathFinder.transform.position, nextPathPosition) <= 0.1f)
             {
-                pathRoute.character.transform.position = nextPathPosition;
+                pathRoute.pathFinder.transform.position = nextPathPosition;
 
                 pathRoute.pathIndex++;
                 if (pathRoute.pathIndex >= pathRoute.pathNodeVectorList.Count)
@@ -357,22 +355,7 @@ public abstract class CharacterBase : Entity
         }
         return characters;
     }
-    public List<CharacterBase> GetOppositeCharacter()
-    {
-        List<CharacterBase> oppositeCharacter = new List<CharacterBase>();
-        List<TeamDeployment> battleTeam = BattleManager.instance.GetBattleTeam();
-        foreach (var team in battleTeam)
-        {
-            foreach (var character in team.teamCharacter)
-            {
-                if (character.currentTeam != currentTeam)
-                {
-                    oppositeCharacter.Add(character);
-                }
-            }
-        }
-        return oppositeCharacter;
-    }
+
     public List<Vector3Int> GetCustomizedSizeMovablePos(int size, HashSet<Vector3Int> occupiedPos)
     {
         List<Vector3Int> result = new List<Vector3Int>();
@@ -412,33 +395,71 @@ public abstract class CharacterBase : Entity
         }
         return result;
     }
+    
+    /// <summary>
+    /// Get overlap opposite movable range based on self movable range
+    /// </summary>
+    /// <returns></returns>
     public List<GameNode> GetConflictNode()
     {
         int selfRange = data.movementValue;
-        Vector3Int selfPos = GetCharacterTranformToNodePos();
+        Vector3Int selfPos = currentNode.GetNodeVectorInt();
         List<GameNode> selfRangeExtend = pathFinding.GetCalculateDijkstraCostNodes(selfPos, 2, 1, 1);
         List<GameNode> selfMovableNode = pathFinding.GetCostDijkstraCoverangeNodes(this, selfRange, 1, 1);
         HashSet<GameNode> selfMovableNodeSet = new HashSet<GameNode>(selfMovableNode);
-        List<GameNode> conflictNode = new List<GameNode>();
+        List<GameNode> conflictNodes = new List<GameNode>();
         foreach (GameNode node in selfRangeExtend)
         {
             if (node.character == null) continue;
             CharacterBase character = node.character;
-            TeamDeployment oppositeTeam = character.currentTeam;
-            if (oppositeTeam != currentTeam)
+            TeamDeployment characterTeam = character.currentTeam;
+            if (characterTeam != currentTeam)
             {
                 int oppositeRange = character.data.movementValue;
-                List<GameNode> oppositeRangeNodes = pathFinding.GetCostDijkstraCoverangeNodes(character, oppositeRange, 1, 1);
+                List<GameNode> oppositeRangeNodes = 
+                    pathFinding.GetCostDijkstraCoverangeNodes(
+                        character, oppositeRange, 1, 1);
                 foreach (GameNode rangeNode in oppositeRangeNodes)
                 {
                     if (selfMovableNodeSet.Contains(rangeNode))
                     {
-                        conflictNode.Add(rangeNode);
+                        conflictNodes.Add(rangeNode);
                     }
                 }
             }
         }
-        return conflictNode;
+        return conflictNodes;
+    }
+    /// <summary>
+    /// Get overlap teammate movable range based on self movable range
+    /// </summary>
+    /// <returns></returns>
+    public List<GameNode> GetSupportNode()
+    {
+        int selfRange = data.movementValue;
+        Vector3Int selfPos = currentNode.GetNodeVectorInt();
+        List<GameNode> selfRangeExtend = pathFinding.GetCalculateDijkstraCostNodes(selfPos, 2, 1, 1);
+        List<GameNode> selfMovableNode = pathFinding.GetCostDijkstraCoverangeNodes(this, selfRange, 1, 1);
+        HashSet<GameNode> selfMovableNodeSet = new HashSet<GameNode>(selfMovableNode);
+        List<GameNode> supportNodes = new List<GameNode>();
+        foreach (GameNode node in selfRangeExtend)
+        {
+            if (node.character == null) continue;
+            CharacterBase character = node.character;
+            TeamDeployment characterTeam = character.currentTeam;
+            if (characterTeam == currentTeam)
+            {
+                int teammateRange = character.data.movementValue;
+                List<GameNode> teammateRangeNodes =
+                    pathFinding.GetCostDijkstraCoverangeNodes(
+                        character, teammateRange, 1, 1);
+                foreach (GameNode rangeNode in teammateRangeNodes)
+                {
+                    supportNodes.Add(rangeNode);
+                }
+            }
+        }
+        return supportNodes;
     }
 
     public List<GameNode> GetSkillRangeFromNode(SkillData skill, GameNode gameNode)

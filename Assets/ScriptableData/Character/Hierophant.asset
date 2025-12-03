@@ -22,5 +22,5 @@ MonoBehaviour:
   mental: 150
   physicAttack: 0
   magicAttack: 20
-  speed: 30
+  speed: 25
   movementValue: 4

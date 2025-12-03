@@ -12,12 +12,18 @@ public class GridCursor : Entity
     private float keyPressTimer;
     private float intervalPressTimer;
     public bool hasMoved = false;
+
+    [Header("Battle Cusor Related UI")]
+    public GameObject actionOptionPanel;
+    public GameObject battlefieldInfoPanel;
     public GameNode currentNode { get; private set; }
 
     protected override void Start()
     {
         base.Start();
         cursor.SetActive(false);
+        actionOptionPanel.SetActive(false);
+        battlefieldInfoPanel.SetActive(false);
     }
 
     private void Update()
@@ -68,6 +74,7 @@ public class GridCursor : Entity
             currentNode = gameNode;
             hasMoved = true;
         }
+        CameraController.instance.TurnOnTargeting(true);
     }
 
     private void HandleInput(Vector3Int direction, float initialTimer, float interval)
@@ -115,6 +122,24 @@ public class GridCursor : Entity
     {
         activateCursor = active;
         cursor.SetActive(!hide);
+    }
+
+    public void SwitchActionPanel()
+    {
+        actionOptionPanel.SetActive(true);
+        battlefieldInfoPanel.SetActive(false);
+    }
+
+    public void SwitchInfoPanel()
+    {
+        actionOptionPanel.SetActive(false);
+        battlefieldInfoPanel.SetActive(true);
+    }
+
+    public void OffPanel()
+    {
+        actionOptionPanel.SetActive(false);
+        battlefieldInfoPanel.SetActive(false);
     }
 }
 

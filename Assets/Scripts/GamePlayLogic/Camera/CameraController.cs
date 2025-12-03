@@ -33,6 +33,8 @@ public class CameraController : MonoBehaviour
     private bool isRotateAligmenting = false;
 
     public bool enableTacticalView = false;
+
+    public bool debugMode = false;
     public static CameraController instance { get; private set; }
     private void Awake()
     {
@@ -158,7 +160,7 @@ public class CameraController : MonoBehaviour
     }
     private void RotateCamera()
     {
-        if (enableRotateAlignment) { return;}
+        if (enableRotateAlignment || enableTacticalView) { return;}
         if (InputKeyHelper.GetKeySolo(KeyCode.U))
         {
             pivotPoint.localEulerAngles += new Vector3(0, 10, 0) * Time.deltaTime * rotationSpeed;
@@ -172,7 +174,7 @@ public class CameraController : MonoBehaviour
     }
     private void RotateCameraAlignment()
     {
-        if (!enableRotateAlignment) { return; }
+        if (!enableRotateAlignment || enableTacticalView) { return; }
 
         float currentY = pivotPoint.localEulerAngles.y;
         currentY = Mathf.Repeat(currentY, 360f);
@@ -259,9 +261,16 @@ public class CameraController : MonoBehaviour
     /// </param>
     public void ChangeFollowTarget(Transform transform)
     {
-        Debug.Log($"Change target {transform.name}");
+        if (debugMode)
+            Debug.Log($"Change target {transform.name}");
         followTarget = transform;
         isTargeting = true;
+    }
+
+    public void TurnOnTargeting(bool enabled)
+    {
+        if (followTarget != null)
+            isTargeting = true;
     }
 
     public Vector3 GetCameraTransformDirection(Vector3 direction)
