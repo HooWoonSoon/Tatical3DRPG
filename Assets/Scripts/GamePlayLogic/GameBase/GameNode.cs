@@ -89,5 +89,4 @@ public class GameNode
     {
         if (onWorldNodesChange != null) onWorldNodesChange(this, new OnWorldNodesChange { x = x, y = y, z = z });
     }
-    public Vector3 GetGameNodeVector() => new Vector3(x, y, z);
 }

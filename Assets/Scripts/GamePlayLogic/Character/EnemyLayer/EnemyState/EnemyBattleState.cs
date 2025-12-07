@@ -100,7 +100,7 @@ public class EnemyBattleState : EnemyBaseState
                 }
                 break;
             case AgentBattlePhase.SkillCast:
-                if (phaseStartTime > character.currentSkill.skillCastTime)
+                if (phaseStartTime > currentSkill.skillCastTime)
                 {
                     skillCastConfirmed = true;
                     if (!movedConfirmed)

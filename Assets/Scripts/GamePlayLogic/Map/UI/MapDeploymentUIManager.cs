@@ -45,8 +45,12 @@ public class MapDeploymentUIManager : Entity
     [SerializeField] private Sprite tagSprite;
     [SerializeField] private int columns;
 
-    private CharacterBase[] characters;
+    /// <summary>
+    /// Characters available to select and deploy in tactics map
+    /// </summary>
+    private CharacterBase[] candidateCharacters;
     private List<CharacterBase> allCharactersInMap = new List<CharacterBase>();
+    
     private CharacterBase currentSelectedCharacter;
 
     public int selectedIndex { get; private set; } = -1;
@@ -211,7 +215,7 @@ public class MapDeploymentUIManager : Entity
         }
         uIImages[selectedIndex].tagObject.SetActive(true);
         currentSelectedUIImage = uIImages[selectedIndex];
-        currentSelectedCharacter = characters[selectedIndex];
+        currentSelectedCharacter = candidateCharacters[selectedIndex];
     }
 
     private void ShowDeploymentUI()
@@ -220,8 +224,8 @@ public class MapDeploymentUIManager : Entity
         allowToggleDeploymentUI = true;
         enableDeployment = true;
         characterDeploymentPanel.SetActive(true);
-        characters = MapDeploymentManager.instance.allCharacter;
-        foreach (CharacterBase character in characters)
+        candidateCharacters = MapDeploymentManager.instance.allCharacter;
+        foreach (CharacterBase character in candidateCharacters)
         {
             if (character == null) { continue; }
             CreateCharacterUI(character);

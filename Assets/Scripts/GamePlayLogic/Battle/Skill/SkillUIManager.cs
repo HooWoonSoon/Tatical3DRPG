@@ -310,7 +310,7 @@ public class SkillUIManager : MonoBehaviour
 
         foreach (SkillData skillData in skillDatas)
         {
-            AbilityType type = skillData.type;
+            AbilityType type = skillData.abilityType;
             if (type == AbilityType.Skill || type == AbilityType.Inventory) { continue; }
             if (typeMapDictionary.ContainsKey(type))
             {
@@ -351,7 +351,7 @@ public class SkillUIManager : MonoBehaviour
         List<SkillData> typeSkillList = new List<SkillData>();
         foreach (SkillData skillData in skillDatas)
         {
-            if (skillData.type == type)
+            if (skillData.abilityType == type)
             {
                 typeSkillList.Add(skillData);
             }

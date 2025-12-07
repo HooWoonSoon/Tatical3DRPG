@@ -15,7 +15,7 @@ MonoBehaviour:
   skillName: Melee Attack
   skillIcon: {fileID: 21300000, guid: 49c9206e2a50e8944a4b8e5608ab5a9d, type: 3}
   description: The melee attack, use sword attack the single unit.
-  type: 0
+  abilityType: 0
   skillType: 0
   isTargetTypeSkill: 1
   skillTargetType: 2

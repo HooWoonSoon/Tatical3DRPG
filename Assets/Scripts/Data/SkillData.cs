@@ -16,7 +16,7 @@ public class SkillData : ScriptableObject
     public string skillName;
     public Sprite skillIcon;
     public string description;
-    public AbilityType type;
+    public AbilityType abilityType;
     public SkillType skillType;
     public bool isTargetTypeSkill;
     public SkillTargetType skillTargetType;

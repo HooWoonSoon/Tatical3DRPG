@@ -207,6 +207,7 @@ public class BattleManager : Entity
     {
         onConfrimCallback = () =>
         {
+            MapDeploymentManager.instance.CreateTempoTeam();
             SetJoinedBattleUnit(allBattleCharacter);
             if (debugMode)
             {
@@ -367,7 +368,7 @@ public class BattleManager : Entity
     public bool IsValidSkillSelection(CharacterBase character, SkillData selectedSkill)
     {
         int skillRequireMP = selectedSkill.MPAmount;
-        if (character.currentMetal < skillRequireMP)
+        if (character.currentMental < skillRequireMP)
             return false;
         else
             return true;
@@ -482,10 +483,14 @@ public class BattleManager : Entity
     out ParabolaRenderer parabolaRenderer, out Vector3 originPos, out Vector3 targetPos)
     {
         LineRenderer lineRenderer = selfCharacter.GetComponentInChildren<LineRenderer>();
-        parabolaRenderer = new ParabolaRenderer(world, lineRenderer);
+        parabolaRenderer = null;
 
         originPos = Vector3.zero;
         targetPos = Vector3.zero;
+
+        if (lineRenderer == null) return false;
+
+        parabolaRenderer = new ParabolaRenderer(world, lineRenderer);
 
         if (targetNode == null)
         {
@@ -500,7 +505,9 @@ public class BattleManager : Entity
         }
 
         if (originNode == null)
+        {
             originNode = selfCharacter.GetCharacterTransformToNode();
+        }
 
         originPos = originNode.GetNodeVector();
         targetPos = targetNode.GetNodeVector();
@@ -568,7 +575,7 @@ public class BattleManager : Entity
         StartCoroutine(SkillEventCoroutine(currentSkill));
         int costMP = currentSkill.MPAmount;
         CTTurnUIManager.instance.ExecuteMentalChange(selfCharacter, -costMP);
-        selfCharacter.currentMetal -= costMP;
+        selfCharacter.currentMental -= costMP;
         Vector3 direction = (targetNode.GetNodeVector() - selfCharacter.transform.position);
         selfCharacter.SetOrientation(direction);
 
@@ -619,7 +626,8 @@ public class BattleManager : Entity
         GameObject projectilePrefab = Instantiate(currentSkill.projectTilePrefab, originNode.GetNodeVector(), Quaternion.identity);
 
         CameraController.instance.ChangeFollowTarget(projectilePrefab.transform);
-        Debug.Log($"Instantiate projectile {currentSkill.projectTilePrefab.name} at {originNode.GetNodeVector()}");
+        if (debugMode)
+            Debug.Log($"Instantiate projectile {currentSkill.projectTilePrefab.name} at {originNode.GetNodeVector()}");
         Projectile projectile = projectilePrefab.GetComponent<Projectile>();
 
         Vector3 targetPos = targetNode.GetNodeVector();

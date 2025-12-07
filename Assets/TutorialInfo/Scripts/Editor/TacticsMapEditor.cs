@@ -145,6 +145,7 @@ public class TacticsMapEditor : EditorWindow
     private void AddNewMap()
     {
         MapEditorList mapEditorList = FindFirstObjectByType<MapEditorList>();
+
         if (mapEditorList == null)
         {
             mapEditorList = new GameObject("All Map").AddComponent<MapEditorList>();
@@ -152,6 +153,7 @@ public class TacticsMapEditor : EditorWindow
         }
 
         GameObject newMapObject = new GameObject($"Map{mapEditorList.mapList.Count}");
+        newMapObject.transform.SetParent(mapEditorList.transform, false);
 
         Grid grid = newMapObject.AddComponent<Grid>();
         grid.cellSize = new Vector3(1, 1, 1);
@@ -167,7 +169,7 @@ public class TacticsMapEditor : EditorWindow
 
     private void AddNewLevel(GameObject gridObject)
     {
-        if (Selection.activeGameObject == null) { return; }
+        if (gridObject == null) { return; }
 
         MapEditorLevelList tilemapList3D = gridObject.GetComponent<MapEditorLevelList>();
         Grid grid = gridObject.GetComponent<Grid>();

@@ -1,14 +1,13 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json;
-using System.Linq;
 
 public class MapDeploymentManager : Entity
 {
     [Header("Deployable Character")]
     public CharacterBase[] allCharacter;
+    private List<CharacterBase> selectedCharacters = new List<CharacterBase>();
 
     private List<GameNode> deployableNodes = new List<GameNode>();
     private Dictionary<CharacterBase, GameNode> occupiedNodes = new Dictionary<CharacterBase, GameNode>();
@@ -134,6 +133,11 @@ public class MapDeploymentManager : Entity
         character.TeleportToNodeDeployble(randomNode);
         occupiedNodes[character] = randomNode;
 
+        if (!selectedCharacters.Contains(character))
+        {
+            selectedCharacters.Add(character);
+        }
+
         Debug.Log($"Deployed {character.name} at {randomNode.x},{randomNode.y},{randomNode.z}");
     }
     public void RemoveCharacterDeployment(CharacterBase character)
@@ -143,6 +147,7 @@ public class MapDeploymentManager : Entity
         node.SetUnitGridCharacter(null);
         character.gameObject.SetActive(false);
         occupiedNodes.Remove(character);
+        selectedCharacters.Remove(character);
 
         if (lasSelectedCharacter == character)
         {
@@ -251,8 +256,15 @@ public class MapDeploymentManager : Entity
         else
             enableEditing = false;
     }
+
+    public void CreateTempoTeam()
+    {
+        MapTeamManager.instance.GenerateTeam(selectedCharacters, TeamType.Player, true);
+    }
+
     public void EndDeployment()
     {
+        selectedCharacters.Clear();
         deployableNodes.Clear();
         occupiedNodes.Clear();
         lastNode = null;

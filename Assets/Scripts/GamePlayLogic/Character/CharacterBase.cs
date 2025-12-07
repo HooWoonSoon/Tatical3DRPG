@@ -19,7 +19,7 @@ public abstract class CharacterBase : Entity
     public List<SkillData> skillDatas;
 
     public int currentHealth { get; set; }
-    public int currentMetal { get; set; }
+    public int currentMental { get; set; }
     public float moveSpeed = 5f;
 
     public GameNode currentNode { get; private set; }
@@ -36,7 +36,7 @@ public abstract class CharacterBase : Entity
         unitDetectable = GetComponent<UnitDetectable>();
 
         currentHealth = data.health;
-        currentMetal = data.mental;
+        currentMental = data.mental;
     }
 
     protected virtual void Update()
@@ -292,6 +292,20 @@ public abstract class CharacterBase : Entity
         if (skill == null) { return; }
         currentSkill = skill;
         currentSkillTargetNode = targetNode;
+    }
+    public List<SkillData> GetAvaliableSkills()
+    {
+        List<SkillData> availabelSkills = new List<SkillData>();
+        foreach (var skill in skillDatas)
+        {
+            if (availabelSkills.Contains(skill)) continue;
+
+            if (skill.MPAmount <= currentMental)
+            {
+                availabelSkills.Add(skill);
+            }
+        }
+        return availabelSkills;
     }
 
     public void TakeDamage(int damage)

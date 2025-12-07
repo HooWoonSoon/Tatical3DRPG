@@ -15,7 +15,7 @@ MonoBehaviour:
   skillName: Ultra Close Shooting
   skillIcon: {fileID: 21300000, guid: 54b763209277a3f438a7733dff99e37a, type: 3}
   description: Ultra close but high damage, physic attack
-  type: 0
+  abilityType: 0
   skillType: 0
   isTargetTypeSkill: 1
   skillTargetType: 2
@@ -28,6 +28,6 @@ MonoBehaviour:
   MPIcon: {fileID: 0}
   requireMP: 1
   MPAmount: 10
-  damageAmount: 100
+  damageAmount: 35
   healAmount: 0
   skillCastTime: 1

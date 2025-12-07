@@ -2,7 +2,7 @@
 using UnityEngine;
 public class TreatRule : ScoreRuleBase
 {
-    public TreatRule(List<IScoreSubRule> scoreSubRules, PathFinding pathFinding, int scoreBonus, bool debugMode) : base(scoreSubRules, pathFinding, scoreBonus, debugMode)
+    public TreatRule(List<IScoreRule> scoreSubRules, PathFinding pathFinding, int scoreBonus, bool debugMode) : base(scoreSubRules, pathFinding, scoreBonus, debugMode)
     {
     }
 
@@ -13,6 +13,7 @@ public class TreatRule : ScoreRuleBase
             return 0;
         if (skill.skillType != SkillType.Heal)
             return 0;
+        if (skill.MPAmount > character.currentMental) return 0;
 
         CharacterBase target = targetNode.character;
 
@@ -20,7 +21,7 @@ public class TreatRule : ScoreRuleBase
         float targetHealthRatio = (float)target.currentHealth / target.data.health;
 
         if (missingHealth <= 0)
-            return -int.MaxValue;
+            return 0;
 
         int actualHeal = Mathf.Min(skill.healAmount, missingHealth);
 

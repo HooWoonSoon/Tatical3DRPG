@@ -12,12 +12,13 @@ namespace Tactics.AI
             Move,
             MoveAndCastSkill
         }
-
-        List<IScoreRule> rules = new List<IScoreRule>();
         private World world;
         private PathFinding pathFinding;
-
         public CharacterBase decisionMaker;
+
+        private List<IScoreRule> targetRules = new List<IScoreRule>();
+        private List<IScoreRule> skillRules = new List<IScoreRule>();
+        private List<IScoreRule> moveRules = new List<IScoreRule>();
 
         private SkillData skill;
         private GameNode moveNode;
@@ -37,71 +38,49 @@ namespace Tactics.AI
             PathFinding pathfinding = new PathFinding(world);
             this.pathFinding = pathfinding;
 
-            List<IScoreSubRule> targetSubRules = new List<IScoreSubRule>()
+            List<IScoreRule> targetSubRules = new List<IScoreRule>()
             {
             };
-            rules.Add(new AgressiveTargetRule(targetSubRules, pathfinding, 20, false));
+            targetRules.Add(new AgressiveTargetRule(targetSubRules, pathfinding, 20, false));
 
             //  Move Rule
-            List<IScoreSubRule> moveSubRules = new List<IScoreSubRule>()
+            List<IScoreRule> moveTargetSubRules = new List<IScoreRule>()
             {
             };
-            rules.Add(new UnitMoveRule(moveSubRules, pathfinding, 25, false));
-            
-            //  SkillRule
-            List<IScoreSubRule> harmSubRules = new List<IScoreSubRule>() 
-            { 
-                new FatalHitSubRule(10, false) 
-            };
-            rules.Add(new HarmRule(harmSubRules, pathfinding, 330, true));
+            moveRules.Add(new MoveTargetRule(moveTargetSubRules, pathfinding, 25, false));
 
-            List<IScoreSubRule> treatSubRules = new List<IScoreSubRule>()
+            List<IScoreRule> moveSubRules = new List<IScoreRule>()
+            {
+                new HarmRule(null, pathfinding, 15, false),
+                new TreatRule(null, pathfinding, 15, false)
+            };
+            moveRules.Add(new RiskMoveRule(moveSubRules, pathfinding, 25, false));
+
+            //  SkillRule
+            List<IScoreRule> harmSubRules = new List<IScoreRule>() 
+            { 
+                new FatalHitRule(null, pathfinding, 20, false)
+            };
+            skillRules.Add(new HarmRule(harmSubRules, pathfinding, 330, false));
+
+            List<IScoreRule> treatSubRules = new List<IScoreRule>()
             {
             };
-            rules.Add(new TreatRule(treatSubRules, pathfinding, 330, true));
+            skillRules.Add(new TreatRule(treatSubRules, pathfinding, 330, false));
         }
 
         public void MakeDecision(bool allowMove = true, bool allowSkill = true)
         {
-            float skillBestScore = float.MinValue;
-            SkillData originSkill = null;
-            GameNode originSkillTargetNode = null;
+            EvaluateSkill(allowSkill, out float skillBestScore, 
+                out SkillData originSkill, out GameNode originSkillTargetNode, 
+                out string sourceSkill);
 
-            if (allowSkill)
-            {
-                EvaluateOriginSkillOption(
-                    ref skillBestScore, 
-                    ref originSkill,
-                    ref originSkillTargetNode);
-            }
+            EvaluateMoveAndSkill(allowMove, allowSkill, out float moveAndSkillBestScore,
+                out SkillData moveSkill, out GameNode moveSkillMoveNode, 
+                out GameNode moveSkillTargetNode, out string sourceMoveAndSkill);
 
-            float moveAndSkillBestScore = float.MinValue;
-            SkillData moveSkill = null;
-            GameNode moveSkillMoveNode = null;
-            GameNode moveSkillTargetNode = null;
-
-            if (allowMove && allowSkill)
-            {
-                EvaluateMoveAndSkillOption(
-                    ref moveAndSkillBestScore, 
-                    ref moveSkill, 
-                    ref moveSkillMoveNode, 
-                    ref moveSkillTargetNode);
-            }
-
-            float moveBestScore = float.MinValue;
-            GameNode moveOnlyNode = null;
-
-            if (allowMove)
-            {
-                EvaluateMoveTargetOption(
-                    ref moveBestScore, 
-                    ref moveOnlyNode);
-                if (!allowSkill)
-                    EvaluateMoveOption(
-                        ref moveBestScore,
-                        ref moveOnlyNode);
-            }
+            EvaluateMove(allowMove, allowSkill, out float moveBestScore, 
+                out GameNode moveOnlyNode, out string sourceMove);
 
             float ORIGIN_SKILL_BONUS = 0f;
             float MOVE_SKILL_BONUS = 0f;
@@ -132,10 +111,13 @@ namespace Tactics.AI
                 moveNode = null;
                 skillTargetNode = originSkillTargetNode;
 
-                executeLog = 
-                    $"Decision: Use Skill {skill.skillName} " +
-                    $"at {skillTargetNode.GetNodeVectorInt()}";
-
+                if (originSkill != null && originSkillTargetNode != null)
+                {
+                    executeLog =
+                    $"Decision: Origin Cast Skill, " +
+                    $"Execute Option: {sourceSkill}, " +
+                    $"Skill: {skill.skillName} at {skillTargetNode.GetNodeVectorInt()}";
+                }
             }
             else if (decision == Decision.MoveAndCastSkill)
             {
@@ -143,9 +125,11 @@ namespace Tactics.AI
                 moveNode = moveSkillMoveNode;
                 skillTargetNode = moveSkillTargetNode;
 
-                executeLog = 
-                    $"Decision: Move to {moveNode.GetNodeVectorInt()}, " +
-                    $"Use Skill {skill.skillName} at {skillTargetNode.GetNodeVectorInt()}";
+                executeLog =
+                    $"Decision: Move And Cast Skill, " +
+                    $"Execute Option: {sourceMoveAndSkill}, " +
+                    $"Move: {moveNode.GetNodeVectorInt()}, " +
+                    $"Skill: {skill.skillName} at {skillTargetNode.GetNodeVectorInt()}";
             }
             else if (decision == Decision.Move)
             {
@@ -153,12 +137,80 @@ namespace Tactics.AI
                 moveNode = moveOnlyNode;
                 skillTargetNode = null;
 
-                executeLog = $"Decision: Move to {moveNode.GetNodeVectorInt()}";
+                if (moveNode != null)
+                {
+                    executeLog =
+                        $"Decision: Move, " +
+                        $"Execute Option: {sourceMove}, " +
+                        $"Move: {moveNode.GetNodeVectorInt()}";
+                }
             }
-            Debug.Log(
-                $"{decisionMaker.data.characterName}, " +
-                $"Final decision: {decision}, " +
-                $"{executeLog}");
+            if (debugMode)
+                Debug.Log(
+                    $"{decisionMaker.data.characterName}, " +
+                    $"{executeLog}");
+        }
+
+        private void EvaluateSkill(bool allowSkill, out float skillBestScore, 
+            out SkillData originSkill, out GameNode originSkillTargetNode,
+            out string source)
+        {
+            skillBestScore = float.MinValue;
+            originSkill = null;
+            originSkillTargetNode = null;
+            source = null;
+
+            if (allowSkill)
+            {
+                EvaluateOriginSkillOption(
+                    ref skillBestScore,
+                    ref originSkill,
+                    ref originSkillTargetNode);
+                source = "Evaluate Origin Skill Option";
+            }
+        }
+        private void EvaluateMoveAndSkill(bool allowMove, bool allowSkill, 
+            out float moveAndSkillBestScore, out SkillData moveSkill, 
+            out GameNode moveSkillMoveNode, out GameNode moveSkillTargetNode,
+            out string source)
+        {
+            moveAndSkillBestScore = float.MinValue;
+            moveSkill = null;
+            moveSkillMoveNode = null;
+            moveSkillTargetNode = null;
+            source = null;
+
+            if (allowMove && allowSkill)
+            {
+                EvaluateMoveAndSkillOption(
+                    ref moveAndSkillBestScore,
+                    ref moveSkill,
+                    ref moveSkillMoveNode,
+                    ref moveSkillTargetNode);
+                source = "Evaluate Move And Skill Option";
+            }
+        }
+        private void EvaluateMove(bool allowMove, bool allowSkill, 
+            out float moveBestScore, out GameNode moveOnlyNode, out string soure)
+        {
+            moveBestScore = float.MinValue;
+            moveOnlyNode = null;
+            soure = null;
+
+            if (allowMove && allowSkill)
+            {
+                EvaluateMoveTargetOption(
+                    ref moveBestScore,
+                    ref moveOnlyNode);
+                soure = "Evaluate Move Target Option";
+            }
+            else if (allowMove && !allowSkill)
+            {
+                EvaluateMoveOption(
+                    ref moveBestScore,
+                    ref moveOnlyNode);
+                soure = "Evaluate Move Option";
+            }
         }
 
         private void EvaluateOriginSkillOption(ref float bestScore,
@@ -168,6 +220,8 @@ namespace Tactics.AI
 
             bestSkill = null;
             bestSkillTargetNode = null;
+
+            int maxHealthAmongOpposite = GetOppositeHighestHealth(decisionMaker);
 
             foreach (SkillData skill in decisionMaker.skillDatas)
             {
@@ -184,8 +238,12 @@ namespace Tactics.AI
                         if (!IsValidSkillTargetNodeSingle(skill, skillTargetNode))
                             continue;
 
-                        foreach (var rule in rules)
+                        foreach (var rule in skillRules)
+                        {
                             totalScore += rule.CalculateSkillScore(decisionMaker, skill, originNode, skillTargetNode);
+                            totalScore += rule.CalculateSkillScore(decisionMaker, skill, originNode, skillTargetNode, maxHealthAmongOpposite);
+                        }
+
 
                         if (totalScore > bestScore)
                         {
@@ -204,6 +262,8 @@ namespace Tactics.AI
             bestSkill = null;
             bestMoveNode = null;
             bestSkillTargetNode = null;
+
+            int maxHealthAmongOpposite = GetOppositeHighestHealth(decisionMaker);
 
             foreach (SkillData skill in decisionMaker.skillDatas)
             {
@@ -239,8 +299,11 @@ namespace Tactics.AI
                             if (!IsValidSkillTargetNodeSingle(skill, skillTargetNode))
                                 continue;
 
-                            foreach (var rule in rules)
+                            foreach (var rule in skillRules)
+                            {
                                 totalScore += rule.CalculateSkillScore(decisionMaker, skill, moveNode, skillTargetNode);
+                                totalScore += rule.CalculateSkillScore(decisionMaker, skill, moveNode, skillTargetNode, maxHealthAmongOpposite);
+                            }
 
                             if (totalScore > bestScore)
                             {
@@ -254,7 +317,8 @@ namespace Tactics.AI
                 }
             }
         }
-        private void EvaluateMoveTargetOption(ref float bestScore, ref GameNode bestNode)
+        private void EvaluateMoveTargetOption(ref float bestScore, 
+            ref GameNode bestNode)
         {
             CharacterBase primaryTarget = GetPrimaryTarget();
             if (primaryTarget == null) return;
@@ -265,7 +329,7 @@ namespace Tactics.AI
             {
                 float totalScore = 0;
 
-                foreach (var rule in rules)
+                foreach (var rule in moveRules)
                     totalScore += rule.CalculateMoveToTargetScore(decisionMaker, targetAroundNodes, moveNode);
 
                 if (totalScore > bestScore)
@@ -275,14 +339,11 @@ namespace Tactics.AI
                 }
             }
         }
-
         private void EvaluateMoveOption(ref float bestScore, 
             ref GameNode bestNode)
         {
             Debug.Log("Execute Evaluate Move Option");
             List<GameNode> movableNodes = decisionMaker.GetMovableNode();
-            List<GameNode> conflictNodes = decisionMaker.GetConflictNode();
-            List<GameNode> supportNode = decisionMaker.GetSupportNode();
 
             List<CharacterBase> mapCharactersExceptSelf = 
                 decisionMaker.GetMapCharacterExceptSelf();
@@ -291,21 +352,76 @@ namespace Tactics.AI
             List<CharacterBase> teammates =
                 GetSameTeamCharacter(decisionMaker, mapCharactersExceptSelf);
 
+            CharacterSkillInfluenceNodes characterSkillInfluenceNodes = 
+                new CharacterSkillInfluenceNodes();
+
+            foreach (var opposite in opposites)
+            {
+                Dictionary<SkillData, List<GameNode>> skillCanAttackSet =
+                GetOppositeSkillInfluence(opposite);
+
+                if (debugMode)
+                {
+                    foreach (var kvp in skillCanAttackSet)
+                    {
+                        string skillName = kvp.Key.skillName;
+                        string nodeLog = string.Join(", ", kvp.Value.ConvertAll(n => n.GetNodeVectorInt()));
+
+                        Debug.Log(
+                            $"Opposite: {opposite.data.characterName}, " +
+                            $"Skill: {skillName}, " +
+                            $"Influence Nodes: {nodeLog}");
+                    }
+                }
+                characterSkillInfluenceNodes.oppositeInfluence[opposite] = skillCanAttackSet;
+            }
+
+            foreach (var teammate in teammates)
+            {
+                Dictionary<SkillData, List<GameNode>> skillCanSupportSet =
+                GetTeammateSkillInfluence(teammate);
+
+                if (debugMode)
+                {
+                    foreach (var kvp in skillCanSupportSet)
+                    {
+                        string skillName = kvp.Key.skillName;
+                        string nodeLog = string.Join(", ", kvp.Value.ConvertAll(n => n.GetNodeVectorInt()));
+
+                        Debug.Log(
+                            $"Teammate: {teammate.data.characterName}, " +
+                            $"Skill: {skillName}, " +
+                            $"Influence Nodes: {nodeLog}");
+                    }
+                }
+                characterSkillInfluenceNodes.teammateInfluence[teammate] = skillCanSupportSet;
+            }
+
+            float bestRiskMoveScore = 0;
+            GameNode bestRiskMoveNode = null;
+
             foreach (var moveNode in movableNodes)
             {
-                float totalScore = 0;
+                float riskMoveScore = 0;
 
-                foreach (var rule in rules)
+                foreach (var rule in moveRules)
                 {
-                    totalScore += rule.CalculateMoveScore(decisionMaker,
-                        conflictNodes, opposites, supportNode, teammates, moveNode);
+                    riskMoveScore += rule.CalculateRiskMoveScore(decisionMaker,
+                        characterSkillInfluenceNodes, moveNode);
                 }
+                if (riskMoveScore > bestScore)
+                {
+                    bestRiskMoveScore = riskMoveScore;
+                    bestRiskMoveNode = moveNode;
+                }
+            }
 
-                if (totalScore > bestScore)
-                {
-                    bestScore = totalScore;
-                    bestNode = moveNode;
-                }
+            float selfFrontPosIndex = CalculateFrontPosIndex(decisionMaker, opposites);
+
+            if (selfFrontPosIndex < 0)
+            {
+                bestScore = bestRiskMoveScore;
+                bestNode = bestRiskMoveNode;
             }
         }
 
@@ -319,7 +435,7 @@ namespace Tactics.AI
             {
                 float totalScore = 0;
 
-                foreach (var rule in rules)
+                foreach (var rule in targetRules)
                     totalScore += rule.CalculateTargetScore(decisionMaker, otherCharacter);
                 
                 if (totalScore > bestScore)
@@ -330,6 +446,202 @@ namespace Tactics.AI
             }
             return primaryTarget;
         }
+
+        #region Front Score
+        public CharacterBase GetMostHighFrontScoreCharacter(List<CharacterBase> characters, 
+            List<CharacterBase> opposites)
+        {
+            float bestScore = float.MinValue;
+            CharacterBase bestCharacter = null;
+            foreach (var character in characters)
+            {
+                float score = CalculateFrontPosIndex(character, opposites);
+                if (score > bestScore)
+                {
+                    bestScore = score;
+                    bestCharacter = character;
+                }
+            }
+            return bestCharacter;
+        }
+        public float CalculateFrontPosIndex(CharacterBase character, 
+            List<CharacterBase> opposites)
+        {
+            float score = 0f;
+
+            int maxHealth = character.data.health;
+            int currentHealth = character.currentHealth;
+            float healthFactor = (float)currentHealth / maxHealth;
+            float healthModifier = Mathf.Lerp(0.5f, 1, healthFactor);
+
+            //  At least One Range
+            float rangedAbility = CalculateRangedAbility(character);
+            int abosoluteRangerIndex = 10;
+            float tR = rangedAbility / abosoluteRangerIndex;
+            float rangedModifier = Mathf.Lerp(0, 8, tR);
+
+            //  At least One-time
+            int takeDamageAbility = CalculateSurvivAbility(character, opposites);
+            float absoluteSurvivalIndex = 8;
+            float tS = takeDamageAbility / absoluteSurvivalIndex;
+            float takeDamageModifier = Mathf.Lerp(0, 10, tS);
+
+            score = healthModifier * takeDamageAbility - rangedModifier;
+
+            Debug.Log(
+                    $"<color=green>[FrontPosIndex]</color> " +
+                    $"{character.data.characterName}, " +
+                    $"plus Score bonus: {score}");
+
+            return score;
+        }
+        private float CalculateRangedAbility(CharacterBase character)
+        {
+            float rangeScore = 0;
+            List<SkillData> skillData = character.skillDatas;
+            int availableSkillCount = 0;
+            foreach (var skill in skillData)
+            {
+                int mpCost = skill.MPAmount;
+                float currentMetal = character.currentMental;
+                if (mpCost > currentMetal) continue;
+                availableSkillCount++;
+
+                int range = skill.skillRange;
+                int occulsiveRange = skill.occlusionRange;
+
+                rangeScore += (range + occulsiveRange);
+            }
+
+            if (availableSkillCount == 0) return 1;
+            if (rangeScore == 0) return 1;
+
+            float skillScore = rangeScore / availableSkillCount;
+            return skillScore;
+        }
+        private int CalculateSurvivAbility(CharacterBase character,
+            List<CharacterBase> opposites)
+        {
+            float combinedDamage = 0;
+            foreach (CharacterBase opposite in opposites)
+            {
+                List<SkillData> skills = opposite.GetAvaliableSkills();
+
+                var damageSkills = skills.Where(s => s.damageAmount > 0).ToList();
+
+                if (damageSkills.Count > 0)
+                {
+                    float totalDamage = 0;
+                    foreach (SkillData skill in damageSkills)
+                    {
+                        totalDamage += skill.damageAmount;
+                    }
+                    float averageDamage = totalDamage / damageSkills.Count;
+                    combinedDamage += averageDamage;
+                }
+            }
+
+            float combinedAverangeDamage = combinedDamage / opposites.Count;
+
+            if (combinedAverangeDamage <= 0)
+                return 999;
+
+            int takeDamageTime = 0;
+            float startHealth = character.data.health;
+            while (startHealth > 0)
+            {
+                startHealth -= combinedAverangeDamage;
+                takeDamageTime++;
+            }
+
+            return takeDamageTime;
+        }
+        #endregion
+
+        public class CharacterSkillInfluenceNodes
+        {
+            public Dictionary<CharacterBase, Dictionary<SkillData, List<GameNode>>> oppositeInfluence;
+            public Dictionary<CharacterBase, Dictionary<SkillData, List<GameNode>>> teammateInfluence;
+
+            public CharacterSkillInfluenceNodes()
+            {
+                oppositeInfluence = new Dictionary<CharacterBase, Dictionary<SkillData, List<GameNode>>>();
+                teammateInfluence = new Dictionary<CharacterBase, Dictionary<SkillData, List<GameNode>>>();
+            }
+        }
+        private Dictionary<SkillData, List<GameNode>> GetOppositeSkillInfluence
+            (CharacterBase opposite)
+        {
+            Dictionary<SkillData, List<GameNode>> skillCanAttackSet = new Dictionary<SkillData, List<GameNode>>();
+
+            int currentMental = opposite.currentMental;
+
+            foreach (var skill in opposite.skillDatas)
+            {
+                if (skill.MPAmount > currentMental) continue;
+                if (skill.skillTargetType != SkillTargetType.Opposite) continue;
+
+                List<GameNode> oppositeMovableNodes = opposite.GetMovableNode();
+                HashSet<GameNode> canAttackNodes = new HashSet<GameNode>();
+
+                foreach (var fromNode in oppositeMovableNodes)
+                {
+                    List<GameNode> skillScope = opposite.GetSkillRangeFromNode(skill, fromNode);
+
+                    foreach (var scopeNode in skillScope)
+                    {
+                        canAttackNodes.Add(scopeNode);
+                    }
+                }
+                skillCanAttackSet[skill] = canAttackNodes.ToList();
+            }
+            return skillCanAttackSet;
+        }
+        private Dictionary<SkillData, List<GameNode>> GetTeammateSkillInfluence
+            (CharacterBase teammate)
+        {
+            Dictionary<SkillData, List<GameNode>> skillCanSupportSet = new Dictionary<SkillData, List<GameNode>>();
+
+            int currentMental = teammate.currentMental;
+
+            foreach (var skill in teammate.skillDatas)
+            {
+                if (currentMental > skill.MPAmount) continue;
+                if (skill.skillTargetType == SkillTargetType.Opposite) continue;
+
+                List<GameNode> oppositeMovableNodes = teammate.GetMovableNode();
+                HashSet<GameNode> canAttackNodes = new HashSet<GameNode>();
+
+                foreach (var fromNode in oppositeMovableNodes)
+                {
+                    List<GameNode> skillScope = teammate.GetSkillRangeFromNode(skill, fromNode);
+
+                    foreach (var scopeNode in skillScope)
+                    {
+                        canAttackNodes.Add(scopeNode);
+                    }
+                }
+                skillCanSupportSet[skill] = canAttackNodes.ToList();
+            }
+            return skillCanSupportSet;
+        }
+        
+        private int GetOppositeHighestHealth(CharacterBase character)
+        {
+            List<CharacterBase> mapCharacterEcexptSelf = character.GetMapCharacterExceptSelf();
+            List<CharacterBase> opposites = GetOppositeCharacter(character, mapCharacterEcexptSelf);
+            int highestHealth = 0;
+            foreach (var opposite in opposites)
+            {
+                int health = opposite.data.health;
+                if (health > highestHealth)
+                {
+                    highestHealth = health;
+                }
+            }
+            return highestHealth;
+        }
+
         public List<CharacterBase> GetOppositeCharacter(CharacterBase character,
         List<CharacterBase> characterList)
         {
@@ -367,7 +679,8 @@ namespace Tactics.AI
             while ((primaryTargetAroundNodes == null || primaryTargetAroundNodes.Count == 0) && iteration <= maxIteration)
             {
                 primaryTargetAroundNodes = targetCharacter.GetCustomizedSizeMovableNodes(iteration, 0);
-                Debug.Log($"Iteration {iteration}, nodes count: {primaryTargetAroundNodes.Count}");
+                if (debugMode)
+                    Debug.Log($"Iteration {iteration}, nodes count: {primaryTargetAroundNodes.Count}");
                 iteration++;
             }
 

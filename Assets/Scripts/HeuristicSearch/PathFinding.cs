@@ -383,11 +383,6 @@ public class PathFinding
         return result;
     }
 
-    public void CalculateDijkstraCostNodes(CharacterBase pathfinder,
-    int riseLimit, int lowerLimit)
-    {
-        GetCalculateDijkstraCostNodes(pathfinder, riseLimit, lowerLimit);
-    }
     public List<GameNode> GetCalculateDijkstraCostNodes(CharacterBase pathfinder, 
         int riseLimit, int lowerLimit)
     {
@@ -426,16 +421,28 @@ public class PathFinding
                 if (isDiagonal) 
                 { 
                     Vector3Int horizontalPos = new Vector3Int(currentNode.x + offset.x, currentNode.y, currentNode.z); 
-                    Vector3Int verticalPos = new Vector3Int(currentNode.x, currentNode.y, currentNode.z + offset.z); 
-                    
-                    if (!world.loadedNodes.TryGetValue(horizontalPos, out GameNode horizontalNode)) continue; 
-                    if (!world.loadedNodes.TryGetValue(verticalPos, out GameNode verticalNode)) continue; 
+                    Vector3Int verticalPos = new Vector3Int(currentNode.x, currentNode.y, currentNode.z + offset.z);
 
-                    CharacterBase horizontalCharacter = horizontalNode.GetUnitGridCharacter(); 
-                    CharacterBase verticalCharacter = verticalNode.GetUnitGridCharacter();
+                    world.loadedNodes.TryGetValue(horizontalPos, out GameNode horizontalNode);
+                    world.loadedNodes.TryGetValue(verticalPos, out GameNode verticalNode);
+
+                    if (horizontalNode == null && verticalNode == null) continue;
+
+                    CharacterBase horizontalCharacter = null;
+                    CharacterBase verticalCharacter = null;
+
+                    if (horizontalNode != null)
+                        horizontalCharacter = horizontalNode.GetUnitGridCharacter(); 
+                    if (verticalNode != null)
+                        verticalCharacter = verticalNode.GetUnitGridCharacter();
 
                     bool horizontalBlocked = false;
-                    if (!horizontalNode.isWalkable) { horizontalBlocked = true; } 
+
+                    if (horizontalNode != null && !horizontalNode.isWalkable 
+                        || horizontalNode == null) 
+                    { 
+                        horizontalBlocked = true; 
+                    } 
                     else if (horizontalCharacter != null) 
                     {
                         if (pathfinder.currentTeam.teamType != horizontalCharacter.currentTeam.teamType)
@@ -443,7 +450,11 @@ public class PathFinding
                     }
 
                     bool verticalBlocked = false;
-                    if (!verticalNode.isWalkable) { verticalBlocked = true; }
+                    if (verticalNode != null && !verticalNode.isWalkable
+                        || verticalNode == null) 
+                    { 
+                        verticalBlocked = true; 
+                    }
                     else if (verticalCharacter != null)
                     {
                         if (pathfinder.currentTeam.teamType != verticalCharacter.currentTeam.teamType)

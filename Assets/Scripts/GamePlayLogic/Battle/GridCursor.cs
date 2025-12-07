@@ -65,7 +65,7 @@ public class GridCursor : Entity
         GameNode gameNode = world.GetHeightNodeWithCube(nodePos.x + gridDirection.x, nodePos.z + gridDirection.z);
         if (gameNode != null)
         {
-            cursor.transform.position = gameNode.GetGameNodeVector() + new Vector3(0, heightOffset);
+            cursor.transform.position = gameNode.GetNodeVectorInt() + new Vector3(0, heightOffset);
             CharacterBase character = gameNode.GetUnitGridCharacter();
             if (character != null)
             {

@@ -11,11 +11,11 @@ public static class SkillEditorDrawer
         data.description = EditorGUILayout.TextField("Description", data.description);
 
         AbilityType[] allowedTypes = { AbilityType.Skill, AbilityType.Spell };
-        int currentIndex = Array.IndexOf(allowedTypes, data.type);
+        int currentIndex = Array.IndexOf(allowedTypes, data.abilityType);
         if (currentIndex < 0) currentIndex = 0;
 
         int newIndex = EditorGUILayout.Popup("Type", currentIndex, Array.ConvertAll(allowedTypes, t => t.ToString()));
-        data.type = allowedTypes[newIndex];
+        data.abilityType = allowedTypes[newIndex];
 
         data.skillType = (SkillType)EditorGUILayout.EnumPopup("Skill Type", data.skillType);
         
@@ -34,13 +34,13 @@ public static class SkillEditorDrawer
         EditorGUILayout.Space();
         EditorGUILayout.LabelField("Skill Details", EditorStyles.boldLabel);
 
-        if (data.type == AbilityType.Skill)
+        if (data.abilityType == AbilityType.Skill)
         {
             data.requireMP = EditorGUILayout.Toggle("Require MP", data.requireMP);
             if (data.requireMP)
                 data.MPAmount = EditorGUILayout.IntField("MP Amount", data.MPAmount);
         }
-        else if (data.type == AbilityType.Spell)
+        else if (data.abilityType == AbilityType.Spell)
         {
             data.requireMP = true;
             data.MPAmount = EditorGUILayout.IntField("MP Amount", data.MPAmount);

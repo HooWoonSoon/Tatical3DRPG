@@ -51,25 +51,33 @@ public class MapTeamManager : MonoBehaviour
         GameObject team = new GameObject($"Teams System");
         team.transform.SetParent(transform, false);
         TeamDeployment teamDeployment = team.AddComponent<TeamDeployment>();
-        teamDeployment.teamCharacter = characters;
+        teamDeployment.teamCharacter = new List<CharacterBase>(characters);
         allTeam.Add(teamDeployment);
+
+        foreach (CharacterBase character in characters)
+        {
+            character.currentTeam = teamDeployment;
+        }
 
         switch (teamType)
         {
             case TeamType.Opposite:
                 teamDeployment.teamType = TeamType.Opposite;
-                team.name = team.name + " Opposite" + allTeam.Count.ToString();
-                EnemyTeamSystem enemyTeamSystem = team.AddComponent<EnemyTeamSystem>();
-                if (isDeploy)
+                if (!isDeploy)
                 {
-                    enemyTeamSystem.Initialize<TeamIdleState>(teamDeployment);
-                    //Debug.Log("Generate Team Deploy");
-                }
-                else
-                {
+                    team.name = "Explore " + team.name + " (Opposite) " + allTeam.Count.ToString();
+                    EnemyTeamSystem enemyTeamSystem = team.AddComponent<EnemyTeamSystem>();
                     enemyTeamSystem.Initialize<TeamScoutingState>(teamDeployment);
                     //Debug.Log("Generate Team Scouting");
                 }
+                else
+                {
+                    team.name = "Deploy " + team.name + " (Opposite) Tempo"; 
+                }
+                break;
+            case TeamType.Player:
+                teamDeployment.teamType = TeamType.Player;
+                team.name = "Deploy " + team.name + " (Player) Tempo";
                 break;
         }
     }

@@ -331,12 +331,12 @@ public class CTTurnUIManager : MonoBehaviour
         if (maxMentalText != null)
             maxMentalText.text = character.data.mental.ToString();
         if (currentMentalText != null)
-            currentMentalText.text = character.currentMetal.ToString();
+            currentMentalText.text = character.currentMental.ToString();
 
         if (heathBarImage != null)
             heathBarImage.fillAmount = (float)character.currentHealth / character.data.health;
         if (mentalBarImage != null)
-            mentalBarImage.fillAmount = (float)character.currentMetal / character.data.mental;
+            mentalBarImage.fillAmount = (float)character.currentMental / character.data.mental;
     }
 
     public void ExecuteHealthChange(CharacterBase character, int value)
@@ -349,8 +349,8 @@ public class CTTurnUIManager : MonoBehaviour
     public void ExecuteMentalChange(CharacterBase character, int value)
     {
         StartCoroutine(Utils.UIFilledValueChangeCoroutine(
-            mentalBarImage, character.data.mental, character.currentMetal, value, 0.5f));
+            mentalBarImage, character.data.mental, character.currentMental, value, 0.5f));
         StartCoroutine(Utils.TextValueChangeCoroutine(
-            currentMentalText, character.currentMetal, value, 0.5f, true));
+            currentMentalText, character.currentMental, value, 0.5f, true));
     }
 }

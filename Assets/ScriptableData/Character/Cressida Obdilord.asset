@@ -19,7 +19,7 @@ MonoBehaviour:
   type: 1
   unitType: 0
   health: 150
-  mental: 200
+  mental: 50
   physicAttack: 0
   magicAttack: 20
   speed: 7

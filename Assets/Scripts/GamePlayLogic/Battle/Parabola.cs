@@ -82,21 +82,6 @@ public class Parabola
         return hits;
     }
 
-    //private UnitDetectable GetHitUnitDetectable(Vector3 position)
-    //{
-    //    List<UnitDetectable> unitDetectables = UnitDetectable.all;
-
-    //    foreach (UnitDetectable unit in unitDetectables)
-    //    {
-    //        Bounds selfBound = unit.GetRotatedBoundSelf();
-    //        if (selfBound.Contains(position))
-    //        {
-    //            return unit;
-    //        }
-    //    }
-    //    return null;
-    //}
-
     public UnitDetectable GetHitUnitDetectable(Bounds bounds)
     {
         Vector3[] positions =

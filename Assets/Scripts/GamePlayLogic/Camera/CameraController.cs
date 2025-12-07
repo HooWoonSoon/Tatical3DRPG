@@ -210,13 +210,13 @@ public class CameraController : MonoBehaviour
     {
         if (enableTacticalView) { return; }
 
-        if (InputKeyHelper.GetKeySolo(KeyCode.Minus))
+        if (InputKeyHelper.GetKeySolo(KeyCode.Equals))
         {
             if (cameraBody.transform.localPosition.y < maximunZoomIn.y || cameraBody.transform.localPosition.z > maximunZoomIn.z) { return; }
             cameraBody.transform.localPosition += new Vector3(0, -1, 1) * Time.deltaTime * moveSpeed;
             generalBodyPos = cameraBody.transform.localPosition;
         }
-        if (InputKeyHelper.GetKeySolo(KeyCode.Equals))
+        if (InputKeyHelper.GetKeySolo(KeyCode.Minus))
         {
             if (cameraBody.transform.localPosition.y > maximunZoomOut.y || cameraBody.transform.localPosition.z < maximunZoomOut.z) { return; }
             cameraBody.transform.localPosition += new Vector3(0, 1, -1) * Time.deltaTime * moveSpeed;
