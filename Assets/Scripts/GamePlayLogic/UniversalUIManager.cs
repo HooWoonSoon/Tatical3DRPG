@@ -34,14 +34,18 @@ public class UniversalUIManager : MonoBehaviour
         UITip();
     }
 
-    public void CreateCountText(CharacterBase character, int value)
+    public void CreateText(CharacterBase character, string text)
     {
-        string damageText = value.ToString();
-        TextMeshProUGUI damangeTextUI = Utils.CreateCanvasText(damageText, universalPanel.transform, character.transform.position + new Vector3(0, 1, 0), 35, Color.white, TextAlignmentOptions.Center);
+        TextMeshProUGUI damangeTextUI = Utils.CreateCanvasText(text, universalPanel.transform, character.transform.position + new Vector3(0, 1, 0), 35, Color.white, TextAlignmentOptions.Center);
         StartCoroutine(UIFadeCoroutine(damangeTextUI, 0f, 1f, 0.2f, false));
         StartCoroutine(UIFadeCoroutine(damangeTextUI, 1f, 0f, 1.5f, true));
         if (debugMode)
             Debug.Log("Generated Text");
+    }
+    public void CreateCriticalCountText(CharacterBase character, string value)
+    {
+        string criticalValueText = $"Critical\n{value}";
+        CreateText(character, criticalValueText);
     }
     private IEnumerator UIFadeCoroutine(TextMeshProUGUI textUI, float startAlpha, float endAlpha, float duration, bool destroyOnComplete = false)
     {

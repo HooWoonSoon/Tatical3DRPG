@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 
 public class Projectile : Entity
@@ -15,6 +16,7 @@ public class Projectile : Entity
     private Vector3 velocity;
 
     private bool enableHit = false;
+    public event Action onHitCompleted;
 
     protected override void Start()
     {
@@ -45,6 +47,7 @@ public class Projectile : Entity
                 DoDamage(unitDetectable);
                 CameraController.instance.ChangeFollowTarget(shooter.transform);
                 Destroy(gameObject);
+                onHitCompleted.Invoke();
                 return;
             }
         }
@@ -54,6 +57,7 @@ public class Projectile : Entity
             || CheckWorldLeftUpBackward() || CheckWorldLeftDownBackward())
         {
             Debug.Log("Hit World");
+            onHitCompleted.Invoke();
             Destroy(gameObject);
         }
     }
@@ -65,7 +69,7 @@ public class Projectile : Entity
         int damage = skillData.damageAmount;
         targetCharacter.TakeDamage(damage);
     }
-    
+
     private void Launch(Vector3 direction, float speed)
     {
         enableHit = true;

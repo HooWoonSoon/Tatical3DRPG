@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System;
+using System.Collections.Generic;
 
 public enum PlayerBattlePhase
 {
@@ -24,6 +25,8 @@ public class PlayerBattleState : PlayerBaseState
     private bool skillCastConfirmed = false;
     private bool endTurnConfirmed = false;
     private bool movedConfirmed = false;
+
+    private bool freezeState = false;
 
     public PlayerBattleState(PlayerStateMachine stateMachine, PlayerCharacter character) : base(stateMachine, character)
     {
@@ -66,17 +69,19 @@ public class PlayerBattleState : PlayerBaseState
                     GameNode selectedNode = BattleManager.instance.GetSelectedGameNode();
                     BattleManager.instance.ShowPathLine(character, 
                         character.GetCharacterNodePos(), selectedNode.GetNodeVector());
-                    character.ShowDangerMovableAndTargetTilemap(selectedNode);
+
+                    List<GameNode> movableNodes = character.GetMovableNodes();
+                    character.ShowDangerMovableAndTargetTilemap(selectedNode, movableNodes);
                     if (selectedNode.character != null)
                     {
                         BattleUIManager.instance.SwitchInfoPanel();
                     }
-                    else if (character.IsInMovableRange(selectedNode) && 
+                    else if (character.IsInMovableRange(selectedNode, movableNodes) && 
                         selectedNode.character == null)
                     {
                         BattleUIManager.instance.SwitchActionPanel();
                     }
-                    else if (!character.IsInMovableRange(selectedNode) 
+                    else if (!character.IsInMovableRange(selectedNode, movableNodes) 
                         && selectedNode.character == null)
                     {
                         BattleUIManager.instance.OffCursorPanel();
@@ -173,7 +178,7 @@ public class PlayerBattleState : PlayerBaseState
                         character.GetCharacterNodePos(), selectedNode.GetNodeVector());
                     character.ShowDangerMovableAndTargetTilemap(selectedNode);
                 }
-                if (Input.GetKeyDown(KeyCode.Return))
+                if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Z))
                 {
                     GameNode moveTargetNode = BattleManager.instance.GetSelectedGameNode();
                     if (!character.IsInMovableRange(moveTargetNode)) return;
@@ -226,6 +231,10 @@ public class PlayerBattleState : PlayerBaseState
                 }
                 break;
             case PlayerBattlePhase.SkillCast:;
+                if (!freezeState)
+                {
+                    SkillCastEnd();
+                }
                 break;
             case PlayerBattlePhase.ReleaseSkillComandEnd:
                 if (BattleManager.instance.IsOrientationChanged())
@@ -251,6 +260,21 @@ public class PlayerBattleState : PlayerBaseState
                 {
                     Orientation orientation = BattleManager.instance.GetSelectedOrientation();
                     character.SetTransfromOrientation(orientation);
+                }
+                else if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    if (!movedConfirmed && skillCastConfirmed)
+                    {
+                        ChangePhase(PlayerBattlePhase.ReleaseMoveComand);
+                    }
+                    else if (movedConfirmed && !skillCastConfirmed)
+                    {
+                        ChangePhase(PlayerBattlePhase.ReleaseSkillComand);
+                    }
+                    else if (!movedConfirmed && !skillCastConfirmed)
+                    {
+                        ChangePhase(PlayerBattlePhase.MoveComand);
+                    }
                 }
                 else if (Input.GetKeyDown(KeyCode.Return))
                 {
@@ -298,7 +322,9 @@ public class PlayerBattleState : PlayerBaseState
                 BattleUIManager.instance.CloseSkillUI();
                 break;
             case PlayerBattlePhase.SkillCast:
-                GameEvent.onSkillCastEnd -= SkillCastEnd;
+                break;
+            case PlayerBattlePhase.End:
+                BattleManager.instance.HideOrientationArrow();
                 break;
         }
     }
@@ -357,7 +383,6 @@ public class PlayerBattleState : PlayerBaseState
                 break;
             case PlayerBattlePhase.SkillCast:
                 CastSkillInstruction();
-                GameEvent.onSkillCastEnd += SkillCastEnd;
                 break;
             case PlayerBattlePhase.ReleaseSkillComandEnd:
                 EndInstruction();
@@ -380,7 +405,6 @@ public class PlayerBattleState : PlayerBaseState
         changedHandler = () =>
         {
             selectedSkill = SkillUIManager.instance.GetCurrentSelectedSkill();
-            character.SetSkill(selectedSkill);
             character.ShowSkillTilemap(confirmMoveNode, selectedSkill);
         };
         GameEvent.onListOptionChanged += changedHandler;
@@ -392,9 +416,11 @@ public class PlayerBattleState : PlayerBaseState
 
     private void CastSkillInstruction()
     {
+        freezeState = true;
         character.ShowSkillTargetTilemap(confirmMoveNode, targetNode, selectedSkill);
         BattleManager.instance.DestroyPreviewModel();
-        BattleManager.instance.CastSkill(character, selectedSkill, confirmMoveNode, targetNode);
+        BattleManager.instance.CastSkill(character, selectedSkill, confirmMoveNode, 
+            targetNode, () => { freezeState = false; });
     }
     private void SkillCastEnd()
     {
@@ -414,9 +440,11 @@ public class PlayerBattleState : PlayerBaseState
     private void EndInstruction()
     {
         character.ResetVisualTilemap();
+        CameraController.instance.ChangeFollowTarget(character.transform);
         BattleManager.instance.ActivateMoveCursorAndHide(false, true);
         BattleManager.instance.SetupOrientationArrow(character, confirmMoveNode);
         BattleManager.instance.DestroyPreviewModel();
+        BattleManager.instance.ClosePathLine();
         BattleUIManager.instance.ActiveAllCharacterInfoTip(false);
         BattleUIManager.instance.OffCursorPanel();
     }

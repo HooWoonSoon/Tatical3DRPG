@@ -1,7 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-
 public class PlayerTeamSystem : TeamSystem
 {
     public TeamDeployment teamDeployment;

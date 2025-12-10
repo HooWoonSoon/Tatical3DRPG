@@ -10,7 +10,7 @@ public class BattleOrientationArrow : MonoBehaviour
 
     private GameObject[] arrows;
     private bool activateArrow = false;
-    public Orientation currentOrientation { get; private set;}
+    public Orientation currentOrientation;
 
     public Material normalMat;
     public Material highlightMat;
@@ -64,7 +64,7 @@ public class BattleOrientationArrow : MonoBehaviour
         HighlightOrientationArrow(currentOrientation);
     }
 
-    private void HighlightOrientationArrow(Orientation orientation)
+    public void HighlightOrientationArrow(Orientation orientation)
     {
         foreach (var arrow in arrows)
         {
@@ -113,6 +113,8 @@ public class BattleOrientationArrow : MonoBehaviour
         backArrow.SetActive(true);
         backArrow.transform.position = target + new Vector3(0, 1f, -centerOffset);
         activateArrow = true;
+
+        HighlightOrientationArrow(currentOrientation);
     }
     public void HideAll()
     {

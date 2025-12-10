@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class BattleManager : Entity
@@ -367,6 +366,12 @@ public class BattleManager : Entity
     #region Skill Selection
     public bool IsValidSkillSelection(CharacterBase character, SkillData selectedSkill)
     {
+        if (selectedSkill == null)
+        {
+            Debug.LogWarning("Missing selected Skill");
+            return false;
+        }
+
         int skillRequireMP = selectedSkill.MPAmount;
         if (character.currentMental < skillRequireMP)
             return false;
@@ -458,6 +463,12 @@ public class BattleManager : Entity
         GameNode originNode, GameNode targetNode,
         bool checkInRange = false, bool forceOffset = false)
     {
+        if (originNode == null)
+        {
+            Debug.LogWarning("Missing originNode");
+            return; 
+        }
+
         if (!TryGetParabolaData(selfCharacter, originNode, targetNode, forceOffset,
             out ParabolaRenderer parabola, out Vector3 originPos, out Vector3 targetPos))
             return;
@@ -552,7 +563,8 @@ public class BattleManager : Entity
     }
     #endregion
 
-    public void CastSkill(CharacterBase selfCharacter, SkillData currentSkill, GameNode originNode, GameNode targetNode)
+    public void CastSkill(CharacterBase selfCharacter, SkillData currentSkill, GameNode originNode,
+        GameNode targetNode, Action onSkillFinished)
     {
         if (selfCharacter == null)
         {
@@ -572,42 +584,74 @@ public class BattleManager : Entity
             return;
         }
 
-        StartCoroutine(SkillEventCoroutine(currentSkill));
         int costMP = currentSkill.MPAmount;
         CTTurnUIManager.instance.ExecuteMentalChange(selfCharacter, -costMP);
         selfCharacter.currentMental -= costMP;
         Vector3 direction = (targetNode.GetNodeVector() - selfCharacter.transform.position);
         selfCharacter.SetOrientation(direction);
 
+        StartCoroutine(SkillCastCoroutine(selfCharacter, currentSkill, originNode, targetNode, onSkillFinished));
+    }
+
+    private IEnumerator SkillCastCoroutine(CharacterBase selfCharacter, SkillData currentSkill,
+        GameNode originNode, GameNode targetNode, Action onFinished)
+    {
+        bool isFinish = false;
+        GameEvent.onSkillCastStart?.Invoke(currentSkill);
+
         if (currentSkill.isProjectile)
         {
-            CastSkillProjectile(selfCharacter, currentSkill, originNode, targetNode);
-            if (originNode == null)
+            Projectile projectile = CastSkillProjectile(selfCharacter, currentSkill, originNode, targetNode);
+            if (projectile == null) 
             {
-                Debug.LogError("CastSkill failed: originNode is null for projectile");
-                return;
+                Debug.LogWarning("Missing projectile");
+                isFinish = true;
             }
-            if (targetNode == null)
-            {
-                Debug.LogError($"CastSkillProjectile Failed: targetNode == null  | skill={currentSkill.skillName}");
-                return;
-            }
+            
+            projectile.onHitCompleted += () => { isFinish = true; };
+
+            yield return new WaitUntil(() => isFinish);
         }
         else
         {
             CastSkil(selfCharacter, currentSkill, targetNode);
+            yield return StartCoroutine(SkillEventCoroutine(currentSkill));
+
+            isFinish = true;
+        }
+
+        yield return new WaitUntil(() => isFinish);
+        GameEvent.onSkillCastEnd?.Invoke();
+        onFinished?.Invoke();
+    }
+    private IEnumerator SkillEventCoroutine(SkillData skill)
+    {   
+        if (skill.skillCastTime < 0)
+        {
+            Debug.LogWarning("Skill Cast Time Issue! less than 0!");
+            yield return null;
+        }
+
+        float skillTime = skill.skillCastTime;
+        float elapsedTime = 0;
+
+        while (elapsedTime < skillTime)
+        {
+            elapsedTime += Time.deltaTime;
+            yield return null;
         }
     }
+
     private void CastSkil(CharacterBase selfCharacter, SkillData currentSkill, GameNode targetNode)
     {
         CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
 
         if (currentSkill.skillType == SkillType.Acttack)
         {
-            int damage = currentSkill.damageAmount;
+            int baseDamage = currentSkill.damageAmount;
             if (targetCharacter != null)
             {
-                targetCharacter.TakeDamage(damage);
+                selfCharacter.DoDamage(baseDamage, targetCharacter);
             }
         }
         else if (currentSkill.skillType == SkillType.Heal)
@@ -619,9 +663,9 @@ public class BattleManager : Entity
             }
         }
     }
-    private void CastSkillProjectile(CharacterBase selfCharacter, SkillData currentSkill, GameNode originNode, GameNode targetNode)
+    private Projectile CastSkillProjectile(CharacterBase selfCharacter, SkillData currentSkill, GameNode originNode, GameNode targetNode)
     {
-        if (!currentSkill.isProjectile) { return; }
+        if (!currentSkill.isProjectile) { return null; }
 
         GameObject projectilePrefab = Instantiate(currentSkill.projectTilePrefab, originNode.GetNodeVector(), Quaternion.identity);
 
@@ -644,31 +688,13 @@ public class BattleManager : Entity
                 projectile.LaunchToTarget(selfCharacter, currentSkill,
                     originNode.GetNodeVector() + new Vector3(0, 1.5f, 0), targetPos);
         }
-    }
-    private IEnumerator SkillEventCoroutine(SkillData skill)
-    {   
-        if (skill.skillCastTime < 0)
-        {
-            Debug.Log("Skill Cast Time Issue! less than 0!");
-            yield return null;
-        }
-
-        float skillTime = skill.skillCastTime;
-        float elapsedTime = 0;
-        GameEvent.onSkillCastStart?.Invoke(skill);
-
-        while (elapsedTime < skillTime)
-        {
-            elapsedTime += Time.deltaTime;
-            yield return null;
-        }
-        GameEvent.onSkillCastEnd?.Invoke();
+        return projectile;
     }
 
     #region Preview Character
     public void GeneratePreviewCharacterInMovableRange(CharacterBase character)
     {
-        List<GameNode> gameNodes = character.GetMovableNode();
+        List<GameNode> gameNodes = character.GetMovableNodes();
         if (gameNodes.Contains(lastSelectedNode))
         {
             GeneratePreviewCharacter(character);
@@ -700,12 +726,61 @@ public class BattleManager : Entity
     }
     #endregion
     
-    #region Orientation Arrow Gizmos
+    #region Orientation Gizmos
+    /// <summary>
+    /// Setup up orientation arrow at target node position with character current orientation
+    /// </summary>
     public void SetupOrientationArrow(CharacterBase character, GameNode targetNode)
     {
-        Orientation orientation = character.orientation;
+        Orientation orientation = character.selfOrientation;
         orientationArrow.ShowArrows(orientation, targetNode);
     }
+
+    private Orientation[] clockwiseOrder =
+    {
+        Orientation.right,
+        Orientation.back,
+        Orientation.left,
+        Orientation.forward
+    };
+    public void SwitchToOrientationWithArrow(CharacterBase character, Orientation targetOrientation, 
+        float stepTime = 0.1f, Action onRotateFinished = null)
+    {
+        StartCoroutine(OrientationWithArrouwCoroutine(character, targetOrientation, stepTime, onRotateFinished));
+    }
+    private IEnumerator OrientationWithArrouwCoroutine(CharacterBase character, Orientation target,
+    float stepTime, Action onFinished)
+    {
+        Orientation current = character.selfOrientation;
+        int currentIndex = Array.IndexOf(clockwiseOrder, current);
+        int targetIndex = Array.IndexOf(clockwiseOrder, target);
+
+        int total = clockwiseOrder.Length;
+
+        int clockwiseDist = (targetIndex - currentIndex + total) % total;
+        int counterDist = (currentIndex - targetIndex + total) % total;
+
+        bool useClockwise = clockwiseDist <= counterDist;
+
+        while (currentIndex != targetIndex)
+        {
+            if (useClockwise)
+                currentIndex = (currentIndex + 1) % total;
+            else
+                currentIndex = (currentIndex - 1 + total) % total;
+
+            Orientation newOrientation = clockwiseOrder[currentIndex];
+
+            orientationArrow.currentOrientation = newOrientation;
+            orientationArrow.HighlightOrientationArrow(newOrientation);
+            character.SetTransfromOrientation(newOrientation);
+
+            yield return new WaitForSeconds(stepTime);
+        }
+
+        onFinished?.Invoke();
+    }
+
     public void HideOrientationArrow()
     {
         orientationArrow.HideAll();

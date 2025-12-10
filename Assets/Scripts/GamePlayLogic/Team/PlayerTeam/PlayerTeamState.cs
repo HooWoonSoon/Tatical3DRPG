@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-public abstract class PlayerTeamState
+﻿public abstract class PlayerTeamState
 {
     protected PlayerTeamSystem team;
     protected TeamStateMachine stateMachine;

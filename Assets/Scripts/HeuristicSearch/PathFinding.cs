@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class PathFinding
 {
-    private World world;
+    public World world;
     private List<GameNode> openList;
     private HashSet<GameNode> closedList;
     private List<GameNode> processedPath;
@@ -231,7 +230,51 @@ public class PathFinding
         }
         return neighbourList;
     }
+    public List<GameNode> GetNeighbourNodeCustomized(GameNode currentNode, int size)
+    {
+        List<GameNode> neighbourList = new List<GameNode>();
 
+        if (size <= 0) { return neighbourList; }
+
+        List<Vector3Int> neighbourPosList = GetNeighbourPosCustomized
+            (new Vector3Int(currentNode.x, currentNode.y, currentNode.z), size);
+
+        if (neighbourPosList == null) { return neighbourList;}
+
+        foreach (var neighbourPos in neighbourPosList)
+        {
+            if (world.loadedNodes.TryGetValue(neighbourPos, out GameNode neighbourNode))
+            {
+                neighbourList.Add(neighbourNode);
+            }
+        }
+        return neighbourList;
+    }
+    public List<Vector3Int> GetNeighbourPosCustomized(Vector3Int currentPos, int size)
+    {
+        if (size <= 0) { return null; }
+
+        List<Vector3Int> neighbourPosList = new List<Vector3Int>();
+
+        for (int dx = -size; dx <= size; dx++)
+        {
+            for (int dz = -size; dz <= size; dz++)
+            {
+                // Manhattan distance check
+                if (Mathf.Abs(dx) + Mathf.Abs(dz) <= size)
+                {
+                    // Exclude the center (0,0)
+                    if (dx != 0 || dz != 0)
+                    {
+                        neighbourPosList.Add(
+                            new Vector3Int(currentPos.x + dx, currentPos.y, currentPos.z + dz)
+                        );
+                    }
+                }
+            }
+        }
+        return neighbourPosList;
+    }
     public void SetProcessPath(Vector3 currentPosition, Vector3 targetPosition, 
         CharacterBase pathFinder, int riseLimit, int lowerLimit)
     {   
@@ -272,6 +315,22 @@ public class PathFinding
     }
 
     #region Dijkstra Region Search
+    public GameNode GetLowCostNode(List<GameNode> reachableNodes, List<GameNode> compareNodes)
+    {
+        GameNode bestNode = null;
+        int lowestCost = int.MaxValue;
+
+        foreach (GameNode node in compareNodes)
+        {
+            if (!reachableNodes.Contains(node)) continue;
+            if (node.dijkstraCost < lowestCost)
+            {
+                bestNode = node;
+                lowestCost = node.dijkstraCost;
+            }
+        }
+        return bestNode;
+    }
     /// <summary>
     /// Get the coverange from input position then use the dijkstra algorithm
     /// to calculate the cost of each node check if the cost is lower than the
@@ -372,7 +431,7 @@ public class PathFinding
         int movableRangeCost, int riseLimit, int lowerLimit)
     {
         List<GameNode> result = new List<GameNode>();
-        List<GameNode> costNodes = GetCalculateDijkstraCostNodes(pathfinder, riseLimit, lowerLimit);
+        List<GameNode> costNodes = GetCalculateDijkstraCostNodes(pathfinder, riseLimit, lowerLimit, movableRangeCost);
         foreach (GameNode node in costNodes)
         {
             if (node.dijkstraCost <= movableRangeCost)
@@ -384,7 +443,7 @@ public class PathFinding
     }
 
     public List<GameNode> GetCalculateDijkstraCostNodes(CharacterBase pathfinder, 
-        int riseLimit, int lowerLimit)
+        int riseLimit, int lowerLimit, int seacrhTillCost = 200)
     {
         GameNode startNode = pathfinder.currentNode;
 
@@ -468,7 +527,7 @@ public class PathFinding
                 int tentativeGCost = currentNode.dijkstraCost + CalculateSlopeCost(currentNode, neighbourNode);
 
                 //  Limit the searching range to avoid the long pathfinding time
-                if (tentativeGCost > 200)
+                if (tentativeGCost > seacrhTillCost)
                     continue;
 
                 if (tentativeGCost < neighbourNode.dijkstraCost)

@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
+using Tactics.AI;
 using UnityEngine;
 public class FatalHitRule : ScoreRuleBase
 {
-    public FatalHitRule(List<IScoreRule> scoreSubRules, PathFinding pathFinding, int scoreBonus, bool debugMode) : base(scoreSubRules, pathFinding, scoreBonus, debugMode)
+    public FatalHitRule(DecisionSystem decisionSystem, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, scoreSubRules, scoreBonus, debugMode)
     {
     }
 
     public override float CalculateSkillScore(CharacterBase character, SkillData skill, 
-        GameNode moveNode, GameNode targetNode)
+        GameNode targetNode, int maxHealthAmongOpposites)
     {
         //  No Join the Rule
         if (skill == null) return 0;

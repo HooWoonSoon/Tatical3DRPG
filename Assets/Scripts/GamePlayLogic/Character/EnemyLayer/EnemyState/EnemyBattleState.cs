@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-using Tactics.AI;
-
+﻿using UnityEngine;
 public enum AgentBattlePhase
 {
     Ready, Wait, Thinking, Move, SkillCast,
@@ -13,13 +10,16 @@ public class EnemyBattleState : EnemyBaseState
 {
     private AgentBattlePhase currentPhase;
     private float phaseStartTime;
-    private GameNode confrimMoveNode;
+    private GameNode confirmMoveNode;
 
     private GameNode targetNode;
     private SkillData currentSkill;
+    private Orientation orientation;
 
     private bool movedConfirmed = false;
     private bool skillCastConfirmed = false;
+
+    private bool freezeState = false;
 
     public EnemyBattleState(EnemyStateMachine stateMachine, EnemyCharacter character) : base(stateMachine, character)
     {
@@ -62,7 +62,7 @@ public class EnemyBattleState : EnemyBaseState
                 {
                     if (character.pathRoute != null)
                         ChangePhase(AgentBattlePhase.Move);
-                    else if (character.currentSkill != null)
+                    else if (currentSkill != null)
                         ChangePhase(AgentBattlePhase.SkillCast);
                     else
                         ChangePhase(AgentBattlePhase.End);
@@ -100,16 +100,19 @@ public class EnemyBattleState : EnemyBaseState
                 }
                 break;
             case AgentBattlePhase.SkillCast:
-                if (phaseStartTime > currentSkill.skillCastTime)
+                skillCastConfirmed = true;
+                if (freezeState) return;
+
+                if (!movedConfirmed)
+                    ChangePhase(AgentBattlePhase.ReleaseMoveThinking);
+                else
                 {
-                    skillCastConfirmed = true;
-                    if (!movedConfirmed)
-                        ChangePhase(AgentBattlePhase.ReleaseMoveThinking);
-                    else
-                        ChangePhase(AgentBattlePhase.End);
+                    ChangePhase(AgentBattlePhase.End);
                 }
                 break;
             case AgentBattlePhase.End:
+                if (freezeState) return;
+
                 if (phaseStartTime > 0.5f)
                 {
                     BattleManager.instance.OnLoadNextTurn();
@@ -121,6 +124,7 @@ public class EnemyBattleState : EnemyBaseState
 
     public void ChangePhase(AgentBattlePhase newPhase)
     {
+        ExitPhase(currentPhase);
         currentPhase = newPhase;
         phaseStartTime = 0;
         EnterPhase(newPhase);
@@ -135,7 +139,7 @@ public class EnemyBattleState : EnemyBaseState
             case AgentBattlePhase.Ready:
                 break;
             case AgentBattlePhase.Wait:
-                confrimMoveNode = null;
+                confirmMoveNode = null;
                 currentSkill = null;
                 targetNode = null;
                 movedConfirmed = false;
@@ -143,42 +147,56 @@ public class EnemyBattleState : EnemyBaseState
                 break;
             case AgentBattlePhase.Thinking:
                 CameraController.instance.ChangeFollowTarget(character.transform);
-                float startTime = Time.realtimeSinceStartup;
                 character.decisionSystem.MakeDecision();
-                character.decisionSystem.GetResult(out currentSkill, out confrimMoveNode, out targetNode);
-                //Debug.Log($"Decision Time: {Time.realtimeSinceStartup - startTime}");
+                character.decisionSystem.GetResult(out currentSkill, out confirmMoveNode, 
+                    out targetNode, out orientation);
 
-                if (confrimMoveNode != null)
+                if (confirmMoveNode != null)
                 {
-                    character.SetPathRoute(confrimMoveNode);
+                    character.SetPathRoute(confirmMoveNode);
                 }
-                character.SetSkillAndTarget(currentSkill, targetNode);
                 break;
             case AgentBattlePhase.ReleaseMoveThinking:
                 character.decisionSystem.MakeDecision(true, false);
-                character.decisionSystem.GetResult(out currentSkill, out confrimMoveNode, out targetNode);
+                character.decisionSystem.GetResult(out currentSkill, out confirmMoveNode, 
+                    out targetNode, out orientation);
 
-                if (confrimMoveNode != null)
+                if (confirmMoveNode != null)
                 {
-                    character.SetPathRoute(confrimMoveNode);
+                    character.SetPathRoute(confirmMoveNode);
                 }
                 break;
             case AgentBattlePhase.Move:
-                if (confrimMoveNode != null)
+                if (confirmMoveNode != null)
                 {
-                    character.ShowDangerMovableAndTargetTilemap(confrimMoveNode);
+                    character.ShowDangerMovableAndTargetTilemap(confirmMoveNode);
                     CameraController.instance.ChangeFollowTarget(character.transform);
                 }
                 break;
             case AgentBattlePhase.SkillCast:
                 if (currentSkill != null)
                 {
-                    character.ShowSkillTargetTilemap();
-                    BattleManager.instance.CastSkill(character, currentSkill, confrimMoveNode, targetNode);
+                    freezeState = true;
+                    character.ShowSkillTargetTilemap(character.currentNode, targetNode, currentSkill);
+                    BattleManager.instance.CastSkill(character, currentSkill, confirmMoveNode, 
+                        targetNode, () => { freezeState = false; });
                 }
                 break;
             case AgentBattlePhase.End:
+                freezeState = true;
                 character.ResetVisualTilemap();
+                BattleManager.instance.SetupOrientationArrow(character, confirmMoveNode);
+                BattleManager.instance.SwitchToOrientationWithArrow(character, orientation, 0.05f, 
+                    () => { freezeState = false; });
+                break;
+        }
+    }
+    public void ExitPhase(AgentBattlePhase phase)
+    {
+        switch (phase)
+        {
+            case AgentBattlePhase.End:
+                BattleManager.instance.HideOrientationArrow();
                 break;
         }
     }

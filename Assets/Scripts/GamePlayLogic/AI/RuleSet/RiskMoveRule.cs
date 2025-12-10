@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
 using Tactics.AI;
 using UnityEngine;
-using static Tactics.AI.DecisionSystem;
 
 public class RiskMoveRule : ScoreRuleBase
 {
-    public RiskMoveRule(List<IScoreRule> scoreSubRules, PathFinding pathFinding, int scoreBonus, bool debugMode) : base(scoreSubRules, pathFinding, scoreBonus, debugMode)
+    public RiskMoveRule(DecisionSystem decisionSystem, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, scoreSubRules, scoreBonus, debugMode)
     {
     }
 
@@ -48,8 +47,7 @@ public class RiskMoveRule : ScoreRuleBase
 
                 foreach (var subRule in scoreSubRules)
                 {
-                    skillScore += subRule.CalculateSkillScore(enemy, skill, null, moveNode);
-                    skillScore += subRule.CalculateSkillScore(enemy, skill, null, moveNode, highestHealth);
+                    skillScore += subRule.CalculateMoveSkillScore(enemy, skill, null, moveNode, highestHealth);
                 }
 
                 currentNode.character = character;
@@ -89,7 +87,7 @@ public class RiskMoveRule : ScoreRuleBase
 
                 foreach (var subRule in scoreSubRules)
                 {
-                    score += subRule.CalculateSkillScore(teammate, skill, null, moveNode);
+                    score += subRule.CalculateMoveSkillScore(teammate, skill, null, moveNode, highestHealth);
                 }
 
                 currentNode.character = character;

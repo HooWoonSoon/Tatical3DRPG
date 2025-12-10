@@ -23,4 +23,5 @@ public class CharacterData : ScriptableObject
     public int magicAttack;
     public int speed;
     public int movementValue;
+    public float criticalChance = 0.1f;
 }

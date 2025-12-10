@@ -1,7 +1,6 @@
-﻿    using System.Collections.Generic;
-    using UnityEngine;
-using UnityEngine.UIElements;
-using static Unity.Cinemachine.IInputAxisOwner.AxisDescriptor;
+﻿using System.Collections.Generic;
+using UnityEngine;
+
 
 public class Parabola
 {

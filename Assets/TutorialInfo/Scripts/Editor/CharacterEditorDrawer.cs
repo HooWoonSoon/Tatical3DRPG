@@ -68,6 +68,7 @@ public static class CharacterEditorDrawer
         data.magicAttack = EditorGUILayout.IntField("Mag ATK", data.magicAttack);
         data.speed = EditorGUILayout.IntField("Speed", data.speed);
         data.movementValue = EditorGUILayout.IntField("Movement", data.movementValue);
+        data.criticalChance = EditorGUILayout.Slider("Critical Chance", data.criticalChance, 0, 1);
 
         if (EditorGUI.EndChangeCheck())
         {

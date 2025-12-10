@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using TMPro;
+using UnityEngine;
 
 public class GridCursor : Entity
 {
@@ -16,6 +17,9 @@ public class GridCursor : Entity
     [Header("Battle Cusor Related UI")]
     public GameObject actionOptionPanel;
     public GameObject battlefieldInfoPanel;
+    public TextMeshProUGUI characterTextUI;
+    public TextMeshProUGUI healthTextUI;
+
     public GameNode currentNode { get; private set; }
 
     protected override void Start()
@@ -134,6 +138,12 @@ public class GridCursor : Entity
     {
         actionOptionPanel.SetActive(false);
         battlefieldInfoPanel.SetActive(true);
+        CharacterBase character = currentNode.GetUnitGridCharacter();
+        if (character != null)
+        {
+            characterTextUI.text = character.data.characterName;
+            healthTextUI.text = character.currentHealth.ToString();
+        }
     }
 
     public void OffPanel()

@@ -23,11 +23,9 @@ public abstract class CharacterBase : Entity
     public float moveSpeed = 5f;
 
     public GameNode currentNode { get; private set; }
-    public SkillData currentSkill { get; private set;}
-    public GameNode currentSkillTargetNode { get; private set; }
     public PathRoute pathRoute { get; private set; }
 
-    public Orientation orientation = Orientation.right;
+    public Orientation selfOrientation = Orientation.right;
     public UnitState unitState = UnitState.Active;
 
     protected override void Start()
@@ -53,23 +51,23 @@ public abstract class CharacterBase : Entity
         if (Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
         {
             if (direction.x < 0)
-                orientation = Orientation.left;
+                selfOrientation = Orientation.left;
             else
-                orientation = Orientation.right;
+                selfOrientation = Orientation.right;
         }
         else
         {
             if (direction.z < 0)
-                orientation = Orientation.back;
+                selfOrientation = Orientation.back;
             else
-                orientation = Orientation.forward;
+                selfOrientation = Orientation.forward;
         }
-        SetTransfromOrientation(orientation);
+        SetTransfromOrientation(selfOrientation);
     }
 
     public void SetTransfromOrientation(Orientation orientation, bool is2D = false)
     {
-        this.orientation = orientation;
+        this.selfOrientation = orientation;
         switch (orientation)
         {
             case Orientation.left:
@@ -90,6 +88,10 @@ public abstract class CharacterBase : Entity
     }
     public Vector3Int GetOrientationDirection()
     {
+        return GetOrientationDirection(selfOrientation);
+    }
+    public Vector3Int GetOrientationDirection(Orientation orientation)
+    {
         switch (orientation)
         {
             case Orientation.left:
@@ -104,7 +106,6 @@ public abstract class CharacterBase : Entity
                 return Vector3Int.zero;
         }
     }
-
     private Orientation GetOrientation(Vector3 from, Vector3 to)
     {
         Vector3 direction = (to - from).normalized;
@@ -124,7 +125,24 @@ public abstract class CharacterBase : Entity
                 return Orientation.back;
         }
     }
-
+    public Vector3Int GetDirConvertOrientationDir(Vector3 direction)
+    {
+        if (Mathf.Abs(direction.x) > Mathf.Abs(direction.z))
+        {
+            if (direction.x > 0)
+                return new Vector3Int(1, 0, 0);
+            else if (direction.x < 0)
+                return new Vector3Int(-1, 0, 0);
+        }
+        else
+        {
+            if (direction.z > 0)
+                return new Vector3Int(0, 0, 1);
+            else if (direction.z < 0)
+                return new Vector3Int(0, 0, -1);
+        }
+        return Vector3Int.zero;
+    }
     #endregion
 
     public void SetGridPos()
@@ -257,6 +275,8 @@ public abstract class CharacterBase : Entity
         foreach (CharacterBase other in currentTeam.teamCharacter)
         {
             if (other == this) continue;
+            if (other.unitState == UnitState.Knockout || 
+                other.unitState == UnitState.Dead) continue;
             if (other.currentNode == currentNode)
                 return other;
         }
@@ -282,17 +302,6 @@ public abstract class CharacterBase : Entity
         }
     }
 
-    public void SetSkill(SkillData skill)
-    {
-        if (skill == null) { return; }
-        currentSkill = skill;
-    }
-    public void SetSkillAndTarget(SkillData skill, GameNode targetNode)
-    {
-        if (skill == null) { return; }
-        currentSkill = skill;
-        currentSkillTargetNode = targetNode;
-    }
     public List<SkillData> GetAvaliableSkills()
     {
         List<SkillData> availabelSkills = new List<SkillData>();
@@ -308,13 +317,56 @@ public abstract class CharacterBase : Entity
         return availabelSkills;
     }
 
-    public void TakeDamage(int damage)
+    public bool CheckHitTargetBack(CharacterBase targetCharacter)
+    {
+        Vector3 origin = currentNode.GetNodeVector();
+        Vector3 target = targetCharacter.currentNode.GetNodeVector();
+
+        Vector3 direction = (target - origin).normalized;
+
+        Vector3Int hitOrientationDir = GetDirConvertOrientationDir(direction);
+        Vector3 targetOrientationDir = targetCharacter.GetOrientationDirection();
+
+        if (hitOrientationDir == targetOrientationDir)
+        {
+            return true;
+        }
+
+        return false;
+    }
+    public bool CriticalSuccess(float criticalChance = 0.1f)
+    {
+        float randomFloat = UnityEngine.Random.Range(0f, 1f);
+        return criticalChance > randomFloat;
+    }
+    public void DoDamage(int baseDamage, CharacterBase target)
+    {
+        int damage = baseDamage;
+        float criticalChance = data.criticalChance;
+
+        bool backHit = CheckHitTargetBack(target);
+        if (backHit)
+        {
+            criticalChance += 0.3f;
+        }
+        bool isCritical = CriticalSuccess(criticalChance);
+        if (isCritical)
+        {
+            damage = Mathf.CeilToInt(baseDamage * 1.5f);
+        }
+        target.TakeDamage(damage, isCritical);
+    }
+    public void TakeDamage(int damage, bool isCritical = false)
     {
         if (selfCanvasController != null)
             selfCanvasController.ExecuteHealthChange(this, -damage);
 
         currentHealth -= damage;
-        UniversalUIManager.instance.CreateCountText(this, damage);
+        string damageText = damage.ToString();
+        if (isCritical)
+            UniversalUIManager.instance.CreateCriticalCountText(this, damageText);
+        else
+            UniversalUIManager.instance.CreateText(this, damageText);
         TakeDamageEffect();
         if (currentHealth <= 0)
         {
@@ -330,11 +382,11 @@ public abstract class CharacterBase : Entity
     {
         if (characterModel == null) { return; }
 
-        if (orientation == Orientation.right || orientation == Orientation.left)
+        if (selfOrientation == Orientation.right || selfOrientation == Orientation.left)
         {
             StartCoroutine(Utils.VibrationCorroutine(transform, new Vector3(-0.1f, 0, 0), new Vector3(0.1f, 0, 0), 3, 0.2f));
         }
-        else if (orientation == Orientation.forward || orientation == Orientation.back)
+        else if (selfOrientation == Orientation.forward || selfOrientation == Orientation.back)
         {
             StartCoroutine(Utils.VibrationCorroutine(transform, new Vector3(0, 0, -0.1f), new Vector3(0, 0, 0.1f), 3, 0.2f));
         }
@@ -343,7 +395,8 @@ public abstract class CharacterBase : Entity
     public void TakeHeal(int heal)
     {
         currentHealth += heal;
-        UniversalUIManager.instance.CreateCountText(this, heal);
+        string healText = heal.ToString();
+        UniversalUIManager.instance.CreateText(this, healText);
     }
     private void KnockOut()
     {
@@ -395,7 +448,7 @@ public abstract class CharacterBase : Entity
         sizeRangeNode.RemoveAll(n => occlusionRangeNode.Contains(n));
         return sizeRangeNode;
     }
-    public List<GameNode> GetMovableNode()
+    public List<GameNode> GetMovableNodes()
     {
         List<GameNode> result = new List<GameNode>();
         int movableRange = data.movementValue;
@@ -416,11 +469,15 @@ public abstract class CharacterBase : Entity
     /// <returns></returns>
     public List<GameNode> GetConflictNode()
     {
+        List<GameNode> movableNodes = GetMovableNodes();
+        return GetConflictNode(movableNodes);
+    }
+    public List<GameNode> GetConflictNode(List<GameNode> movableNodes)
+    {
         int selfRange = data.movementValue;
         Vector3Int selfPos = currentNode.GetNodeVectorInt();
         List<GameNode> selfRangeExtend = pathFinding.GetCalculateDijkstraCostNodes(selfPos, 2, 1, 1);
-        List<GameNode> selfMovableNode = pathFinding.GetCostDijkstraCoverangeNodes(this, selfRange, 1, 1);
-        HashSet<GameNode> selfMovableNodeSet = new HashSet<GameNode>(selfMovableNode);
+        HashSet<GameNode> selfMovableNodeSet = new HashSet<GameNode>(movableNodes);
         List<GameNode> conflictNodes = new List<GameNode>();
         foreach (GameNode node in selfRangeExtend)
         {
@@ -480,10 +537,6 @@ public abstract class CharacterBase : Entity
     {
         return skill.GetInflueneNode(world, gameNode);
     }
-    private List<GameNode> GetSkillRangeFromNode(SkillData skill)
-    {
-        return skill.GetInflueneNode(world, world.GetNode(GetCharacterTranformToNodePos()));
-    }
 
     #region Visual Tilemap
     public void ResetVisualTilemap()
@@ -494,7 +547,7 @@ public abstract class CharacterBase : Entity
     {
         ResetVisualTilemap();
         int selfRange = data.movementValue;
-        List<GameNode> movableNode = GetMovableNode();
+        List<GameNode> movableNode = GetMovableNodes();
         foreach (GameNode node in movableNode)
         {
             Vector3Int position = node.GetNodeVectorInt();
@@ -504,36 +557,33 @@ public abstract class CharacterBase : Entity
     public void ShowDangerAndMovableTileFromNode()
     {
         ResetVisualTilemap();
-        List<GameNode> selfMovableNode = GetMovableNode();
-        foreach (GameNode node in selfMovableNode)
-        {
-            Vector3Int nodePos = node.GetNodeVectorInt();
-            GridTilemapVisual.instance.SetTilemapSprite(nodePos, GameNode.TilemapSprite.Blue);
-        }
-        List<GameNode> dangerNode = GetConflictNode();
-        foreach (GameNode rangeNode in dangerNode)
-        {
-            Vector3Int rangeNodePos = rangeNode.GetNodeVectorInt();
-            GridTilemapVisual.instance.SetTilemapSprite(rangeNodePos, GameNode.TilemapSprite.Purple);
-        }
+        List<GameNode> selfMovableNodes = GetMovableNodes();
+        List<GameNode> dangerNodes = GetConflictNode(selfMovableNodes);
+        ShowDangerAndMovableTileFromNode(selfMovableNodes, dangerNodes);
     }
-    public void ShowDangerMovableAndTargetTilemap(GameNode targetNode)
+    public void ShowDangerAndMovableTileFromNode(List<GameNode> movableNodes, List<GameNode> dangerNodes)
     {
         ResetVisualTilemap();
-        List<GameNode> movableNode = GetMovableNode();
-        if (movableNode.Contains(targetNode))
+        foreach (GameNode node in movableNodes)
         {
-            foreach (GameNode gameNode in movableNode)
-            {
-                Vector3Int position = gameNode.GetNodeVectorInt();
-                GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Blue);
-            }
-            List<GameNode> conflictNode = GetConflictNode();
-            foreach (GameNode gameNode in conflictNode)
-            {
-                Vector3Int position = gameNode.GetNodeVectorInt();
-                GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Purple);
-            }
+            GridTilemapVisual.instance.SetTilemapSprite(node, GameNode.TilemapSprite.Blue);
+        }
+        foreach (GameNode rangeNode in dangerNodes)
+        {
+            GridTilemapVisual.instance.SetTilemapSprite(rangeNode, GameNode.TilemapSprite.Purple);
+        }
+    }
+    public void ShowDangerMovableAndTargetTilemap(GameNode targetNode, List<GameNode> movableNodes = null)
+    {
+        ResetVisualTilemap();
+        if (movableNodes == null)
+        {
+            movableNodes = GetMovableNodes();
+        }
+        List<GameNode> dangerNodes = GetConflictNode(movableNodes);
+        if (movableNodes.Contains(targetNode))
+        {
+            ShowDangerAndMovableTileFromNode(movableNodes, dangerNodes);
             GridTilemapVisual.instance.SetTilemapSprite(targetNode.GetNodeVectorInt(), GameNode.TilemapSprite.TinyBlue);
         }
         else
@@ -541,62 +591,46 @@ public abstract class CharacterBase : Entity
             ShowDangerAndMovableTileFromNode();
         }
     }
-    public void ShowSkillTargetTilemap()
-    {
-        if (currentSkillTargetNode == null) { return; }
-        ShowSkillTilemap();
-        Vector3Int position = currentSkillTargetNode.GetNodeVectorInt();
-        GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
-    }
+
     public void ShowSkillTargetTilemap(GameNode originNode, GameNode targetNode, SkillData skill)
     {
+        if (originNode == null) { Debug.LogWarning("Missing originNode"); }
         ShowSkillTilemap(originNode, skill);
-        List<GameNode> skillRangeNodes = GetSkillRangeFromNode(currentSkill, originNode);
+        List<GameNode> skillRangeNodes = GetSkillRangeFromNode(skill, originNode);
         if (skillRangeNodes.Contains(targetNode))
         {
-            Vector3Int position = targetNode.GetNodeVectorInt();
-            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
+            GridTilemapVisual.instance.SetTilemapSprite(targetNode, GameNode.TilemapSprite.Red);
         }
     }
     public GameNode GetSkillTargetShowTilemap(GameNode originNode, GameNode targetNode, SkillData skill)
     {
+        if (originNode == null) { Debug.LogWarning("Missing originNode"); }
         ShowSkillTilemap(originNode, skill);
-        List<GameNode> skillRangeNodes = GetSkillRangeFromNode(currentSkill, originNode);
+        List<GameNode> skillRangeNodes = GetSkillRangeFromNode(skill, originNode);
         if (skillRangeNodes.Contains(targetNode))
         {
-            Vector3Int position = targetNode.GetNodeVectorInt();
-            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.Red);
+            GridTilemapVisual.instance.SetTilemapSprite(targetNode, GameNode.TilemapSprite.Red);
             return targetNode;
         }
         return null;
     }
-    public void ShowSkillTilemap()
-    {
-        if (currentSkill == null) return;
-        ResetVisualTilemap();
-        List<GameNode> influenceNodes = GetSkillRangeFromNode(currentSkill);
-        foreach (GameNode node in influenceNodes)
-        {
-            Vector3Int position = node.GetNodeVectorInt();
-            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.TinyBlue);
-        }
-    }
-    public void ShowSkillTilemap(GameNode gameNode, SkillData skill)
+    public void ShowSkillTilemap(GameNode startFormNode, SkillData skill)
     {
         if (skill == null) return;
         ResetVisualTilemap();
-        List<GameNode> influenceNodes = GetSkillRangeFromNode(skill, gameNode);
+        List<GameNode> influenceNodes = GetSkillRangeFromNode(skill, startFormNode);
         foreach (GameNode node in influenceNodes)
         {
-            Vector3Int position = node.GetNodeVectorInt();
-            GridTilemapVisual.instance.SetTilemapSprite(position, GameNode.TilemapSprite.TinyBlue);
+            GridTilemapVisual.instance.SetTilemapSprite(node, GameNode.TilemapSprite.TinyBlue);
         }
     }
     #endregion
 
-    public bool IsInMovableRange(GameNode gameNode)
+    public bool IsInMovableRange(GameNode gameNode, List<GameNode> movableNodes = null)
     {
-        HashSet<GameNode> movableNodes = new HashSet<GameNode>(GetMovableNode());
+        if (movableNodes == null)
+            movableNodes = GetMovableNodes();
+        
         if (movableNodes.Contains(gameNode))
         {
             return true;

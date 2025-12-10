@@ -19,8 +19,9 @@ MonoBehaviour:
   type: 0
   unitType: 0
   health: 160
-  mental: 50
+  mental: 100
   physicAttack: 20
   magicAttack: 0
   speed: 13
   movementValue: 4
+  criticalChance: 0.1

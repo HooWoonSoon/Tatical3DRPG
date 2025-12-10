@@ -1,5 +1,4 @@
-﻿
-public class TeamStateMachine
+﻿public class TeamStateMachine
 {
     public PlayerTeamState currentPlayerTeamState;
     public EnemyTeamState currentEnemyTeamState;

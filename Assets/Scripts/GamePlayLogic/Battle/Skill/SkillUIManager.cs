@@ -389,7 +389,6 @@ public class SkillUIManager : MonoBehaviour
         {
             listOptionIndex = 0;
             FocusCurrentListUI(0);
-            currentCharacter.SetSkill(GetCurrentSelectedSkill());
             UpdateSkillDescription(0);
         }
     }

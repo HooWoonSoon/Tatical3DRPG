@@ -1,14 +1,18 @@
 ﻿using System.Collections.Generic;
+using Tactics.AI;
 using UnityEngine;
 public class MoveTargetRule : ScoreRuleBase
 {
-    public MoveTargetRule(List<IScoreRule> scoreSubRules, PathFinding pathFinding, int scoreBonus, bool debugMode) : base(scoreSubRules, pathFinding, scoreBonus, debugMode)
+    public MoveTargetRule(DecisionSystem decisionSystem, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, scoreSubRules, scoreBonus, debugMode)
     {
     }
 
     public override float CalculateMoveToTargetScore(CharacterBase character, 
-        List<GameNode> targetAroundNodes, GameNode moveNode)
+        CharacterBase targetCharacter, List<GameNode> targetAroundNodes, GameNode moveNode, 
+        List<CharacterBase> teammates, List<CharacterBase> opposites, 
+        DecisionSystem.CharacterSkillInfluenceNodes characterSkillInfluenceNodes)
     {
+        PathFinding pathFinding = decisionSystem.pathFinding;
         CharacterData data = character.data;
         //  No Join the Rule
         if (data == null) return 0;
@@ -41,16 +45,47 @@ public class MoveTargetRule : ScoreRuleBase
         }
 
         float costFactor = Mathf.Sqrt(bestCost);
-        float distanceFactor = 1f / (1f + costFactor);        
+        float distanceFactor = 1f / (1f + costFactor);
         float score = Mathf.Lerp(0f, scoreBonus, distanceFactor);
+
+        Dictionary<SkillData, List<GameNode>> oppositeSkillInflunce;
+        float deductScore = 0f;
+
+        Debug.Log("Move Node: " + moveNode.GetNodeVectorInt());
+
+        foreach (var opposite in opposites)
+        {
+            oppositeSkillInflunce = characterSkillInfluenceNodes.oppositeInfluence[opposite];
+            if (oppositeSkillInflunce != null)
+            {
+                foreach (SkillData skill in oppositeSkillInflunce.Keys)
+                {
+                    if (skill.skillType != SkillType.Acttack) continue;
+                    if (oppositeSkillInflunce[skill].Contains(moveNode))
+                    {
+                        int damage = skill.damageAmount;
+                        if (damage >= character.currentHealth)
+                        {
+                            score -= 1;
+                            deductScore++;
+                        }
+                    }
+                }
+            }
+        }
+        Debug.Log($"<color=#00BFFF>[Work Deduct Score: {deductScore}]</color>");
+
+
+        foreach (var subRule in scoreSubRules)
+            score += subRule.CalculateTargetScore(character, targetCharacter, teammates, opposites);
 
         if (debugMode)
             Debug.Log(
                 $"<color=black>[MoveTargetRule]</color> " +
                 $"{character.data.characterName}, " +
-                $"StartNode: {character.currentNode.GetNodeVectorInt()} " +
-                $"MoveNode: {moveNode.GetNodeVectorInt()}," +
-                $"Route actual cost: {bestCost} " +
+                $"StartNode: {character.currentNode.GetNodeVectorInt()}, " +
+                $"MoveNode: {moveNode.GetNodeVectorInt()}, " +
+                $"Route actual cost: {bestCost}, " +
                 $"TargetNode: {bestTargetNode.GetNodeVectorInt()}, " +
                 $"get Score bonus: {score}");
         return score;
