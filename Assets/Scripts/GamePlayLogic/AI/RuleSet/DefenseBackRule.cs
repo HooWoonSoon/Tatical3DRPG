@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DefenseBackRule : ScoreRuleBase
 {
-    public DefenseBackRule(DecisionSystem decisionSystem, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, scoreSubRules, scoreBonus, debugMode)
+    public DefenseBackRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
     {
     }
 

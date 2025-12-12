@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class RiskMoveRule : ScoreRuleBase
 {
-    public RiskMoveRule(DecisionSystem decisionSystem, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, scoreSubRules, scoreBonus, debugMode)
+    public RiskMoveRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
     {
     }
 
@@ -35,7 +35,12 @@ public class RiskMoveRule : ScoreRuleBase
                 currentNode.character = null;
                 moveNode.character = character;
 
-                if (!nodeList.Contains(moveNode)) continue;
+                if (!nodeList.Contains(moveNode))
+                {
+                    currentNode.character = character;
+                    moveNode.character = null;
+                    continue;
+                }
 
                 if (debugMode)
                     Debug.Log(
@@ -47,7 +52,7 @@ public class RiskMoveRule : ScoreRuleBase
 
                 foreach (var subRule in scoreSubRules)
                 {
-                    skillScore += subRule.CalculateMoveSkillScore(enemy, skill, null, moveNode, highestHealth);
+                    skillScore += subRule.CalculateSkillScore(enemy, skill, moveNode, highestHealth);
                 }
 
                 currentNode.character = character;
@@ -75,7 +80,12 @@ public class RiskMoveRule : ScoreRuleBase
                 currentNode.character = null;
                 moveNode.character = character;
 
-                if (!nodeList.Contains(moveNode)) continue;
+                if (!nodeList.Contains(moveNode))
+                {
+                    currentNode.character = character;
+                    moveNode.character = null;
+                    continue;
+                }
 
                 if (debugMode)
                     Debug.Log(
@@ -87,7 +97,7 @@ public class RiskMoveRule : ScoreRuleBase
 
                 foreach (var subRule in scoreSubRules)
                 {
-                    score += subRule.CalculateMoveSkillScore(teammate, skill, null, moveNode, highestHealth);
+                    score += subRule.CalculateSkillScore(teammate, skill, moveNode, highestHealth);
                 }
 
                 currentNode.character = character;

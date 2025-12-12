@@ -31,6 +31,7 @@ public static class CharacterEditorDrawer
             if (GUILayout.Button("Remove", GUILayout.Width(60)))
             {
                 character.skillDatas.RemoveAt(i);
+                EditorGUILayout.EndHorizontal();
                 break;
             }
             EditorGUILayout.EndHorizontal();
@@ -60,7 +61,6 @@ public static class CharacterEditorDrawer
         data.isometricIcon = (Sprite)EditorGUILayout.ObjectField("Isometric Icon", data.isometricIcon,
             (typeof(Sprite)), false);
         data.type = (TeamType)EditorGUILayout.EnumPopup("Team Type", data.type);
-        data.unitType = (UnitType)EditorGUILayout.EnumPopup("Unit Type", data.unitType);
 
         data.health = EditorGUILayout.IntField("Health", data.health);
         data.mental = EditorGUILayout.IntField("Mental", data.mental);

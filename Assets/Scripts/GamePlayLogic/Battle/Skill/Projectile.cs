@@ -18,6 +18,8 @@ public class Projectile : Entity
     private bool enableHit = false;
     public event Action onHitCompleted;
 
+    public bool debugMode = false;
+
     protected override void Start()
     {
         base.Start();
@@ -43,7 +45,9 @@ public class Projectile : Entity
             if (unitDetectable != null)
             {
                 if (unitDetectable.GetComponent<CharacterBase>() == null) { continue; }
-                Debug.Log($"Hit {unitDetectable.name}");
+                if (debugMode)
+                    Debug.Log($"Hit {unitDetectable.name}");
+
                 DoDamage(unitDetectable);
                 CameraController.instance.ChangeFollowTarget(shooter.transform);
                 Destroy(gameObject);

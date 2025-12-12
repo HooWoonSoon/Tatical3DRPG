@@ -3,11 +3,11 @@ using Tactics.AI;
 using UnityEngine;
 public class MoveTargetRule : ScoreRuleBase
 {
-    public MoveTargetRule(DecisionSystem decisionSystem, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, scoreSubRules, scoreBonus, debugMode)
+    public MoveTargetRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
     {
     }
 
-    public override float CalculateMoveToTargetScore(CharacterBase character, 
+    public override float CalculateMoveToTargetScore(CharacterBase character, float frontLineIndex,
         CharacterBase targetCharacter, List<GameNode> targetAroundNodes, GameNode moveNode, 
         List<CharacterBase> teammates, List<CharacterBase> opposites, 
         DecisionSystem.CharacterSkillInfluenceNodes characterSkillInfluenceNodes)
@@ -49,9 +49,6 @@ public class MoveTargetRule : ScoreRuleBase
         float score = Mathf.Lerp(0f, scoreBonus, distanceFactor);
 
         Dictionary<SkillData, List<GameNode>> oppositeSkillInflunce;
-        float deductScore = 0f;
-
-        Debug.Log("Move Node: " + moveNode.GetNodeVectorInt());
 
         foreach (var opposite in opposites)
         {
@@ -66,15 +63,15 @@ public class MoveTargetRule : ScoreRuleBase
                         int damage = skill.damageAmount;
                         if (damage >= character.currentHealth)
                         {
-                            score -= 1;
-                            deductScore++;
+                            if (frontLineIndex > 0)
+                                score -= scoreBonus / 12;
+                            else
+                                score -= scoreBonus / 8;
                         }
                     }
                 }
             }
         }
-        Debug.Log($"<color=#00BFFF>[Work Deduct Score: {deductScore}]</color>");
-
 
         foreach (var subRule in scoreSubRules)
             score += subRule.CalculateTargetScore(character, targetCharacter, teammates, opposites);

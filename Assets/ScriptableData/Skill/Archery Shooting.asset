@@ -19,7 +19,7 @@ MonoBehaviour:
   skillType: 0
   isTargetTypeSkill: 1
   skillTargetType: 2
-  skillRange: 6
+  skillRange: 7
   occlusionRange: 3
   aoeRadius: 1
   isProjectile: 1

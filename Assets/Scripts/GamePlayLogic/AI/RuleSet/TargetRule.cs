@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TargetRule : ScoreRuleBase
 {
-    public TargetRule(DecisionSystem decisionSystem, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, scoreSubRules, scoreBonus, debugMode)
+    public TargetRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
     {
     }
 
@@ -29,7 +29,7 @@ public class TargetRule : ScoreRuleBase
 
         if (debugMode)
             Debug.Log(
-                $"<color=purple>[TargetRule]</color> " +
+                $"<color=yellow>[TargetRule]</color> " +
                 $"{selfCharacter.data.characterName}, " +
                 $"Target Character: {targetCharacter.data.characterName}, " +
                 $"plus Score bonus: {score}");

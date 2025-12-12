@@ -9,6 +9,7 @@ public class EnemyCharacter : CharacterBase
     public EnemyIdleStateExplore idleStateExplore { get; private set; }
 
     public DecisionSystem decisionSystem;
+    public UtilityAIScoreConfig utilityAI;
     public bool debugMode = false;
 
     private void Awake()
@@ -23,7 +24,7 @@ public class EnemyCharacter : CharacterBase
     protected override void Start()
     {
         base.Start();
-        decisionSystem = new DecisionSystem(world, this);
+        decisionSystem = new DecisionSystem(world, utilityAI, this);
         stateMechine.Initialize(idleStateExplore);
 
         GameEvent.onDeploymentStart += () =>

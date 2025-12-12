@@ -1,10 +1,5 @@
 ﻿using UnityEngine;
 
-public enum UnitType
-{
-    Melee, Ranged
-}
-
 [CreateAssetMenu(fileName = "CharacterData", menuName = "Tactics/Character")]
 public class CharacterData : ScriptableObject
 {
@@ -14,7 +9,6 @@ public class CharacterData : ScriptableObject
     public Sprite turnUISprite;
     public Sprite isometricIcon;
     public TeamType type;
-    public UnitType unitType;
 
     [Header("Properties")]
     public int health;

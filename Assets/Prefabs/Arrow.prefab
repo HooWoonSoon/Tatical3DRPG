@@ -308,7 +308,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   center: {x: 0, y: 0, z: -0.43}
   size: {x: 0.1, y: 0.15, z: 1.2}
-  mahhatassRange: 0
 --- !u!114 &13547933470921612
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -315,22 +315,29 @@ public class PathFinding
     }
 
     #region Dijkstra Region Search
-    public GameNode GetLowCostNode(List<GameNode> reachableNodes, List<GameNode> compareNodes)
+    public List<GameNode> GetLowestCostNodes(GameNode targetNode, List<GameNode> reachableNodes)
     {
-        GameNode bestNode = null;
-        int lowestCost = int.MaxValue;
+        List<GameNode> compareNodes = GetCalculateDijkstraCostNodes(targetNode, 2, 1, 1);
 
+        int lowestCost = int.MaxValue;
         foreach (GameNode node in compareNodes)
         {
             if (!reachableNodes.Contains(node)) continue;
             if (node.dijkstraCost < lowestCost)
-            {
-                bestNode = node;
                 lowestCost = node.dijkstraCost;
-            }
         }
-        return bestNode;
+
+        List<GameNode> lowestCostNodes = new List<GameNode>();
+        foreach (GameNode node in compareNodes)
+        {
+            if (!reachableNodes.Contains(node)) continue;
+            if (node.dijkstraCost == lowestCost)
+                lowestCostNodes.Add(node);
+        }
+
+        return lowestCostNodes;
     }
+
     /// <summary>
     /// Get the coverange from input position then use the dijkstra algorithm
     /// to calculate the cost of each node check if the cost is lower than the

@@ -4,7 +4,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "SkillDatabase", menuName = "Tactics/Skill Database")]
 public class SkillDatabase : ScriptableObject
 {
-    public List<SkillData> allSkills;
+    public List<SkillData> allSkills = new List<SkillData>();
 
     public void AddSkill(SkillData skill)
     {

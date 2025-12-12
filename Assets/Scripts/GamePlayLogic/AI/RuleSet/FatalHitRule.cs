@@ -3,7 +3,7 @@ using Tactics.AI;
 using UnityEngine;
 public class FatalHitRule : ScoreRuleBase
 {
-    public FatalHitRule(DecisionSystem decisionSystem, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, scoreSubRules, scoreBonus, debugMode)
+    public FatalHitRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
     {
     }
 
