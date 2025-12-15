@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(InventoryData))]
-public class InventoryDataEditor : Editor
+public class InventoryDataInpectorRedraw : Editor
 {
     public override void OnInspectorGUI()
     {

@@ -40,7 +40,7 @@ public class UtilityAIScoreConfig : ScriptableObject
 
     [Header("Head Defense Back Rule")]
     [Tooltip("Defense Back Rule Score (default = 188)")]
-    public int defenseBackRuleRuleScore = 25;
+    public int defenseBackRuleScore = 25;
     #endregion
 
     [Header("Harm formula parameter")]

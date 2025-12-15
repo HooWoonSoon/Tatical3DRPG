@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using Tactics.AI;
 using UnityEngine;
-public class TreatRule : ScoreRuleBase
+public class SkillTreatRule : ScoreRuleBase
 {
-    public TreatRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
+    public SkillTreatRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, RuleDebugContext context) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, context)
     {
     }
+
+    protected override bool DebugMode => DebugManager.IsDebugEnabled(context);
 
     public override float CalculateSkillScore(CharacterBase character, SkillData skill, 
         GameNode targetNode, int maxHealthAmongOpposites)
@@ -15,7 +17,7 @@ public class TreatRule : ScoreRuleBase
         if (skill.skillType != SkillType.Heal)return 0;
         if (skill.MPAmount > character.currentMental) return 0;
 
-        CharacterBase target = targetNode.character;
+        CharacterBase target = targetNode.GetUnitGridCharacter();
 
         int missingHealth = target.data.health - target.currentHealth;
         if (missingHealth <= 0) return 0;
@@ -36,7 +38,7 @@ public class TreatRule : ScoreRuleBase
 
         float score = Mathf.Lerp(0f, scoreBonus, t);
 
-        if (debugMode)
+        if (DebugMode)
             Debug.Log(
                 $"<color=#00BFFF>[MoveTreatRule]</color> " +
                 $"{character.data.characterName}, " +

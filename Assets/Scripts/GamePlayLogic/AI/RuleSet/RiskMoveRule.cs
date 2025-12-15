@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class RiskMoveRule : ScoreRuleBase
 {
-    public RiskMoveRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
+    public RiskMoveRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, RuleDebugContext context) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, context)
     {
     }
+
+    protected override bool DebugMode => DebugManager.IsDebugEnabled(context);
 
     public override float CalculateRiskMoveScore(CharacterBase character, 
         DecisionSystem.CharacterSkillInfluenceNodes characterSkillInfluenceNodes, GameNode moveNode)
@@ -32,17 +34,17 @@ public class RiskMoveRule : ScoreRuleBase
                 var nodeList = characterSkillInfluenceNodes.oppositeInfluence[enemy][skill];
 
                 GameNode currentNode = character.currentNode;
-                currentNode.character = null;
-                moveNode.character = character;
+                currentNode.SetUnitGridCharacter(null);
+                moveNode.SetUnitGridCharacter(character);
 
                 if (!nodeList.Contains(moveNode))
                 {
-                    currentNode.character = character;
-                    moveNode.character = null;
+                    currentNode.SetUnitGridCharacter(character);
+                    moveNode.SetUnitGridCharacter(null);
                     continue;
                 }
 
-                if (debugMode)
+                if (DebugMode)
                     Debug.Log(
                         $"{enemy.data.characterName}, " +
                         $"Skill: {skill}, " +
@@ -55,8 +57,8 @@ public class RiskMoveRule : ScoreRuleBase
                     skillScore += subRule.CalculateSkillScore(enemy, skill, moveNode, highestHealth);
                 }
 
-                currentNode.character = character;
-                moveNode.character = null;
+                currentNode.SetUnitGridCharacter(character);
+                moveNode.SetUnitGridCharacter(null);
 
                 if (skillScore > skillBestScore)
                 {
@@ -77,17 +79,17 @@ public class RiskMoveRule : ScoreRuleBase
                 var nodeList = characterSkillInfluenceNodes.teammateInfluence[teammate][skill];
 
                 GameNode currentNode = character.currentNode;
-                currentNode.character = null;
-                moveNode.character = character;
+                currentNode.SetUnitGridCharacter(null);
+                moveNode.SetUnitGridCharacter(character);
 
                 if (!nodeList.Contains(moveNode))
                 {
-                    currentNode.character = character;
-                    moveNode.character = null;
+                    currentNode.SetUnitGridCharacter(character);
+                    moveNode.SetUnitGridCharacter(null);
                     continue;
                 }
 
-                if (debugMode)
+                if (DebugMode)
                     Debug.Log(
                         $"{teammate.data.characterName}, " +
                         $"Skill: {skill}, " +
@@ -100,8 +102,8 @@ public class RiskMoveRule : ScoreRuleBase
                     score += subRule.CalculateSkillScore(teammate, skill, moveNode, highestHealth);
                 }
 
-                currentNode.character = character;
-                moveNode.character = null;
+                currentNode.SetUnitGridCharacter(character);
+                moveNode.SetUnitGridCharacter(null);
 
                 if (skillScore > skillBestScore)
                 {
@@ -111,7 +113,7 @@ public class RiskMoveRule : ScoreRuleBase
             score += skillBestScore;
         }
 
-        if (debugMode)
+        if (DebugMode)
             Debug.Log(
                 $"<color=black>[MoveRule]</color> " +
                 $"{character.data.characterName}, " +

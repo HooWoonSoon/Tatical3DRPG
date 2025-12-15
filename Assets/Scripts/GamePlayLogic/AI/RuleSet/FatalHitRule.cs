@@ -3,9 +3,11 @@ using Tactics.AI;
 using UnityEngine;
 public class FatalHitRule : ScoreRuleBase
 {
-    public FatalHitRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
+    public FatalHitRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, RuleDebugContext context) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, context)
     {
     }
+
+    protected override bool DebugMode => DebugManager.IsDebugEnabled(context);
 
     public override float CalculateSkillScore(CharacterBase character, SkillData skill, 
         GameNode targetNode, int maxHealthAmongOpposites)
@@ -13,10 +15,10 @@ public class FatalHitRule : ScoreRuleBase
         //  No Join the Rule
         if (skill == null) return 0;
 
-        CharacterBase target = targetNode.character;
+        CharacterBase target = targetNode.GetUnitGridCharacter();
         if (target == null) return 0;
 
-        if (debugMode)
+        if (DebugMode)
         {
             Debug.Log("Execute Fatal Hit Rule");
             if (target != null)
@@ -26,7 +28,7 @@ public class FatalHitRule : ScoreRuleBase
 
         if (skill.damageAmount >= target.currentHealth)
         {
-            if (debugMode)
+            if (DebugMode)
                 Debug.Log($"Skill: {skill.skillName} is fatal skill, " +
                     $"plus Score Bonus : {scoreBonus}");
             return scoreBonus;

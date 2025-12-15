@@ -3,9 +3,11 @@ using Tactics.AI;
 using UnityEngine;
 public class MoveTargetRule : ScoreRuleBase
 {
-    public MoveTargetRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
+    public MoveTargetRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, RuleDebugContext context) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, context)
     {
     }
+
+    protected override bool DebugMode => DebugManager.IsDebugEnabled(context);
 
     public override float CalculateMoveToTargetScore(CharacterBase character, float frontLineIndex,
         CharacterBase targetCharacter, List<GameNode> targetAroundNodes, GameNode moveNode, 
@@ -39,7 +41,7 @@ public class MoveTargetRule : ScoreRuleBase
 
         if (bestCost == int.MaxValue)
         {
-            if (debugMode)
+            if (DebugMode)
                 Debug.Log("No valid path to any target node");
             return -100; // Dead Path
         }
@@ -76,7 +78,7 @@ public class MoveTargetRule : ScoreRuleBase
         foreach (var subRule in scoreSubRules)
             score += subRule.CalculateTargetScore(character, targetCharacter, teammates, opposites);
 
-        if (debugMode)
+        if (DebugMode)
             Debug.Log(
                 $"<color=black>[MoveTargetRule]</color> " +
                 $"{character.data.characterName}, " +

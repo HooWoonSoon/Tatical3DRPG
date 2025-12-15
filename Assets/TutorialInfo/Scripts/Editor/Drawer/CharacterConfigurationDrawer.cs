@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.Playables;
 using UnityEngine;
 public static class CharacterConfigurationDrawer
 {

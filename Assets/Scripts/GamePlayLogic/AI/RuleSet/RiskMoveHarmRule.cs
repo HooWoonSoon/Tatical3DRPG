@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using Tactics.AI;
 public class RiskMoveHarmRule : ScoreRuleBase
 {
-    public RiskMoveHarmRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
+    public RiskMoveHarmRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, RuleDebugContext context) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, context)
     {
     }
+
+    protected override bool DebugMode => DebugManager.IsDebugEnabled(context);
 
     public override float CalculateRiskMoveSkillScore(CharacterBase character, SkillData skill,
         DecisionSystem.CharacterSkillInfluenceNodes characterSkillInfluenceNodes,
@@ -17,7 +19,7 @@ public class RiskMoveHarmRule : ScoreRuleBase
             return 0;
         if (skill.MPAmount > character.currentMental) return 0;
 
-        CharacterBase target = targetNode.character;
+        CharacterBase target = targetNode.GetUnitGridCharacter();
         if (target == null) return 0;
 
         float oppositeSkillScore = GetOppositeHarmSkillScore(character, 
@@ -40,7 +42,7 @@ public class RiskMoveHarmRule : ScoreRuleBase
         float priorityRiskScore = oppositeSkillScore * 0.02f;
         score += skillScore + priorityRiskScore;
 
-        if (debugMode)
+        if (DebugMode)
             Debug.Log(
                 $"<color=red>[RiskMoveHarmRule]</color> " +
                 $"{character.data.characterName}, " +
@@ -72,17 +74,17 @@ public class RiskMoveHarmRule : ScoreRuleBase
                 var nodeList = characterSkillInfluenceNodes.oppositeInfluence[enemy][enemySkill];
 
                 GameNode currentNode = character.currentNode;
-                currentNode.character = null;
-                moveNode.character = character;
+                currentNode.SetUnitGridCharacter(null);
+                moveNode.SetUnitGridCharacter(character);
 
                 if (!nodeList.Contains(moveNode))
                 {
-                    currentNode.character = character;
-                    moveNode.character = null;
+                    currentNode.SetUnitGridCharacter(character);
+                    moveNode.SetUnitGridCharacter(null);
                     continue;
                 }
 
-                if (debugMode)
+                if (DebugMode)
                     Debug.Log(
                         $"{enemy.data.characterName}, " +
                         $"Skill: {enemySkill}, " +
@@ -90,8 +92,8 @@ public class RiskMoveHarmRule : ScoreRuleBase
 
                 skillScore += GetHarmSkillScore(enemy, enemySkill, highestHealthAmongCharacters, character);
 
-                currentNode.character = character;
-                moveNode.character = null;
+                currentNode.SetUnitGridCharacter(character);
+                moveNode.SetUnitGridCharacter(null);
 
                 if (skillScore > skillBestScore)
                 {
@@ -113,7 +115,7 @@ public class RiskMoveHarmRule : ScoreRuleBase
 
         if (actualDamage <= 0)
         {
-            if (debugMode)
+            if (DebugMode)
                 Debug.Log($"Skill: {skill.skillName} damage skill," +
                     $" cannot deal damage to {target.data.characterName}, " +
                     $" Get Score bonus: Min Value");

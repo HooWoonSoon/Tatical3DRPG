@@ -1,11 +1,13 @@
 ﻿using System.Collections.Generic;
 using Tactics.AI;
 using UnityEngine;
-public class HarmRule : ScoreRuleBase
+public class SkillHarmRule : ScoreRuleBase
 {
-    public HarmRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
+    public SkillHarmRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, RuleDebugContext context) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, context)
     {
     }
+
+    protected override bool DebugMode => DebugManager.IsDebugEnabled(context);
 
     public override float CalculateSkillScore(CharacterBase character, SkillData skill, 
         GameNode targetNode, int highestHealthAmongCharacters)
@@ -16,7 +18,7 @@ public class HarmRule : ScoreRuleBase
             return 0;
         if (skill.MPAmount > character.currentMental) return 0;
 
-        CharacterBase target = targetNode.character;
+        CharacterBase target = targetNode.GetUnitGridCharacter();
         if (target == null) return 0;
 
         int damage = skill.damageAmount;
@@ -27,7 +29,7 @@ public class HarmRule : ScoreRuleBase
 
         if (actualDamage <= 0)
         {
-            if (debugMode)
+            if (DebugMode)
                 Debug.Log($"Skill: {skill.skillName} damage skill," +
                     $" cannot deal damage to {target.data.characterName}, " +
                     $" Get Score bonus: Min Value");
@@ -58,7 +60,7 @@ public class HarmRule : ScoreRuleBase
         if (score > scoreBonus)
             score = scoreBonus;
 
-        if (debugMode)
+        if (DebugMode)
             Debug.Log(
                 $"<color=red>[HarmRule]</color> " +
                 $"{character.data.characterName}, " +

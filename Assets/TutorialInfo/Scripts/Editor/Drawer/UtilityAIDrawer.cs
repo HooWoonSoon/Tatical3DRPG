@@ -6,11 +6,14 @@ public static class UtilityAIDrawer
 {
     public enum Option
     {
-        Rules, Parameters 
+        Rules, Parameters
     }
 
+    private static Dictionary<string, MonoScript> scriptCache = 
+        new Dictionary<string, MonoScript>();
     private static Option option;
     private static Vector2 scorllPos;
+    private static bool unsetDebug;
 
     public static void DrawUtilityCard(ref UtilityAIDatabase database, 
         ref UtilityAIScoreConfig selectedUtilityAI, UtilityAIScoreConfig data)
@@ -123,15 +126,15 @@ public static class UtilityAIDrawer
                 EditorGUILayout.LabelField("Utility AI Scoring Rules Configuration", EditorStyles.boldLabel);
                 EditorGUILayout.BeginVertical("box");
 
-                DrawRuleGroup("MoveTargetRule", "Move Target Rule",
-                    ref utilityAI.moveTargetRuleScore,
+                DrawRuleGroup(typeof(MoveTargetRule).FullName, "Move Target Rule",
+                    ref utilityAI.moveTargetRuleScore, ref DebugManager.moveTargetRDebug,
                     new SubRuleRef("Target Rule Score", () => utilityAI.targeRuleScore,
                     v => utilityAI.targeRuleScore = v));
 
                 EditorGUILayout.Space(5);
 
-                DrawRuleGroup("RiskMoveRule", "Risk Move Rule",
-                    ref utilityAI.riskMoveRuleScore,
+                DrawRuleGroup(typeof(RiskMoveRule).FullName, "Risk Move Rule",
+                    ref utilityAI.riskMoveRuleScore, ref DebugManager.riskMoveRDebug,
                     new SubRuleRef("Harm Rule Score", () => utilityAI.harmRuleScore,
                     v => utilityAI.harmRuleScore = v),
                     new SubRuleRef("Treat Rule Score", () => utilityAI.treatRuleScore,
@@ -139,32 +142,32 @@ public static class UtilityAIDrawer
 
                 EditorGUILayout.Space(5);
 
-                DrawRuleGroup("HarmRule", "Origin Harm Rule",
-                    ref utilityAI.originHarmRuleScore,
+                DrawRuleGroup(typeof(SkillHarmRule).FullName, "Origin Harm Rule",
+                    ref utilityAI.originHarmRuleScore, ref DebugManager.harmRDebug,
                     new SubRuleRef("Fatal Hit Rule Score", () => utilityAI.fatalHitRuleScore,
                     v => utilityAI.fatalHitRuleScore = v));
 
                 EditorGUILayout.Space(5);
 
-                DrawRuleGroup("TreatRule", "Origin Treat Rule",
-                    ref utilityAI.originTreatRuleScore);
+                DrawRuleGroup(typeof(SkillTreatRule).FullName, "Origin Treat Rule",
+                    ref utilityAI.originTreatRuleScore, ref DebugManager.treatRDebug);
 
                 EditorGUILayout.Space(5);
 
-                DrawRuleGroup("RiskMoveHarmRule", "Risk Move Harm Rule",
-                    ref utilityAI.riskMoveHarmRuleScore,
+                DrawRuleGroup(typeof(RiskMoveHarmRule).FullName, "Risk Move Harm Rule",
+                    ref utilityAI.riskMoveHarmRuleScore, ref DebugManager.riskMoveHarmRDebug,
                     new SubRuleRef("Fatal Hit Rule Score", () => utilityAI.riskFatalHitRuleScore,
                     v => utilityAI.riskFatalHitRuleScore = v));
 
                 EditorGUILayout.Space(5);
 
-                DrawRuleGroup("RiskMoveTreatRule", "Risk Move Treat Rule",
-                    ref utilityAI.riskMoveTreatRuleScore);
+                DrawRuleGroup(typeof(RiskMoveTreatRule).FullName, "Risk Move Treat Rule",
+                    ref utilityAI.riskMoveTreatRuleScore, ref DebugManager.riskMoveTreatRDebug);
 
                 EditorGUILayout.Space(5);
 
-                DrawRuleGroup("DefenseBackRule", "Defense Back Rule",
-                    ref utilityAI.defenseBackRuleRuleScore);
+                DrawRuleGroup(typeof(DefenseBackRule).FullName, "Defense Back Rule",
+                    ref utilityAI.defenseBackRuleScore, ref DebugManager.defenseBackRDebug);
 
                 EditorGUILayout.EndVertical();
 
@@ -192,18 +195,17 @@ public static class UtilityAIDrawer
 
     private static void DrawRuleGroup(string className,
         string title,
-        ref int headScore,
+        ref int headScore, ref bool headDebugMode,
         params SubRuleRef[] subRules)
     {
         EditorGUILayout.BeginVertical("box");
-
         EditorGUILayout.BeginHorizontal();
         EditorGUILayout.LabelField($"{title}", EditorStyles.boldLabel, GUILayout.Width(150));
-        DrawScriptLink($"{className}");
+        EditorUtils.DrawScriptLink($"{className}", scriptCache);
         EditorGUILayout.EndHorizontal();
+        headDebugMode = EditorGUILayout.Toggle("Debug mode", headDebugMode);
 
-        headScore = EditorGUILayout.
-            IntField($"{title} Score", headScore);
+        headScore = EditorGUILayout.IntField($"{title} Score", headScore);
 
         if (subRules != null && subRules.Length > 0)
         {
@@ -220,24 +222,5 @@ public static class UtilityAIDrawer
             EditorGUILayout.EndVertical();
         }
         EditorGUILayout.EndVertical();
-    }
-
-    private static Dictionary<string, MonoScript> scriptCache = new Dictionary<string, MonoScript>();
-    private static void DrawScriptLink(string className)
-    {
-        if (!scriptCache.TryGetValue(className, out MonoScript script))
-        {
-            string[] guids = AssetDatabase.FindAssets($"{className} t:Script");
-            if (guids.Length == 0)
-            {
-                Debug.LogWarning($"Script not found: {className}");
-                return;
-            }
-            string path = AssetDatabase.GUIDToAssetPath(guids[0]);
-            script = AssetDatabase.LoadAssetAtPath<MonoScript>(path);
-            scriptCache[className] = script;
-        }
-
-        EditorGUILayout.ObjectField(script, typeof(MonoScript), false);
     }
 }

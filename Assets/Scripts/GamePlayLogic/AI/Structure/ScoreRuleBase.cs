@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Tactics.AI;
+using UnityEditor.Rendering.LookDev;
 
 public abstract class ScoreRuleBase : IScoreRule
 {
@@ -7,21 +8,23 @@ public abstract class ScoreRuleBase : IScoreRule
     protected UtilityAIScoreConfig utilityAI;
     protected List<IScoreRule> scoreSubRules;
     protected int scoreBonus;
-    protected bool debugMode;
+    protected RuleDebugContext context;
 
     protected DecisionSystem DecisionSystem => decisionSystem;
     protected UtilityAIScoreConfig UtilityAI => utilityAI;
     protected List<IScoreRule> ScoreSubRules => scoreSubRules;
-    public int ScoreBonus => scoreBonus;
-    public bool DebugMode => debugMode;
+    protected int ScoreBonus => scoreBonus;
+    protected RuleDebugContext Context => context;
+    protected virtual bool DebugMode => DebugManager.IsDebugEnabled(context);
 
-    protected ScoreRuleBase(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode)
+    protected ScoreRuleBase(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, 
+        List<IScoreRule> scoreSubRules, int scoreBonus, RuleDebugContext context)
     {
         this.decisionSystem = decisionSystem;
         this.utilityAI = utilityAI;
         this.scoreSubRules = scoreSubRules;
         this.scoreBonus = scoreBonus;
-        this.debugMode = debugMode;
+        this.context = context;
     }
 
     public virtual float CalculateTargetScore(CharacterBase character,

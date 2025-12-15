@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class DefenseBackRule : ScoreRuleBase
 {
-    public DefenseBackRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
+    public DefenseBackRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, RuleDebugContext context) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, context)
     {
     }
+
+    protected override bool DebugMode => DebugManager.IsDebugEnabled(context);
 
     public override float CalculateOrientationScore(CharacterBase character, 
         GameNode originNode, Orientation orientation)
@@ -36,7 +38,7 @@ public class DefenseBackRule : ScoreRuleBase
             }
         }
 
-        if (debugMode)
+        if (DebugMode)
             Debug.Log(
                 $"<color=purple>[DefenseBackRule]</color> " +
                 $"{character.data.characterName}, " +

@@ -91,7 +91,7 @@ public class GridCharacter : Entity
         {
             if (node != null)
             {
-                node.character = null;
+                node.SetUnitGridCharacter(null);
             }
         }
     }

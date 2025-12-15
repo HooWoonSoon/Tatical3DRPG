@@ -33,7 +33,7 @@ namespace Tactics.AI
 
         private bool debugMode = false;
 
-        public DecisionSystem(World world, UtilityAIScoreConfig utility, CharacterBase decisionMaker, 
+        public DecisionSystem(World world, UtilityAIScoreConfig utility, CharacterBase decisionMaker,
             bool debugMode = false)
         {
             this.world = world;
@@ -47,62 +47,65 @@ namespace Tactics.AI
             //  Move Rule
             List<IScoreRule> moveTargetSubRules = new List<IScoreRule>()
             {
-                new TargetRule(this, utilityAI, null, utility.targeRuleScore, false)
+                new TargetRule(this, utilityAI, null, utility.targeRuleScore,
+                RuleDebugContext.MoveTarget)
             };
             moveToTargetRules.Add(new MoveTargetRule(this, utilityAI, moveTargetSubRules,
-                utility.moveTargetRuleScore, false));
+                utility.moveTargetRuleScore, RuleDebugContext.MoveTarget));
 
             List<IScoreRule> moveSubRules = new List<IScoreRule>()
             {
-                new HarmRule(this, utilityAI, null, utility.harmRuleScore, false),
-                new TreatRule(this, utilityAI, null, utility.treatRuleScore, false)
+                new SkillHarmRule(this, utilityAI, null, utility.harmRuleScore, RuleDebugContext.RiskMove),
+                new SkillTreatRule(this, utilityAI, null, utility.treatRuleScore, RuleDebugContext.RiskMove)
             };
-            moveRules.Add(new RiskMoveRule(this, utilityAI, moveSubRules, utility.riskMoveRuleScore, 
-                false));
+            moveRules.Add(new RiskMoveRule(this, utilityAI, moveSubRules, utility.riskMoveRuleScore,
+                RuleDebugContext.RiskMove));
 
             List<IScoreRule> harmSubRules = new List<IScoreRule>()
             {
-                new FatalHitRule(this, utilityAI, null, utility.fatalHitRuleScore, false)
+                new FatalHitRule(this, utilityAI, null, utility.fatalHitRuleScore,
+                RuleDebugContext.Origin_Harm)
             };
-            skillRules.Add(new HarmRule(this, utilityAI, harmSubRules, utility.originHarmRuleScore, 
-                false));
+            skillRules.Add(new SkillHarmRule(this, utilityAI, harmSubRules, utility.originHarmRuleScore,
+                RuleDebugContext.Origin_Harm));
             List<IScoreRule> treatSubRules = new List<IScoreRule>()
             {
             };
-            skillRules.Add(new TreatRule(this, utilityAI, treatSubRules, utility.originTreatRuleScore, 
-                false));
+            skillRules.Add(new SkillTreatRule(this, utilityAI, treatSubRules, utility.originTreatRuleScore,
+                RuleDebugContext.Origin_Treat));
 
             //  Move Skill Rule
             List<IScoreRule> moveHarmSubRules = new List<IScoreRule>()
-            { 
-                new FatalHitRule(this, utilityAI, null, utility.riskFatalHitRuleScore, false)
+            {
+                new FatalHitRule(this, utilityAI, null, utility.riskFatalHitRuleScore,
+                RuleDebugContext.RiskMove_Harm)
             };
-            moveSkillRules.Add(new RiskMoveHarmRule(this, utilityAI, moveHarmSubRules, 
-                utility.riskMoveHarmRuleScore, true));
+            moveSkillRules.Add(new RiskMoveHarmRule(this, utilityAI, moveHarmSubRules,
+                utility.riskMoveHarmRuleScore, RuleDebugContext.RiskMove_Harm));
 
             List<IScoreRule> moveTreatSubRules = new List<IScoreRule>()
             {
             };
-            moveSkillRules.Add(new RiskMoveTreatRule(this, utilityAI, moveTreatSubRules, 
-                utility.riskMoveTreatRuleScore, false));
+            moveSkillRules.Add(new RiskMoveTreatRule(this, utilityAI, moveTreatSubRules,
+                utility.riskMoveTreatRuleScore, RuleDebugContext.RiskMove_Treat));
 
-            orientationRule.Add(new DefenseBackRule(this, utilityAI, null, utility.defenseBackRuleRuleScore, 
-                false));
+            orientationRule.Add(new DefenseBackRule(this, utilityAI, null,
+                utility.defenseBackRuleScore, RuleDebugContext.DefenseBack));
         }
 
         public void MakeDecision(bool allowMove = true, bool allowSkill = true)
         {
             float startTime = Time.realtimeSinceStartup;
 
-            EvaluateSkill(allowSkill, out float skillBestScore, 
-                out SkillData originSkill, out GameNode originSkillTargetNode, 
+            EvaluateSkill(allowSkill, out float skillBestScore,
+                out SkillData originSkill, out GameNode originSkillTargetNode,
                 out string sourceSkill);
 
             EvaluateMoveAndSkill(allowMove, allowSkill, out float moveAndSkillBestScore,
-                out SkillData moveSkill, out GameNode moveSkillMoveNode, 
+                out SkillData moveSkill, out GameNode moveSkillMoveNode,
                 out GameNode moveSkillTargetNode, out string sourceMoveAndSkill);
 
-            EvaluateMove(allowMove, allowSkill, out float moveBestScore, 
+            EvaluateMove(allowMove, allowSkill, out float moveBestScore,
                 out GameNode moveOnlyNode, out string sourceMove);
 
             float ORIGIN_SKILL_BONUS = 0f;
@@ -187,7 +190,7 @@ namespace Tactics.AI
         }
 
         #region Evaluation Methods
-        private void EvaluateSkill(bool allowSkill, out float skillBestScore, 
+        private void EvaluateSkill(bool allowSkill, out float skillBestScore,
             out SkillData originSkill, out GameNode originSkillTargetNode,
             out string source)
         {
@@ -205,8 +208,8 @@ namespace Tactics.AI
                 source = "Evaluate Origin Skill Option";
             }
         }
-        private void EvaluateMoveAndSkill(bool allowMove, bool allowSkill, 
-            out float moveAndSkillBestScore, out SkillData moveSkill, 
+        private void EvaluateMoveAndSkill(bool allowMove, bool allowSkill,
+            out float moveAndSkillBestScore, out SkillData moveSkill,
             out GameNode moveSkillMoveNode, out GameNode moveSkillTargetNode,
             out string source)
         {
@@ -226,8 +229,8 @@ namespace Tactics.AI
                 source = "Evaluate Move And Skill Option";
             }
         }
-        private void EvaluateMove(bool allowMove, bool allowSkill, 
-            out float moveBestScore, out GameNode moveOnlyNode, 
+        private void EvaluateMove(bool allowMove, bool allowSkill,
+            out float moveBestScore, out GameNode moveOnlyNode,
             out string soure)
         {
             moveBestScore = float.MinValue;
@@ -253,7 +256,7 @@ namespace Tactics.AI
         private void EvaluateOrientation(GameNode originNode, ref Orientation bestOrientation)
         {
             float bestOrientationScore = int.MinValue;
-            Orientation[] orientations = 
+            Orientation[] orientations =
             {
                 Orientation.right,
                 Orientation.left,
@@ -311,10 +314,9 @@ namespace Tactics.AI
 
                     foreach (var rule in skillRules)
                     {
-                        totalScore += rule.CalculateSkillScore(decisionMaker, skill, 
+                        totalScore += rule.CalculateSkillScore(decisionMaker, skill,
                             skillTargetNode, maxHealthAmongOpposite);
                     }
-                    Debug.Log($"TotalScore: {totalScore}");
 
                     if (totalScore > bestScore)
                     {
@@ -331,8 +333,8 @@ namespace Tactics.AI
                 $" completed in {endTime - startTime:F4} seconds, " +
                 $"score: {bestScore}");
         }
-        private void EvaluateMoveAndSkillOption(ref float bestScore, 
-            ref SkillData bestSkill, ref GameNode bestMoveNode, 
+        private void EvaluateMoveAndSkillOption(ref float bestScore,
+            ref SkillData bestSkill, ref GameNode bestMoveNode,
             ref GameNode bestSkillTargetNode)
         {
             float startTime = Time.realtimeSinceStartup;
@@ -356,7 +358,7 @@ namespace Tactics.AI
             foreach (SkillData skill in skills)
             {
                 if (!skill.isTargetTypeSkill) continue;
-                
+
                 List<GameNode> skillTargetableMovableNode = GetSkillTargetableMovableNode(decisionMaker, skill);
 
                 if (debugMode)
@@ -389,8 +391,8 @@ namespace Tactics.AI
 
                         foreach (var rule in moveSkillRules)
                         {
-                            totalScore += rule.CalculateRiskMoveSkillScore(decisionMaker, skill, 
-                                characterSkillInfluenceNodes, moveNode, skillTargetNode, 
+                            totalScore += rule.CalculateRiskMoveSkillScore(decisionMaker, skill,
+                                characterSkillInfluenceNodes, moveNode, skillTargetNode,
                                 highestHealthAmongCharacters);
                         }
 
@@ -410,7 +412,7 @@ namespace Tactics.AI
                 $" completed in {endTime - startTime:F4} seconds, " +
                 $"score: {bestScore}");
         }
-        private void EvaluateMoveTargetOption(ref float bestScore, 
+        private void EvaluateMoveTargetOption(ref float bestScore,
             ref GameNode bestNode)
         {
             float startTime = Time.realtimeSinceStartup;
@@ -422,7 +424,7 @@ namespace Tactics.AI
             List<CharacterBase> teammates = GetSameTeamCharacter(decisionMaker, mapCharactersExceptSelf);
             float frontLineIndex = CalculateFrontPosIndex(decisionMaker, opposites);
 
-            CharacterSkillInfluenceNodes characterSkillInfluenceNodes = 
+            CharacterSkillInfluenceNodes characterSkillInfluenceNodes =
                 new CharacterSkillInfluenceNodes(this, opposites, teammates);
 
             foreach (CharacterBase targetCharacter in mapCharactersExceptSelf)
@@ -442,7 +444,7 @@ namespace Tactics.AI
 
                         foreach (var rule in moveToTargetRules)
                             totalScore += rule.CalculateMoveToTargetScore(decisionMaker, frontLineIndex,
-                                targetCharacter, targetAroundNodes, moveNode, teammates, 
+                                targetCharacter, targetAroundNodes, moveNode, teammates,
                                 opposites, characterSkillInfluenceNodes);
 
                         if (totalScore > bestScore)
@@ -460,23 +462,23 @@ namespace Tactics.AI
                 $" completed in {endTime - startTime:F4} seconds, " +
                 $"score: {bestScore}");
         }
-        private void EvaluateMoveOption(ref float bestScore, 
+        private void EvaluateMoveOption(ref float bestScore,
             ref GameNode bestMoveNode)
         {
             float startTime = Time.realtimeSinceStartup;
             Debug.Log("Execute Evaluate Move Option");
             List<GameNode> movableNodes = decisionMaker.GetMovableNodes();
 
-            List<CharacterBase> mapCharactersExceptSelf = 
+            List<CharacterBase> mapCharactersExceptSelf =
                 decisionMaker.GetMapCharacterExceptSelf();
             if (mapCharactersExceptSelf == null || mapCharactersExceptSelf.Count == 0) return;
 
-            List<CharacterBase> opposites = 
+            List<CharacterBase> opposites =
                 GetOppositeCharacter(decisionMaker, mapCharactersExceptSelf);
             List<CharacterBase> teammates =
                 GetSameTeamCharacter(decisionMaker, mapCharactersExceptSelf);
 
-            CharacterSkillInfluenceNodes characterSkillInfluenceNodes = 
+            CharacterSkillInfluenceNodes characterSkillInfluenceNodes =
                 new CharacterSkillInfluenceNodes(this, opposites, teammates);
 
             float bestRiskMoveScore = 0;
@@ -541,19 +543,19 @@ namespace Tactics.AI
             int oppositeMovableNodesCount, GameNode moveNode)
         {
             GameNode currentNode = character.currentNode;
-            currentNode.character = null;
-            moveNode.character = character;
+            currentNode.SetUnitGridCharacter(null);
+            moveNode.SetUnitGridCharacter(character);
 
             int currentOppositeMovableCount = opposite.GetMovableNodes().Count;
 
-            currentNode.character = character;
-            moveNode.character = null;
+            currentNode.SetUnitGridCharacter(character);
+            moveNode.SetUnitGridCharacter(null);
 
             return oppositeMovableNodesCount - currentOppositeMovableCount;
         }
 
         #region Front Score
-        public CharacterBase GetMostHighFrontScoreCharacter(List<CharacterBase> characters, 
+        public CharacterBase GetMostHighFrontScoreCharacter(List<CharacterBase> characters,
             List<CharacterBase> opposites)
         {
             float bestScore = float.MinValue;
@@ -579,7 +581,7 @@ namespace Tactics.AI
         /// <param name="character">The character required to evaluate</param>
         /// <param name="opposites">List of characters in the opposite team</param>
         /// <returns></returns>
-        public float CalculateFrontPosIndex(CharacterBase character, 
+        public float CalculateFrontPosIndex(CharacterBase character,
             List<CharacterBase> opposites)
         {
             float score = 0f;
@@ -687,7 +689,7 @@ namespace Tactics.AI
             public Dictionary<CharacterBase, Dictionary<SkillData, List<GameNode>>> oppositeInfluence;
             public Dictionary<CharacterBase, Dictionary<SkillData, List<GameNode>>> teammateInfluence;
 
-            public CharacterSkillInfluenceNodes(DecisionSystem decisionSystem, List<CharacterBase> opposites, 
+            public CharacterSkillInfluenceNodes(DecisionSystem decisionSystem, List<CharacterBase> opposites,
                 List<CharacterBase> teammates, bool debugMode = false)
             {
                 oppositeInfluence = new Dictionary<CharacterBase, Dictionary<SkillData, List<GameNode>>>();
@@ -792,7 +794,7 @@ namespace Tactics.AI
             }
             return skillCanSupportSet;
         }
-        
+
         private int GetCharactersHighestHealth(List<CharacterBase> characters)
         {
             int highestHealth = 0;
@@ -812,7 +814,7 @@ namespace Tactics.AI
             List<CharacterBase> characters = new List<CharacterBase>();
             foreach (GameNode node in world.loadedNodes.Values)
             {
-                CharacterBase nodeCharacter = node.character;
+                CharacterBase nodeCharacter = node.GetUnitGridCharacter();
                 if (nodeCharacter != null)
                     characters.Add(nodeCharacter);
             }
@@ -868,16 +870,16 @@ namespace Tactics.AI
         private bool IsValidSkillTargetNodeSingle(SkillData skill, GameNode targetNode)
         {
             TeamType selfTeam = decisionMaker.data.type;
-            CharacterBase targetNodeCharacter = targetNode.character;
+            CharacterBase targetNodeCharacter = targetNode.GetUnitGridCharacter();
 
             if (targetNodeCharacter == null) return false;
 
-            UnitState unitState = targetNodeCharacter.unitState;            
-            if (unitState == UnitState.Knockout || unitState == UnitState.Dead) 
+            UnitState unitState = targetNodeCharacter.unitState;
+            if (unitState == UnitState.Knockout || unitState == UnitState.Dead)
             {
                 if (debugMode)
                     Debug.Log("Skill target character is knockout or dead");
-                return false; 
+                return false;
             }
 
             switch (skill.skillTargetType)
@@ -908,10 +910,10 @@ namespace Tactics.AI
             if (skill.isProjectile)
             {
                 Parabola parabola = new Parabola(world);
-                if (targetNode.character != null)
+                if (targetNode.GetUnitGridCharacter() != null)
                 {
                     UnitDetectable projectileDetect = skill.projectTilePrefab.GetComponent<UnitDetectable>();
-                    
+
                     List<UnitDetectable> units = parabola.GetParabolaHitUnit
                         (projectileDetect, startNode.GetNodeVector() + new Vector3(0, shootOffsetHeight, 0),
                         targetNode.GetNodeVector(),
@@ -927,7 +929,7 @@ namespace Tactics.AI
                             CharacterBase hitCharacter = unit.GetComponent<CharacterBase>();
                             if (hitCharacter == null) continue;
 
-                            if (hitCharacter == targetNode.character)
+                            if (hitCharacter == targetNode.GetUnitGridCharacter())
                                 hitTarget = true;
 
                             if (hitCharacter.currentTeam == decisionMaker.currentTeam)
@@ -959,24 +961,24 @@ namespace Tactics.AI
             GameNode originNode = character.currentNode;
 
             if (movableNodes == null || movableNodes.Count == 0) return null;
-            
-                foreach (GameNode moveNode in movableNodes)
+
+            foreach (GameNode moveNode in movableNodes)
             {
-                CharacterBase originNodeCharacter = originNode.character;
-                CharacterBase moveNodeCharacter = moveNode.character;
+                CharacterBase originNodeCharacter = originNode.GetUnitGridCharacter();
+                CharacterBase moveNodeCharacter = moveNode.GetUnitGridCharacter();
 
                 //  Simulate character change occupyied node
                 if (moveNode != originNode)
                 {
-                    originNode.character = null;
-                    moveNode.character = character;
+                    originNode.SetUnitGridCharacter(null);
+                    moveNode.SetUnitGridCharacter(character);
                 }
                 List<GameNode> influenceNodes = skill.GetInflueneNode(world, moveNode);
 
                 foreach (GameNode node in influenceNodes)
                 {
                     if (!IsValidSkillTargetNodeSingle(skill, node)) continue;
-                    
+
                     if (debugMode)
                     {
                         Debug.Log(
@@ -988,14 +990,14 @@ namespace Tactics.AI
                 }
 
                 //  Revert character occupyied node
-                originNode.character = character;
-                moveNode.character = moveNodeCharacter;
+                originNode.SetUnitGridCharacter(character);
+                moveNode.SetUnitGridCharacter(moveNodeCharacter);
             }
             return result.ToList();
         }
 
         #region External Methods
-        public void GetResult(out SkillData skill, out GameNode moveToNode, 
+        public void GetResult(out SkillData skill, out GameNode moveToNode,
             out GameNode skillTargetNode, out Orientation orientation)
         {
             skill = this.skill;

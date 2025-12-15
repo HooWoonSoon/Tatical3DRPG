@@ -1,6 +1,6 @@
 ﻿using UnityEditor;
 [CustomEditor(typeof(CharacterData))]
-public class CharacterDataEditor : Editor
+public class CharacterDataInpectorRedraw : Editor
 {
     public override void OnInspectorGUI()
     {

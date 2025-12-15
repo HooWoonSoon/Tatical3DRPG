@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class TargetRule : ScoreRuleBase
 {
-    public TargetRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, bool debugMode) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, debugMode)
+    public TargetRule(DecisionSystem decisionSystem, UtilityAIScoreConfig utilityAI, List<IScoreRule> scoreSubRules, int scoreBonus, RuleDebugContext context) : base(decisionSystem, utilityAI, scoreSubRules, scoreBonus, context)
     {
     }
+    protected override bool DebugMode => DebugManager.IsDebugEnabled(context);
 
     public override float CalculateTargetScore(CharacterBase selfCharacter, 
         CharacterBase targetCharacter, List<CharacterBase> teammates, List<CharacterBase> opposites)
@@ -27,7 +28,7 @@ public class TargetRule : ScoreRuleBase
         float t = CalculateOppositeTargetValueFactor(targetCharacter, opposites);
         score = Mathf.Lerp(0, scoreBonus, t);
 
-        if (debugMode)
+        if (DebugMode)
             Debug.Log(
                 $"<color=yellow>[TargetRule]</color> " +
                 $"{selfCharacter.data.characterName}, " +

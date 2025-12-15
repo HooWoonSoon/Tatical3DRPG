@@ -1,7 +1,7 @@
 ﻿using UnityEditor;
 
 [CustomEditor(typeof(SkillData))]
-public class SkillDataEditor : Editor
+public class SkillDataInpectorRedraw : Editor
 {
     public override void OnInspectorGUI()
     {

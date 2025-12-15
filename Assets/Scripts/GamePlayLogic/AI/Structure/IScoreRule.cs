@@ -3,8 +3,6 @@ using Tactics.AI;
 
 public interface IScoreRule
 {
-    int ScoreBonus { get; }
-    bool DebugMode { get; }
     float CalculateTargetScore(CharacterBase selfCharacter, 
         CharacterBase targetCharacter, List<CharacterBase> teammates, 
         List<CharacterBase> opposites);

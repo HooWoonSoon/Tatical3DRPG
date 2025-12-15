@@ -31,7 +31,7 @@ public class TacticsCharactersEditor : EditorWindow
     private PanelState currentPanel = PanelState.CharacterPool;
 
 
-    [MenuItem("Tactics/Characters Pool Editor")]
+    [MenuItem("Tactics/Tactic Characters Editor")]
     private static void ShowWindow()
     {
         TacticsCharactersEditor window = GetWindow<TacticsCharactersEditor>();

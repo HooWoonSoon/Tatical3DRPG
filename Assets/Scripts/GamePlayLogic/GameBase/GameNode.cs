@@ -73,7 +73,7 @@ public class GameNode
         return tilemapSprite;
     }
 
-    public CharacterBase character;
+    public CharacterBase character { get; private set; }
     public void SetUnitGridCharacter(CharacterBase character)
     {
         this.character = character;
