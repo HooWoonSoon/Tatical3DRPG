@@ -61,7 +61,6 @@ public class ParabolaRenderer
             lineRenderer.SetPosition(i, nextPoint);
             if (world.CheckSolidNodeLine(previousPoint, nextPoint))
             {
-                Debug.Log($"Hit Solid: {nextPoint}");
                 lineRenderer.positionCount = i + 1;
                 return;
             }
@@ -69,7 +68,6 @@ public class ParabolaRenderer
         }
         if (world.CheckSolidNode(target))
         {
-            Debug.Log($"Hit Solid: {target}");
             return;
         }
     }

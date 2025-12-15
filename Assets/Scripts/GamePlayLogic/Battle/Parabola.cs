@@ -13,15 +13,33 @@ public class Parabola
         this.debugMode = debugMode;
     }
 
-    public List<UnitDetectable> GetParabolaHitUnit(UnitDetectable projectileDetectable, GameNode start, GameNode target, int elevationAngle)
+    public List<UnitDetectable> GetParabolaHitUnits(UnitDetectable projectileDetectable, 
+        GameNode start, GameNode target, int elevationAngle, 
+        List<UnitDetectable> ingoreUnits)
     {
-        return GetParabolaHitUnit(projectileDetectable, start.GetNodeVector(), target.GetNodeVector(), elevationAngle);
+        List<UnitDetectable> collectedUnits = new List<UnitDetectable>();
+        ParabolaHitUnitInternel(projectileDetectable, start.GetNodeVector(), 
+            target.GetNodeVector(), elevationAngle, collectedUnits, ingoreUnits);
+        return collectedUnits;
     }
 
-    public List<UnitDetectable> GetParabolaHitUnit(UnitDetectable projectileDetectable, Vector3 start, Vector3 target, int elevationAngle)
+    public UnitDetectable GetParabolaHitUnit(UnitDetectable projectileDetectable, 
+        GameNode start, GameNode target, int elevationAngle, List<UnitDetectable> ingoreUnits)
     {
-        List<UnitDetectable> hits = new List<UnitDetectable>();
+        return ParabolaHitUnitInternel(projectileDetectable, start.GetNodeVector(), 
+            target.GetNodeVector(), elevationAngle, null, ingoreUnits);
+    }
 
+    public UnitDetectable GetParabolaHitUnit(UnitDetectable projectileDetectable, 
+        Vector3 start, Vector3 target, int elevationAngle, List<UnitDetectable> ingoreUnits)
+    {
+        return ParabolaHitUnitInternel(projectileDetectable, start, target, elevationAngle, null, ingoreUnits);
+    }
+
+    public UnitDetectable ParabolaHitUnitInternel(UnitDetectable projectileDetectable, 
+        Vector3 start, Vector3 target, int elevationAngle, List<UnitDetectable> collections, 
+        List<UnitDetectable> ingoreUnits)
+    {
         Vector3 displacementXZ = new Vector3(target.x - start.x, 0, target.z - start.z);
         float distanceXZ = displacementXZ.magnitude;
         float heightDifference = target.y - start.y;
@@ -62,23 +80,29 @@ public class Parabola
             if (direction != Vector3.zero)
             {
                 Quaternion rotation = Quaternion.LookRotation(direction);
-                Bounds projectileBound = projectileDetectable.GetRotatedBounds(nextPoint, rotation, center, size);
+                Bounds projectileBound = projectileDetectable.GetRotatedBounds
+                    (nextPoint, rotation, center, size);
 
                 if (world.CheckSolidNodeBound(projectileBound))
                 {
                     if (debugMode)
-                        Debug.Log("Hit Solid");
+                        Debug.Log("Hit Solid break!");
+                    break;
                 }
 
                 UnitDetectable unit = GetHitUnitDetectable(projectileBound);
-                if (unit != null && !hits.Contains(unit))
+                if (unit != null && (ingoreUnits == null || !ingoreUnits.Contains(unit)))
                 {
-                    hits.Add(unit);
+                    if (collections == null)
+                        return unit;
+
+                    if (!collections.Contains(unit))
+                        collections.Add(unit);
                 }
             }
             previousPoint = nextPoint;
         }
-        return hits;
+        return null;
     }
 
     public UnitDetectable GetHitUnitDetectable(Bounds bounds)

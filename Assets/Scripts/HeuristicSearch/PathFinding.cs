@@ -334,7 +334,6 @@ public class PathFinding
             if (node.dijkstraCost == lowestCost)
                 lowestCostNodes.Add(node);
         }
-
         return lowestCostNodes;
     }
 

@@ -160,7 +160,7 @@ public class BattleManager : Entity
         BattleUIManager.instance.PrepareBattleUI();
         CTTimeline.instance.SetJoinedBattleUnit(joinedBattleUnits);
         CTTimeline.instance.SetupTimeline();
-        GameEvent.OnBattleUIFinish += () =>
+        GameEvent.onBattleUIFinish += () =>
         {
             GameEvent.onBattleStart?.Invoke();
             isBattleStarted = true;
@@ -319,6 +319,7 @@ public class BattleManager : Entity
     public void SetGridCursorAt(GameNode target)
     {
         gridCursor.SetGridCursorAt(target);
+        CTTurnUIManager.instance.TargetCursorNodeCharacterUI(target);
     }
     public GameNode GetSelectedGameNode()
     {
@@ -563,12 +564,17 @@ public class BattleManager : Entity
     }
     #endregion
 
-    public void CastSkill(CharacterBase selfCharacter, SkillData currentSkill, GameNode originNode,
+    public void CastSkill(CharacterBase selfCharacter, SkillData currentSkill, GameNode castAtNode,
         GameNode targetNode, Action onSkillFinished)
     {
         if (selfCharacter == null)
         {
             Debug.LogError("CastSkill failed: selfCharacter is null");
+            return;
+        }
+        if (castAtNode == null)
+        {
+            Debug.LogError("CastSkill failed: castAtNode is null");
             return;
         }
 
@@ -590,7 +596,7 @@ public class BattleManager : Entity
         Vector3 direction = (targetNode.GetNodeVector() - selfCharacter.transform.position);
         selfCharacter.SetOrientation(direction);
 
-        StartCoroutine(SkillCastCoroutine(selfCharacter, currentSkill, originNode, targetNode, onSkillFinished));
+        StartCoroutine(SkillCastCoroutine(selfCharacter, currentSkill, castAtNode, targetNode, onSkillFinished));
     }
 
     private IEnumerator SkillCastCoroutine(CharacterBase selfCharacter, SkillData currentSkill,
@@ -602,15 +608,16 @@ public class BattleManager : Entity
         if (currentSkill.isProjectile)
         {
             Projectile projectile = CastSkillProjectile(selfCharacter, currentSkill, originNode, targetNode);
-            if (projectile == null) 
+            if (projectile == null)
             {
                 Debug.LogWarning("Missing projectile");
                 isFinish = true;
             }
-            
-            projectile.onHitCompleted += () => { isFinish = true; };
-
-            yield return new WaitUntil(() => isFinish);
+            else
+            {
+                projectile.onHitCompleted += () => { isFinish = true; };
+                yield return new WaitUntil(() => isFinish);
+            }
         }
         else
         {

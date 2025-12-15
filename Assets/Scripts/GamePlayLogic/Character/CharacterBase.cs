@@ -145,6 +145,14 @@ public abstract class CharacterBase : Entity
     }
     #endregion
 
+    public void SetNode(GameNode newNode)
+    {
+        if (currentNode == newNode) return;
+
+        currentNode?.SetUnitGridCharacter(null);
+        currentNode = newNode;
+        currentNode?.SetUnitGridCharacter(this);
+    }
     public void SetGridPos()
     {
         if (world == null) return;
@@ -152,9 +160,8 @@ public abstract class CharacterBase : Entity
         GameNode nextGridNode = world.GetNode(Utils.RoundXZFloorYInt(transform.position));
 
         if (nextGridNode == currentNode || nextGridNode == null) { return; }
-        
-        currentNode = nextGridNode;
-        GridCharacter.instance.SetGridCharacter(currentNode, this);
+
+        SetNode(nextGridNode);
     }
     public Vector3Int GetCharacterTranformToNodePos()
     {
@@ -199,6 +206,8 @@ public abstract class CharacterBase : Entity
     {
         Vector3 selfPos = GetCharacterTranformToNodePos();
         Vector3 targetPos = targetNode.GetNodeVector();
+
+        if (selfPos == targetPos) return null;
 
         PathRoute pathRoute = pathFinding.GetPathRoute(selfPos, targetPos, this, 1, 1);
         if (pathRoute == null)
@@ -401,6 +410,7 @@ public abstract class CharacterBase : Entity
     private void KnockOut()
     {
         unitState = UnitState.Knockout;
+        currentNode.SetUnitGridCharacter(null);
         gameObject.SetActive(false);
     }
 

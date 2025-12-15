@@ -70,11 +70,6 @@ public class GridCursor : Entity
         if (gameNode != null)
         {
             cursor.transform.position = gameNode.GetNodeVectorInt() + new Vector3(0, heightOffset);
-            CharacterBase character = gameNode.GetUnitGridCharacter();
-            if (character != null)
-            {
-                CTTurnUIManager.instance.TargetCursorCharacterUI(character);
-            }
             currentNode = gameNode;
             hasMoved = true;
         }

@@ -277,8 +277,16 @@ public class CTTurnUIManager : MonoBehaviour
             break;
         }
     }
+    public void TargetCursorNodeCharacterUI(GameNode targetNode)
+    {
+        if (targetNode == null) return;
+        CharacterBase character = targetNode.GetUnitGridCharacter();
+        TargetCursorCharacterUI(character);
+    }
     public void TargetCursorCharacterUI(CharacterBase character)
     {
+        if (character == null) return;
+
         for (int i = 0; i < turnUIImages.Count; i++)
         {
             if (turnUIImages[i].roundCount < currentCTRound.roundCount) { continue; }

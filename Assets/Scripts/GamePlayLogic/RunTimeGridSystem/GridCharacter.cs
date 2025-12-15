@@ -15,30 +15,17 @@ public class GridCharacter : Entity
     protected override void Start()
     {
         base.Start();
-        SubscribeAllNodes();
+        GameEvent.onMapSwitchedTrigger += InitializeGridCharacter;
+        InitializeGridCharacter();
     }
 
-    private void LateUpdate()
+    public void InitializeGridCharacter()
     {
-        if (updateCharacter)
+        ResetAllGridCharacter();
+        foreach (CharacterBase character in characterPools.allCharacter)
         {
-            ResetAllGridCharacter();
-            foreach (CharacterBase character in characterPools.allCharacter)
-            {
-                UpdateGridCharacter(character);
-            }
-            updateCharacter = false;
+            UpdateGridCharacter(character);
         }
-    }
-    public void SubscribeAllNodes()
-    {
-        foreach (var kvp in world.loadedNodes)
-        {
-            GameNode node = kvp.Value;
-            if (node != null)
-                node.onWorldNodesChange += OnCharacterChanged;
-        }
-        updateCharacter = true;
     }
     private void OnCharacterChanged(object sender, GameNode.OnWorldNodesChange e)
     {

@@ -16,8 +16,8 @@ public static class GameEvent
     public static Action<CharacterBase> onBattleUnitKnockout;
 
     //  Battle UI Related Event
-    public static Action OnBattleUIStart;
-    public static Action OnBattleUIFinish;
+    public static Action onBattleUIStart;
+    public static Action onBattleUIFinish;
 
     public static Action onMapSwitchedTrigger;
 

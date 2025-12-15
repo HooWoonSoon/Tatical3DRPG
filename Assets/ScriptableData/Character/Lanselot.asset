@@ -17,10 +17,10 @@ MonoBehaviour:
   turnUISprite: {fileID: 21300000, guid: 4e256d9a08b556047898841cb7fb06c1, type: 3}
   isometricIcon: {fileID: 21300000, guid: 4cdfef10fb3ad314f8009a5fec45827c, type: 3}
   type: 1
-  unitType: 0
   health: 170
   mental: 80
   physicAttack: 24
   magicAttack: 18
   speed: 16
   movementValue: 5
+  criticalChance: 0.1

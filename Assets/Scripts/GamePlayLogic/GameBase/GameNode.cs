@@ -78,7 +78,6 @@ public class GameNode
     {
         this.character = character;
         //Debug.Log("Grid Character Changed");
-        TriggerWorldNodeChanged(x, y, z);
     }
     public CharacterBase GetUnitGridCharacter()
     {

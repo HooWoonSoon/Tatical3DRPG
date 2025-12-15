@@ -6,13 +6,12 @@ public enum PlayerBattlePhase
 {
     Ready, Wait, MoveComand, SkillComand, SkillTarget, Move, SkillCast,
     ReleaseMoveComand,
-    ReleaseSkillComand, ReleaseSkillComandEnd, 
+    ReleaseSkillComandViewMode, ReleaseSkillComand, ReleaseSkillComandEnd, 
     End
 }
 
 public class PlayerBattleState : PlayerBaseState
 {
-
     private PlayerBattlePhase currentPhase;
 
     private Action changedHandler;
@@ -72,6 +71,8 @@ public class PlayerBattleState : PlayerBaseState
 
                     List<GameNode> movableNodes = character.GetMovableNodes();
                     character.ShowDangerMovableAndTargetTilemap(selectedNode, movableNodes);
+                    CTTurnUIManager.instance.TargetCursorNodeCharacterUI(selectedNode);
+                    
                     if (selectedNode.character != null)
                     {
                         BattleUIManager.instance.SwitchInfoPanel();
@@ -151,6 +152,15 @@ public class PlayerBattleState : PlayerBaseState
                     {
                         BattleManager.instance.ShowProjectileParabola(character, selectedSkill, confirmMoveNode, selectedNode);
                     }
+
+                    if (selectedNode.character != null)
+                    {
+                        BattleUIManager.instance.SwitchInfoPanel();
+                    }
+                    else if (selectedNode.character == null)
+                    {
+                        BattleUIManager.instance.OffCursorPanel();
+                    }
                 }
                 if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Backspace))
                 {
@@ -177,6 +187,7 @@ public class PlayerBattleState : PlayerBaseState
                     BattleManager.instance.ShowPathLine(character, 
                         character.GetCharacterNodePos(), selectedNode.GetNodeVector());
                     character.ShowDangerMovableAndTargetTilemap(selectedNode);
+                    CTTurnUIManager.instance.TargetCursorNodeCharacterUI(selectedNode);
                 }
                 if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Z))
                 {
@@ -219,8 +230,28 @@ public class PlayerBattleState : PlayerBaseState
                     }
                 }
                 break;
+            case PlayerBattlePhase.ReleaseSkillComandViewMode:
+                if (BattleManager.instance.IsSelectedNodeChange())
+                {
+                    GameNode selectedNode = BattleManager.instance.GetSelectedGameNode();
+                    CTTurnUIManager.instance.TargetCursorNodeCharacterUI(selectedNode);
+
+                    if (selectedNode.character != null)
+                        BattleUIManager.instance.SwitchInfoPanel();
+                    if (selectedNode.character == null)
+                        BattleUIManager.instance.OffCursorPanel();
+                }
+                if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.Backspace))
+                {
+                    ChangePhase(PlayerBattlePhase.ReleaseSkillComand);
+                }
+                break;
             case PlayerBattlePhase.ReleaseSkillComand:
-                if (Input.GetKeyDown(KeyCode.Return))
+                if (Input.GetKeyDown(KeyCode.Escape))
+                {
+                    ChangePhase(PlayerBattlePhase.ReleaseSkillComandViewMode);
+                }
+                else if (Input.GetKeyDown(KeyCode.Return))
                 {
                     ChangePhase(PlayerBattlePhase.SkillTarget);
                 }
@@ -378,6 +409,10 @@ public class PlayerBattleState : PlayerBaseState
                 character.ShowDangerMovableAndTargetTilemap(confirmMoveNode);
                 movedConfirmed = true;
                 break;
+            case PlayerBattlePhase.ReleaseSkillComandViewMode:
+                BattleManager.instance.ActivateMoveCursorAndHide(true, false);
+                BattleUIManager.instance.CloseSkillUI();
+                break;
             case PlayerBattlePhase.ReleaseSkillComand:
                 SkillComandInstruction();
                 break;
@@ -395,6 +430,7 @@ public class PlayerBattleState : PlayerBaseState
 
     private void SkillComandInstruction()
     {
+        CTTurnUIManager.instance.TargetCursorCharacterUI(character);
         BattleManager.instance.SetGridCursorAt(confirmMoveNode);
         BattleManager.instance.ActivateMoveCursorAndHide(false, false);
         BattleManager.instance.ShowOppositeTeamParabola(character, confirmMoveNode);

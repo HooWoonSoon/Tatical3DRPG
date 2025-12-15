@@ -77,7 +77,6 @@ public class MapManager : MonoBehaviour
         SaveAndLoad.LoadMap(world, mapDataPath, () =>
         {
             GridTilemapVisual.instance.SubscribeAllNodes();
-            GridCharacter.instance.SubscribeAllNodes();
             GameEvent.onMapSwitchedTrigger?.Invoke();
         });
 

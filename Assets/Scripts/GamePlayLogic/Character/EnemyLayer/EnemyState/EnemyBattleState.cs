@@ -60,7 +60,7 @@ public class EnemyBattleState : EnemyBaseState
             case AgentBattlePhase.Thinking:
                 if (phaseStartTime > 0.5f)
                 {
-                    if (character.pathRoute != null)
+                    if (character.pathRoute != null && character.pathRoute.pathNodeVectorList.Count > 0)
                         ChangePhase(AgentBattlePhase.Move);
                     else if (currentSkill != null)
                         ChangePhase(AgentBattlePhase.SkillCast);
@@ -71,7 +71,8 @@ public class EnemyBattleState : EnemyBaseState
             case AgentBattlePhase.ReleaseMoveThinking:
                 if (phaseStartTime > 0.5f)
                 {
-                    if (character.pathRoute != null)
+                    if (character.pathRoute != null && character.pathRoute.pathNodeVectorList.Count > 0
+                        )
                         ChangePhase(AgentBattlePhase.Move);
                     else
                         ChangePhase(AgentBattlePhase.End);

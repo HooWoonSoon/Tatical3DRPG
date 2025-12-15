@@ -13,7 +13,7 @@ public class ExploreUIManager : MonoBehaviour
 
     private void Start()
     {
-        GameEvent.OnBattleUIFinish += DisableExploreMachanine;
+        GameEvent.onBattleUIFinish += DisableExploreMachanine;
         GameEvent.onDeploymentStart += DisableExploreMachanine;
         GameEvent.onBattleEnd += EnableExploreMachanine;
         EnableExploreMachanine();

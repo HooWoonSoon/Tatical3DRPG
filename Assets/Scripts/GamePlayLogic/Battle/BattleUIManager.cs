@@ -32,7 +32,7 @@ public class BattleUIManager : MonoBehaviour
 
     public void PrepareBattleUI()
     {
-        GameEvent.OnBattleUIStart?.Invoke();
+        GameEvent.onBattleUIStart?.Invoke();
         battleStatePanel.SetActive(true);
         battleStartDisplayUI.SetActive(true);
         cTTimelineUI.SetActive(true);
@@ -41,7 +41,7 @@ public class BattleUIManager : MonoBehaviour
     private IEnumerator PrepareBattleSequence()
     {
         yield return new WaitForSeconds(2f);
-        GameEvent.OnBattleUIFinish?.Invoke();
+        GameEvent.onBattleUIFinish?.Invoke();
         battleStartDisplayUI.SetActive(false);
     }
 

@@ -25,7 +25,7 @@ public class UniversalUIManager : MonoBehaviour
     {
         GameEvent.onSkillCastStart += (SkillData skill) => ShowSkillCastNotice(skill);
         GameEvent.onSkillCastEnd += CloseSkillCastNotice;
-        GameEvent.OnBattleUIStart += () => FocesEnableUITip(true);
+        GameEvent.onBattleUIStart += () => FocesEnableUITip(true);
         GameEvent.onBattleEnd += () => FocesEnableUITip(false);
     }
 

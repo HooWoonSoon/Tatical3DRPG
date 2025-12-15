@@ -98,7 +98,8 @@ namespace Tactics.AI
             float startTime = Time.realtimeSinceStartup;
 
             EvaluateSkill(allowSkill, out float skillBestScore,
-                out SkillData originSkill, out GameNode originSkillTargetNode,
+                out SkillData originSkill, out GameNode skillCastNode,
+                out GameNode originSkillTargetNode,
                 out string sourceSkill);
 
             EvaluateMoveAndSkill(allowMove, allowSkill, out float moveAndSkillBestScore,
@@ -134,7 +135,7 @@ namespace Tactics.AI
             if (decision == Decision.OriginCastSkill)
             {
                 skill = originSkill;
-                moveNode = null;
+                moveNode = skillCastNode;
                 skillTargetNode = originSkillTargetNode;
 
                 if (originSkill != null && originSkillTargetNode != null)
@@ -179,23 +180,24 @@ namespace Tactics.AI
                 EvaluateOrientation(moveNode, ref orientation);
             this.orientation = orientation;
 
-            Debug.Log(
-                $"{decisionMaker.data.characterName}, " +
-                $"{executeLog}");
-
             float endTime = Time.realtimeSinceStartup;
 
-            Debug.Log($"<color=green>[Make Decision]</color> " +
-                $" completed in {endTime - startTime:F4} seconds");
+            if (debugMode)
+                Debug.Log($"<color=green>[Make Decision]</color> " +
+                    $"{decisionMaker.data.characterName}, " +
+                    $"{executeLog}, " +
+                    $" completed in {endTime - startTime:F4} seconds");
         }
 
         #region Evaluation Methods
         private void EvaluateSkill(bool allowSkill, out float skillBestScore,
-            out SkillData originSkill, out GameNode originSkillTargetNode,
+            out SkillData originSkill, out GameNode skillCastNode,
+            out GameNode originSkillTargetNode,
             out string source)
         {
             skillBestScore = float.MinValue;
             originSkill = null;
+            skillCastNode = null;
             originSkillTargetNode = null;
             source = null;
 
@@ -204,6 +206,7 @@ namespace Tactics.AI
                 EvaluateOriginSkillOption(
                     ref skillBestScore,
                     ref originSkill,
+                    ref skillCastNode,
                     ref originSkillTargetNode);
                 source = "Evaluate Origin Skill Option";
             }
@@ -283,7 +286,7 @@ namespace Tactics.AI
 
         #region Evaluate Option Methods
         private void EvaluateOriginSkillOption(ref float bestScore,
-            ref SkillData bestSkill, ref GameNode bestSkillTargetNode)
+            ref SkillData bestSkill, ref GameNode skillCastNode, ref GameNode bestSkillTargetNode)
         {
             float startTime = Time.realtimeSinceStartup;
 
@@ -291,6 +294,7 @@ namespace Tactics.AI
 
             bestSkill = null;
             bestSkillTargetNode = null;
+            skillCastNode = originNode;
 
             List<CharacterBase> mapCharacters = GetMapCharacters();
             if (mapCharacters == null || mapCharacters.Count == 0) return;
@@ -329,9 +333,10 @@ namespace Tactics.AI
 
             float endTime = Time.realtimeSinceStartup;
 
-            Debug.Log($"<color=green>[Evaluate Origin Skill Option]</color> " +
-                $" completed in {endTime - startTime:F4} seconds, " +
-                $"score: {bestScore}");
+            if (debugMode)
+                Debug.Log($"<color=green>[Evaluate Origin Skill Option]</color> " +
+                    $" completed in {endTime - startTime:F4} seconds, " +
+                    $"score: {bestScore}");
         }
         private void EvaluateMoveAndSkillOption(ref float bestScore,
             ref SkillData bestSkill, ref GameNode bestMoveNode,
@@ -363,17 +368,13 @@ namespace Tactics.AI
 
                 if (debugMode)
                 {
-                    List<GameNode> movableNodes = decisionMaker.GetMovableNodes();
-                    string log1 = string.Join(",",
-                        movableNodes.ConvertAll(m => m.GetNodeVector().ToString()));
-                    string log2 = string.Join(",",
+                    string log = string.Join(",",
                         skillTargetableMovableNode.ConvertAll(s => s.GetNodeVector().ToString()));
                     Debug.Log(
                         $"Character: {decisionMaker.data.characterName}, " +
                         $"Origin Node: {decisionMaker.currentNode.GetNodeVector()}, " +
-                        $"Movable Node: {log1}, " +
                         $"Skill: {skill.skillName}, " +
-                        $"Skill Targetable Movable Node: {log2}");
+                        $"Skill Targetable Movable Node: {log}");
                 }
 
                 foreach (var moveNode in skillTargetableMovableNode)
@@ -408,9 +409,10 @@ namespace Tactics.AI
             }
             float endTime = Time.realtimeSinceStartup;
 
-            Debug.Log($"<color=green>[Evaluate Move And Skill Option]</color> " +
-                $" completed in {endTime - startTime:F4} seconds, " +
-                $"score: {bestScore}");
+            if (debugMode)
+                Debug.Log($"<color=green>[Evaluate Move And Skill Option]</color> " +
+                    $" completed in {endTime - startTime:F4} seconds, " +
+                    $"score: {bestScore}");
         }
         private void EvaluateMoveTargetOption(ref float bestScore,
             ref GameNode bestNode)
@@ -458,9 +460,10 @@ namespace Tactics.AI
 
             float endTime = Time.realtimeSinceStartup;
 
-            Debug.Log($"<color=green>[Evaluate Move Target Option]</color> " +
-                $" completed in {endTime - startTime:F4} seconds, " +
-                $"score: {bestScore}");
+            if (debugMode)
+                Debug.Log($"<color=green>[Evaluate Move Target Option]</color> " +
+                    $" completed in {endTime - startTime:F4} seconds, " +
+                    $"score: {bestScore}");
         }
         private void EvaluateMoveOption(ref float bestScore,
             ref GameNode bestMoveNode)
@@ -605,10 +608,11 @@ namespace Tactics.AI
 
             score = healthModifier * takeDamageAbility - rangedModifier;
 
-            Debug.Log(
-                    $"<color=purple>[FrontPosIndex]</color> " +
-                    $"{character.data.characterName}, " +
-                    $"plus Score bonus: {score}");
+            if (debugMode)
+                Debug.Log(
+                        $"<color=purple>[FrontPosIndex]</color> " +
+                        $"{character.data.characterName}, " +
+                        $"plus Score bonus: {score}");
 
             return score;
         }
@@ -913,32 +917,27 @@ namespace Tactics.AI
                 if (targetNode.GetUnitGridCharacter() != null)
                 {
                     UnitDetectable projectileDetect = skill.projectTilePrefab.GetComponent<UnitDetectable>();
-
-                    List<UnitDetectable> units = parabola.GetParabolaHitUnit
-                        (projectileDetect, startNode.GetNodeVector() + new Vector3(0, shootOffsetHeight, 0),
-                        targetNode.GetNodeVector(),
-                        skill.initialElevationAngle);
-
-                    if (units != null && units.Count > 0)
+                    List<UnitDetectable> ignoreUnits = new List<UnitDetectable>()
                     {
-                        bool hitTeammate = false;
-                        bool hitTarget = false;
+                        decisionMaker.GetComponent<UnitDetectable>()
+                    };
 
-                        foreach (UnitDetectable unit in units)
-                        {
-                            CharacterBase hitCharacter = unit.GetComponent<CharacterBase>();
-                            if (hitCharacter == null) continue;
+                    UnitDetectable unit = parabola.GetParabolaHitUnit
+                        (projectileDetect, startNode.GetNodeVector() + 
+                        new Vector3(0, shootOffsetHeight, 0),
+                        targetNode.GetNodeVector(), 
+                        skill.initialElevationAngle, ignoreUnits);
 
-                            if (hitCharacter == targetNode.GetUnitGridCharacter())
-                                hitTarget = true;
+                    if (unit == null) return false;
 
-                            if (hitCharacter.currentTeam == decisionMaker.currentTeam)
-                                hitTeammate = true;
-                        }
-                        if (hitTeammate) return false;
+                    CharacterBase targetCharacter = targetNode.GetUnitGridCharacter();
+                    CharacterBase hitCharacter = unit.GetComponent<CharacterBase>();
 
-                        if (hitTarget) return true;
-                    }
+                    if (hitCharacter == null) return false;
+                    if (hitCharacter.currentTeam == decisionMaker.currentTeam)
+                        return false;
+
+                    return hitCharacter == targetCharacter;
                 }
             }
             else
@@ -964,6 +963,8 @@ namespace Tactics.AI
 
             foreach (GameNode moveNode in movableNodes)
             {
+                if (moveNode == character.currentNode) continue;
+
                 CharacterBase originNodeCharacter = originNode.GetUnitGridCharacter();
                 CharacterBase moveNodeCharacter = moveNode.GetUnitGridCharacter();
 
