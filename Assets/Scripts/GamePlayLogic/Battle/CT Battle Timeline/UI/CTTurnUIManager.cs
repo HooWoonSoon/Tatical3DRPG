@@ -84,6 +84,8 @@ public class CTTurnUIManager : MonoBehaviour
     private CTTurn currentCTTurn;
     private int generatedRoundIndex = -1;
     private int generatedTurnIndex = -1;
+
+    public CharacterBase currentTargetCharacter { get; private set; }
     
     [Header("UI Smooth Move")]
     [SerializeField] private float smoothTime = 0.2f;
@@ -197,20 +199,25 @@ public class CTTurnUIManager : MonoBehaviour
         turnUIImages.Clear();
     }
 
-    public void RemoveTurnUIFormRound(CTRound cTRound, CharacterBase character)
-    {
-        for (int i = turnUIImages.Count - 1; i >= 0; i--)
-        {
-            if (turnUIImages[i].roundCount != cTRound.roundCount) continue;
-            if (turnUIImages[i].character != character) continue;
-            if (pastTurnUIImages.Contains(turnUIImages[i])) continue;
-            turnUIImages[i].backgroundPanel.gameObject.SetActive(false);
-        }
-        allCTRound = CTTimeline.instance.GetAllRound();
-    }
     public void AdjustTurnUIStartRound(int roundIndex)
     {
         allCTRound = CTTimeline.instance.GetAllRound();
+        CTRound cTRound = allCTRound[roundIndex];
+        List<CharacterBase> leaveCharacters = CTTimeline.instance.leaveBattleCharacter;
+
+        if (leaveCharacters.Count == 0) { return; }
+
+        foreach (CharacterBase character in leaveCharacters)
+        {
+            for (int i = turnUIImages.Count - 1; i >= 0; i--)
+            {
+                if (turnUIImages[i].roundCount != cTRound.roundCount) continue;
+                if (turnUIImages[i].character != character) continue;
+                if (pastTurnUIImages.Contains(turnUIImages[i])) continue;
+                turnUIImages[i].backgroundPanel.gameObject.SetActive(false);
+            }
+        }
+
         int maxRound = allCTRound.Count;
         for (int i = turnUIImages.Count - 1; i >= 0; i--)
         {
@@ -261,6 +268,21 @@ public class CTTurnUIManager : MonoBehaviour
             }
         }
     }
+
+    #region CT Target UI
+    private void FocusOnCharacterUI(RectTransform target)
+    {
+        RectTransform rectContent = turnUIContent.GetComponent<RectTransform>();
+        RectTransform rectviewport = rectContent.parent.GetComponent<RectTransform>();
+        HorizontalLayoutGroup horizontalLayoutGroup = rectContent.GetComponent<HorizontalLayoutGroup>();
+
+        float targetX = target.anchoredPosition.x + target.rect.width * 0.5f;
+        float distance = rectContent.anchoredPosition.x + targetX + horizontalLayoutGroup.spacing * 0.5f;
+
+        targetAnchoredPos = new Vector2(rectContent.anchoredPosition.x - distance, rectContent.anchoredPosition.y);
+        isFocusing = true;
+    }
+
     public void TargetCurrentCTTurnUI(CTRound cTRound, CTTurn currentTurn)
     {
         currentCTRound = cTRound;
@@ -303,21 +325,10 @@ public class CTTurnUIManager : MonoBehaviour
         }
     }
 
-    private void FocusOnCharacterUI(RectTransform target)
-    {
-        RectTransform rectContent = turnUIContent.GetComponent<RectTransform>();
-        RectTransform rectviewport = rectContent.parent.GetComponent<RectTransform>();
-        HorizontalLayoutGroup horizontalLayoutGroup = rectContent.GetComponent<HorizontalLayoutGroup>();
-
-        float targetX = target.anchoredPosition.x + target.rect.width * 0.5f;
-        float distance = rectContent.anchoredPosition.x + targetX + horizontalLayoutGroup.spacing * 0.5f;
-
-        targetAnchoredPos = new Vector2(rectContent.anchoredPosition.x - distance, rectContent.anchoredPosition.y);
-        isFocusing = true;
-    }
-
     private void UpdateTargetCharacterUI(CharacterBase character)
     {
+        currentTargetCharacter = character;
+
         if (targetUnitImage == null) { return; }
 
         Sprite sprite = character.data.turnUISprite;
@@ -346,19 +357,23 @@ public class CTTurnUIManager : MonoBehaviour
         if (mentalBarImage != null)
             mentalBarImage.fillAmount = (float)character.currentMental / character.data.mental;
     }
-
-    public void ExecuteHealthChange(CharacterBase character, int value)
+    public void ChangeUICurrentHealthTo(CharacterBase character, int targetHealth)
     {
-        StartCoroutine(Utils.UIFilledValueChangeCoroutine(
-            heathBarImage, character.data.health, character.currentHealth, value, 0.5f));
+        StartCoroutine(Utils.UIFilledValueChangeToCoroutine(
+            heathBarImage, character.data.health, character.currentHealth, targetHealth, 0.5f));
+
+        float value = targetHealth - character.currentHealth;
         StartCoroutine(Utils.TextValueChangeCoroutine(
             currentHeathText, character.currentHealth, value, 0.5f, true));
     }
-    public void ExecuteMentalChange(CharacterBase character, int value)
+    public void ChangeUICurrentMentalTo(CharacterBase character, int targetMental)
     {
-        StartCoroutine(Utils.UIFilledValueChangeCoroutine(
-            mentalBarImage, character.data.mental, character.currentMental, value, 0.5f));
+        StartCoroutine(Utils.UIFilledValueChangeToCoroutine(
+            mentalBarImage, character.data.mental, character.currentMental, targetMental, 0.5f));
+
+        float value = targetMental - character.currentMental;
         StartCoroutine(Utils.TextValueChangeCoroutine(
             currentMentalText, character.currentMental, value, 0.5f, true));
     }
+    #endregion
 }

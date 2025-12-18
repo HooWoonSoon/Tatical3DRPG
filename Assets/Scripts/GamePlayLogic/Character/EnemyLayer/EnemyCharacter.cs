@@ -1,5 +1,7 @@
 ﻿using UnityEngine;
 using Tactics.AI;
+using System.Collections;
+using UnityEngine.TextCore.Text;
 
 public class EnemyCharacter : CharacterBase
 {

@@ -21,7 +21,9 @@ public class PlayerTeamSystem : TeamSystem
         GameEvent.onLeaderChangedRequest += SetTeamFollowerLeader;
         GameEvent.onTeamSortExchange += SortTeamFollower;
         GameEvent.onTeamSortExchange += ClearAllHistory;
-        GameEvent.onDeploymentStart += () => stateMachine.ChangeState(teamDeploymentState); // Tempo fix
+
+        GameEvent.onEnterDeployMap += () => stateMachine.ChangeState(teamDeploymentState); // Tempo fix
+        GameEvent.onEnterMap += () => stateMachine.ChangeState(teamIdleState); // Tempo fix
     }
 
     private void OnDisable()
@@ -29,7 +31,9 @@ public class PlayerTeamSystem : TeamSystem
         GameEvent.onLeaderChangedRequest -= SetTeamFollowerLeader;
         GameEvent.onTeamSortExchange -= SortTeamFollower;
         GameEvent.onTeamSortExchange -= ClearAllHistory;
-        GameEvent.onDeploymentStart -= () => stateMachine.ChangeState(teamDeploymentState); // Tempo fix
+
+        GameEvent.onEnterDeployMap -= () => stateMachine.ChangeState(teamDeploymentState); // Tempo fix
+        GameEvent.onEnterMap -= () => stateMachine.ChangeState(teamIdleState); // Tempo fix
     }
 
     private void Awake()
@@ -195,7 +199,6 @@ public class PlayerTeamSystem : TeamSystem
             }
         }
     }
-
     /// <summary>
     /// External call to add a character to the unlink character list.
     /// </summary>
@@ -228,11 +231,11 @@ public class PlayerTeamSystem : TeamSystem
 
         member.SetMoveDirection(direciton);
     }
-
     /// <summary>
     /// Get the direction to follow the target character.
     /// </summary>
-    private void GetFollowTargetDirection(PlayerCharacter member, PlayerCharacter follower, out Vector3 direction)
+    private void GetFollowTargetDirection(PlayerCharacter member, PlayerCharacter follower, 
+        out Vector3 direction)
     {
         direction = Vector3.zero;
 

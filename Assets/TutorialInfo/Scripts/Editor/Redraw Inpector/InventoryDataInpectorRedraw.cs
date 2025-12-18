@@ -1,12 +1,20 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(InventoryData))]
 public class InventoryDataInpectorRedraw : Editor
 {
+    private static Dictionary<string, MonoScript> scriptCache =
+    new Dictionary<string, MonoScript>();
     public override void OnInspectorGUI()
     {
+        GUILayout.Label("Redraw Source Script", EditorStyles.boldLabel);
+        EditorUtils.DrawScriptLink(typeof(InventoryDataInpectorRedraw).FullName, scriptCache);
+
+        EditorGUILayout.Space(5);
+
         InventoryData data = (InventoryData)target;
 
         data.itemName = EditorGUILayout.TextField("Item Name", data.itemName);

@@ -12,6 +12,9 @@ public class MapDeploymentManager : Entity
     private List<GameNode> deployableNodes = new List<GameNode>();
     private Dictionary<CharacterBase, GameNode> occupiedNodes = new Dictionary<CharacterBase, GameNode>();
 
+    public int maxDeploymentCount { get; private set; }
+    private int currentDeploymentCount;
+
     [Header("Deployment Gizmos")]
     [SerializeField] private GridCursor gridCursor;
     private GameNode lastNode;
@@ -71,10 +74,27 @@ public class MapDeploymentManager : Entity
         }
     }
 
+    private void ResetModifier()
+    {
+        occupiedNodes = new Dictionary<CharacterBase, GameNode>();
+        deployableNodes = new List<GameNode>();
+        selectedCharacters = new List<CharacterBase>();
+        maxDeploymentCount = 0;
+        currentDeploymentCount = 0;
+    }
+
     public void StartDeployment(MapData mapData)
     {
+        ResetModifier();
+
         List<GameNode> deployableNode = FindDeployableNodes(mapData);
         this.deployableNodes = deployableNode;
+
+        maxDeploymentCount = mapData.maxDeployUnitCount;
+        if (maxDeploymentCount >= deployableNode.Count)
+        {
+            maxDeploymentCount = deployableNode.Count;
+        }
 
         GridTilemapVisual.instance.SetAllTileSprite(world, GameNode.TilemapSprite.None);
         GridTilemapVisual.instance.SetTilemapSprites(this.deployableNodes, GameNode.TilemapSprite.TinyBlue);
@@ -128,17 +148,24 @@ public class MapDeploymentManager : Entity
             return;
         }
 
-        GameNode randomNode = availableNodes[UnityEngine.Random.Range(0, availableNodes.Count)];
+        if (maxDeploymentCount <= currentDeploymentCount)
+        {
+            Debug.Log($"Max deploy character not beyond {maxDeploymentCount}");
+            return;
+        }
+
+        GameNode randomNode = availableNodes[Random.Range(0, availableNodes.Count)];
         character.gameObject.SetActive(true);
         character.TeleportToNodeDeployble(randomNode);
         occupiedNodes[character] = randomNode;
+        currentDeploymentCount++;
 
         if (!selectedCharacters.Contains(character))
         {
             selectedCharacters.Add(character);
         }
 
-        Debug.Log($"Deployed {character.name} at {randomNode.x},{randomNode.y},{randomNode.z}");
+        Debug.Log($"Deployed {character.data.characterName} at {randomNode.x},{randomNode.y},{randomNode.z}");
     }
     public void RemoveCharacterDeployment(CharacterBase character)
     {
@@ -148,6 +175,7 @@ public class MapDeploymentManager : Entity
         character.gameObject.SetActive(false);
         occupiedNodes.Remove(character);
         selectedCharacters.Remove(character);
+        currentDeploymentCount--;
 
         if (lasSelectedCharacter == character)
         {
@@ -165,7 +193,6 @@ public class MapDeploymentManager : Entity
         if (!deployableNodes.Contains(targetNode)) { return; }
 
         CharacterBase targetNodeCharacter = targetNode.GetUnitGridCharacter();
-        Debug.Log(targetNodeCharacter);
         if (targetNodeCharacter == null)
         {
             ChangeCharacterNode(selectedCharacter, targetNode);
@@ -179,7 +206,8 @@ public class MapDeploymentManager : Entity
     //      Move a character to target node and modified its occupied node
     private void ChangeCharacterNode(CharacterBase character, GameNode targetNode)
     {
-        GameNode currentNode = occupiedNodes[character];
+        occupiedNodes.TryGetValue(character, out GameNode currentNode);
+        if (currentNode == null) return;
 
         character.SetSelfToNode(targetNode, 0.5f);
         targetNode.SetUnitGridCharacter(character);
@@ -244,7 +272,6 @@ public class MapDeploymentManager : Entity
         {
             GameNode node = deployableNodes[0];
             SetGridCursorAt(node);
-            Debug.Log($"Set Grid Cursor At {node.GetNodeVector()}");
         }
         ActivateMoveCursorAndHide(false, true);
     }

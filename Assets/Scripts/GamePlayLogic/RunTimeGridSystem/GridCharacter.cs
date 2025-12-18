@@ -4,7 +4,6 @@ using UnityEngine;
 public class GridCharacter : Entity
 {
     public CharacterPools characterPools;
-    private bool updateCharacter;
     public static GridCharacter instance { get; private set; }
 
     private void Awake()
@@ -27,10 +26,7 @@ public class GridCharacter : Entity
             UpdateGridCharacter(character);
         }
     }
-    private void OnCharacterChanged(object sender, GameNode.OnWorldNodesChange e)
-    {
-        updateCharacter = true;
-    }
+
     private void UpdateGridCharacter(CharacterBase character)
     {
         if (character == null || !character.gameObject.activeSelf)

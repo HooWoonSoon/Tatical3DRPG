@@ -48,6 +48,6 @@ public abstract class ScoreRuleBase : IScoreRule
         GameNode moveNode, GameNode targetNode, int highestHealthAmongCharacters)
     { return 0; }
     public virtual float CalculateOrientationScore(CharacterBase character, 
-        GameNode originNode, Orientation orientation) 
+        List<CharacterBase> opposites, GameNode originNode, Orientation orientation) 
     { return 0; }
 }

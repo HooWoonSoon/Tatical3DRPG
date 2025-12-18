@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,6 +45,11 @@ public class MapDeploymentUIManager : Entity
 
     [SerializeField] private Sprite tagSprite;
     [SerializeField] private int columns;
+
+    [SerializeField] private TextMeshProUGUI maxDeploymentTextUI;
+    private int maxDeploymentCount;
+    [SerializeField] private TextMeshProUGUI currentDeploymentTextUI;
+    private int currentDeploymentCount;
 
     /// <summary>
     /// Characters available to select and deploy in tactics map
@@ -129,6 +135,7 @@ public class MapDeploymentUIManager : Entity
             MapTransitionManager.instance.RequestReturnPreviousMap(() =>
             {
                 ResetModified();
+                allCharactersInMap = new List<CharacterBase>();
                 CloseBattleUI();
                 leaveBattlefieldNotifactionPanel.SetActive(false);
                 characterDeploymentPanel.SetActive(false);
@@ -151,8 +158,9 @@ public class MapDeploymentUIManager : Entity
 
             BattleManager.instance.RequestBattle(allCharactersInMap, () =>
             {
-                startBattleNotificationPanel.SetActive(false);
                 ResetModified();
+                allCharactersInMap = new List<CharacterBase>();
+                startBattleNotificationPanel.SetActive(false);
                 characterDeploymentPanel.SetActive(false);
                 MapDeploymentManager.instance.EndDeployment();
             }, () =>
@@ -189,20 +197,27 @@ public class MapDeploymentUIManager : Entity
     {
         if (activatedUIImange.Contains(currentSelectedUIImage))
         {
+            if (currentDeploymentCount <= 0) return;
+
             Debug.Log("Remove " + currentSelectedCharacter.data.characterName);
             MapDeploymentManager.instance.RemoveCharacterDeployment(currentSelectedCharacter);
             allCharactersInMap.Remove(currentSelectedCharacter);
             activatedUIImange.Remove(currentSelectedUIImage);
             currentSelectedUIImage.image.color = new Color(1, 1, 1, 1f);
+            currentDeploymentCount--;
         }
         else
         {
+            if (currentDeploymentCount >= maxDeploymentCount) return;
+
             Debug.Log("Deploy " + currentSelectedCharacter.data.characterName);
             MapDeploymentManager.instance.RandomDeploymentCharacter(currentSelectedCharacter);
             allCharactersInMap.Add(currentSelectedCharacter);
             activatedUIImange.Add(currentSelectedUIImage);
             currentSelectedUIImage.image.color = new Color(1, 1, 1, 0.5f);
+            currentDeploymentCount++;
         }
+        currentDeploymentTextUI.text = currentDeploymentCount.ToString();
     }
 
     private void FocusOnCurrentCharacterUI()
@@ -225,6 +240,8 @@ public class MapDeploymentUIManager : Entity
         enableDeployment = true;
         characterDeploymentPanel.SetActive(true);
         candidateCharacters = MapDeploymentManager.instance.allCharacter;
+        maxDeploymentCount = MapDeploymentManager.instance.maxDeploymentCount;
+        maxDeploymentTextUI.text = maxDeploymentCount.ToString();
         foreach (CharacterBase character in candidateCharacters)
         {
             if (character == null) { continue; }
@@ -249,6 +266,8 @@ public class MapDeploymentUIManager : Entity
         {
             Destroy(child.gameObject);
         }
+        maxDeploymentCount = 0;
+        currentDeploymentCount = 0;
     }
 
     #region BattleUI Method

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class CTTimeline : MonoBehaviour
 {
@@ -44,7 +45,7 @@ public class CTTimeline : MonoBehaviour
     }
 
     public Dictionary<CharacterBase, CharacterTacticsTime> battleCharacter;
-    private List<CharacterBase> leaveCharacter;
+    public List<CharacterBase> leaveBattleCharacter;
 
     private List<CTRound> cTRounds;
     private const int INITIAL_ROUND = 4;
@@ -126,10 +127,24 @@ public class CTTimeline : MonoBehaviour
 
     public void AdjustTimelineStartRound(int roundIndex)
     {
-        int maxAdjustRounds = cTRounds.Count;
-        cTRounds.RemoveRange(roundIndex, cTRounds.Count - roundIndex);
+        CTRound cTRound = cTRounds[roundIndex];
+        List<CTTurn> turns = cTRound.cTTurnQueue;
+        foreach (var character in leaveBattleCharacter)
+        { 
+            for (int i = turns.Count - 1; i >= 0; i--)
+            {
+                if (turns[i].isExecuted) continue;
+                if (turns[i].character != character) continue;
+                turns.RemoveAt(i);
+            }
+        }
 
-        for (int i = roundIndex; i < maxAdjustRounds; i++)
+        int nextRoundIndex = roundIndex + 1;
+        int maxAdjustRounds = cTRounds.Count;
+        int removeCount = maxAdjustRounds - nextRoundIndex;
+        cTRounds.RemoveRange(nextRoundIndex, removeCount);
+
+        for (int i = nextRoundIndex; i < maxAdjustRounds; i++)
         {
             List<CTTurn> completeQueue = GetCalculateCTTurn();
             CTRound turnHistory = new CTRound(completeQueue, cTRounds.Count);
@@ -140,29 +155,16 @@ public class CTTimeline : MonoBehaviour
                 tactics.Reset();
             }
         }
-        CTTurnUIManager.instance.AdjustTurnUIStartRound(roundIndex);
     }
     public void RemoveCharacter(CharacterBase character)
     {
         if (battleCharacter.ContainsKey(character))
         {
             battleCharacter.Remove(character);
-            RemoveCharacterFormRound(currentRoundIndex, character);
-            AdjustTimelineStartRound(currentRoundIndex + 1);
+            leaveBattleCharacter.Add(character);
+            AdjustTimelineStartRound(currentRoundIndex);
+            CTTurnUIManager.instance.AdjustTurnUIStartRound(currentRoundIndex);
         }
-    }
-    private void RemoveCharacterFormRound(int roundIndex, CharacterBase character)
-    {
-        CTRound cTRound = cTRounds[roundIndex];
-        List<CTTurn> turns = cTRound.cTTurnQueue;
-
-        for (int i = turns.Count - 1; i >= 0; i--)
-        {
-            if (turns[i].isExecuted) continue;
-            if (turns[i].character != character) continue;
-            turns.RemoveAt(i);
-        }
-        CTTurnUIManager.instance.RemoveTurnUIFormRound(cTRound, character);
     }
 
     public void EndTimeline()

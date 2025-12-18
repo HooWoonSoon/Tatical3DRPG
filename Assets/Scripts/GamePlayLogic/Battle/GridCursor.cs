@@ -1,5 +1,6 @@
 ﻿using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GridCursor : Entity
 {
@@ -18,7 +19,14 @@ public class GridCursor : Entity
     public GameObject actionOptionPanel;
     public GameObject battlefieldInfoPanel;
     public TextMeshProUGUI characterTextUI;
+
+    public TextMeshProUGUI maxHealthTextUI;
     public TextMeshProUGUI healthTextUI;
+    public Image healthUIImage;
+
+    public TextMeshProUGUI maxMentalTextUI;
+    public TextMeshProUGUI mentalTextUI;
+    public Image mentalUIImage;
 
     public GameNode currentNode { get; private set; }
 
@@ -137,7 +145,19 @@ public class GridCursor : Entity
         if (character != null)
         {
             characterTextUI.text = character.data.characterName;
+            maxHealthTextUI.text = character.data.health.ToString();
             healthTextUI.text = character.currentHealth.ToString();
+
+            healthUIImage.type = Image.Type.Filled;
+            healthUIImage.fillMethod = Image.FillMethod.Horizontal;
+            healthUIImage.fillAmount = (float)character.currentHealth / character.data.health;
+
+            maxMentalTextUI.text = character.data.mental.ToString();
+            mentalTextUI.text = character.currentMental.ToString();
+
+            mentalUIImage.type = Image.Type.Filled;
+            mentalUIImage.fillMethod = Image.FillMethod.Horizontal;
+            mentalUIImage.fillAmount = (float)character.currentMental / character.data.mental;
         }
     }
 

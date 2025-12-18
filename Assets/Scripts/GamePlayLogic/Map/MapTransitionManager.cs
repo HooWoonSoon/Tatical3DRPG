@@ -133,6 +133,8 @@ public class MapTransitionManager : Entity
         MapManager.instance.SwitchMap(mapData);
         MapManager.instance.PrepareTeamUnitsDeployState(mapData);
         MapDeploymentManager.instance.StartDeployment(mapData);
+
+        GameEvent.onEnterDeployMap?.Invoke();
     }
     private void ExecuteSwitchMapAndTeleport(MapData mapData, Vector3 teleportPos, 
         List<PlayerCharacter> playerCharacters, bool characterActive)
@@ -145,6 +147,8 @@ public class MapTransitionManager : Entity
             playerCharacter.gameObject.SetActive(characterActive);
         }
         MapManager.instance.PrepareTeamUnitsFreeState(mapData);
+
+        GameEvent.onEnterMap?.Invoke();
     }
 
     public void ClearEventCallback(Action action = null)

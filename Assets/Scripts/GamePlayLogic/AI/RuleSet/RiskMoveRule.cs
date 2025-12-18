@@ -23,94 +23,92 @@ public class RiskMoveRule : ScoreRuleBase
                 highestHealth = health;
         }
 
-        foreach (var enemy in characterSkillInfluenceNodes.oppositeInfluence.Keys)
+        GameNode currentNode = character.currentNode;
+        bool isOriginMove = moveNode == character.currentNode;
+
+        try
         {
-            float skillBestScore = 0;
-
-            foreach (var skill in characterSkillInfluenceNodes.oppositeInfluence[enemy].Keys)
+            if (!isOriginMove)
             {
-                float skillScore = 0;
-
-                var nodeList = characterSkillInfluenceNodes.oppositeInfluence[enemy][skill];
-
-                GameNode currentNode = character.currentNode;
                 currentNode.SetUnitGridCharacter(null);
                 moveNode.SetUnitGridCharacter(character);
-
-                if (!nodeList.Contains(moveNode))
-                {
-                    currentNode.SetUnitGridCharacter(character);
-                    moveNode.SetUnitGridCharacter(null);
-                    continue;
-                }
-
-                if (DebugMode)
-                    Debug.Log(
-                        $"{enemy.data.characterName}, " +
-                        $"Skill: {skill}, " +
-                        $"Attackable: {moveNode.GetNodeVectorInt()}");
-
-                if (scoreSubRules == null && scoreSubRules.Count == 0) continue;
-
-                foreach (var subRule in scoreSubRules)
-                {
-                    skillScore += subRule.CalculateSkillScore(enemy, skill, moveNode, highestHealth);
-                }
-
-                currentNode.SetUnitGridCharacter(character);
-                moveNode.SetUnitGridCharacter(null);
-
-                if (skillScore > skillBestScore)
-                {
-                    skillBestScore = skillScore;
-                }
             }
-            score -= skillBestScore;
+
+            foreach (var enemy in characterSkillInfluenceNodes.oppositeInfluence.Keys)
+            {
+                float skillBestScore = 0;
+
+                foreach (var skill in characterSkillInfluenceNodes.oppositeInfluence[enemy].Keys)
+                {
+                    float skillScore = 0;
+
+                    var nodeList = characterSkillInfluenceNodes.oppositeInfluence[enemy][skill];
+
+                    if (!nodeList.Contains(moveNode))
+                        continue;
+
+                    if (DebugMode)
+                        Debug.Log(
+                            $"{enemy.data.characterName}, " +
+                            $"Skill: {skill}, " +
+                            $"Attackable: {moveNode.GetNodeVectorInt()}");
+
+                    if (scoreSubRules == null || scoreSubRules.Count == 0) continue;
+
+                    foreach (var subRule in scoreSubRules)
+                    {
+                        skillScore += subRule.CalculateSkillScore(enemy, skill, moveNode, highestHealth);
+                    }
+
+                    if (skillScore > skillBestScore)
+                    {
+                        skillBestScore = skillScore;
+                    }
+                }
+                score -= skillBestScore;
+            }
+
+            foreach (var teammate in characterSkillInfluenceNodes.teammateInfluence.Keys)
+            {
+                float skillBestScore = 0;
+
+                foreach (var skill in characterSkillInfluenceNodes.teammateInfluence[teammate].Keys)
+                {
+                    float skillScore = 0;
+
+                    var nodeList = characterSkillInfluenceNodes.teammateInfluence[teammate][skill];
+
+                    if (!nodeList.Contains(moveNode))
+                        continue;
+
+                    if (DebugMode)
+                        Debug.Log(
+                            $"{teammate.data.characterName}, " +
+                            $"Skill: {skill}, " +
+                            $"Attackable: {moveNode.GetNodeVectorInt()}");
+
+                    if (scoreSubRules == null || scoreSubRules.Count == 0) continue;
+
+                    foreach (var subRule in scoreSubRules)
+                    {
+                        score += subRule.CalculateSkillScore(teammate, skill, moveNode, highestHealth);
+                    }
+
+                    if (skillScore > skillBestScore)
+                    {
+                        skillBestScore = skillScore;
+                    }
+                }
+                score += skillBestScore;
+            }
         }
-
-        foreach (var teammate in characterSkillInfluenceNodes.teammateInfluence.Keys)
+        finally
         {
-            float skillBestScore = 0;
-
-            foreach (var skill in characterSkillInfluenceNodes.teammateInfluence[teammate].Keys)
+            if (!isOriginMove)
             {
-                float skillScore = 0;
-
-                var nodeList = characterSkillInfluenceNodes.teammateInfluence[teammate][skill];
-
-                GameNode currentNode = character.currentNode;
-                currentNode.SetUnitGridCharacter(null);
-                moveNode.SetUnitGridCharacter(character);
-
-                if (!nodeList.Contains(moveNode))
-                {
-                    currentNode.SetUnitGridCharacter(character);
-                    moveNode.SetUnitGridCharacter(null);
-                    continue;
-                }
-
-                if (DebugMode)
-                    Debug.Log(
-                        $"{teammate.data.characterName}, " +
-                        $"Skill: {skill}, " +
-                        $"Attackable: {moveNode.GetNodeVectorInt()}");
-
-                if (scoreSubRules == null && scoreSubRules.Count == 0) continue;
-
-                foreach (var subRule in scoreSubRules)
-                {
-                    score += subRule.CalculateSkillScore(teammate, skill, moveNode, highestHealth);
-                }
-
                 currentNode.SetUnitGridCharacter(character);
                 moveNode.SetUnitGridCharacter(null);
-
-                if (skillScore > skillBestScore)
-                {
-                    skillBestScore = skillScore;
-                }
             }
-            score += skillBestScore;
         }
 
         if (DebugMode)

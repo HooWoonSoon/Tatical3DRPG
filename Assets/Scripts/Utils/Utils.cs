@@ -332,6 +332,12 @@ public static class Utils
         image.color = endColor;
     }
 
+    public static IEnumerator UIFilledValueChangeToCoroutine(Image image,
+        float maxValue, float currentValue, float targetValue, float duration)
+    {
+        float changeValue = targetValue - currentValue;
+        yield return UIFilledValueChangeCoroutine(image, maxValue, currentValue, changeValue, duration);
+    }
     public static IEnumerator UIFilledValueChangeCoroutine(Image image,
     float maxValue, float currentValue, float changeValue, float duration)
     {
@@ -404,12 +410,13 @@ public static class Utils
                 text.text = Mathf.RoundToInt(displayValue).ToString();
             else
                 text.text = displayValue.ToString("F1");
+
+            yield return null;
         }
         if (useInteger)
             text.text = Mathf.RoundToInt(targetValue).ToString();
         else
             text.text = targetValue.ToString("F1");
-        yield return null;
     }
 
     public static void ApplyAnimation(MonoBehaviour mono, RectTransform rectTransform,

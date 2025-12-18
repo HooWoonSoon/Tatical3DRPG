@@ -77,7 +77,6 @@ public class GameNode
     public void SetUnitGridCharacter(CharacterBase character)
     {
         this.character = character;
-        //Debug.Log("Grid Character Changed");
     }
     public CharacterBase GetUnitGridCharacter()
     {

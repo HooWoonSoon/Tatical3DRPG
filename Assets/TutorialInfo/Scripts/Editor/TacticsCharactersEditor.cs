@@ -16,6 +16,7 @@ public class TacticsCharactersEditor : EditorWindow
     private Vector2 scrollPos;
     private Vector2 scrollPos2;
     private Vector2 scrollPos3;
+    private Vector2 scrollPos4;
 
     private CharacterPools characterPool;
     private CharacterBase selectedCharacter;
@@ -30,6 +31,8 @@ public class TacticsCharactersEditor : EditorWindow
 
     private PanelState currentPanel = PanelState.CharacterPool;
 
+    private Dictionary<string, MonoScript> scriptCache =
+        new Dictionary<string, MonoScript>();
 
     [MenuItem("Tactics/Tactic Characters Editor")]
     private static void ShowWindow()
@@ -119,6 +122,11 @@ public class TacticsCharactersEditor : EditorWindow
 
             EditorGUILayout.Space(bannerHeight + 10f);
         }
+
+        EditorGUILayout.BeginVertical("box");
+        EditorGUILayout.LabelField("Editor Script", EditorStyles.boldLabel);
+        EditorUtils.DrawScriptLink((typeof(TacticsCharactersEditor)).FullName, scriptCache);
+        EditorGUILayout.EndVertical();
 
         #region UIRegion 1
         GUILayout.BeginHorizontal();
@@ -260,12 +268,14 @@ public class TacticsCharactersEditor : EditorWindow
 
                 GUILayout.Label("Editor", EditorStyles.boldLabel);
 
+                scrollPos3 = GUILayout.BeginScrollView(scrollPos3);
                 if (selectedCharacterData != null)
                 {
                     CharacterEditorDrawer.DrawCharacterEditor(selectedCharacterData);
                 }
                 else
                     EditorGUILayout.HelpBox("Press Edit button to select data to edit", MessageType.Info);
+                GUILayout.EndScrollView();
 
                 GUILayout.EndVertical();
                 GUILayout.EndHorizontal();
@@ -284,7 +294,7 @@ public class TacticsCharactersEditor : EditorWindow
 
                 GUILayout.BeginVertical("box", GUILayout.Height(80));
                 if (GUILayout.Button("Create New Utility AI", EditorStyles.toolbarButton)) CreateUtilityData();
-                scrollPos3 = EditorGUILayout.BeginScrollView(scrollPos3);
+                scrollPos4 = EditorGUILayout.BeginScrollView(scrollPos4);
                 if (utilityAIDatabase != null && utilityAIDatabase.dataSet != null)
                 {
                     var validList = utilityAIDatabase.dataSet.Where(d => d != null &&

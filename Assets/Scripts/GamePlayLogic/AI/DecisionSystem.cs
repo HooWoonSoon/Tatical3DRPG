@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEditor.Playables;
 
 namespace Tactics.AI
 {
@@ -33,12 +35,12 @@ namespace Tactics.AI
 
         private bool debugMode = false;
 
-        public DecisionSystem(World world, UtilityAIScoreConfig utility, CharacterBase decisionMaker,
+        public DecisionSystem(World world, UtilityAIScoreConfig utilityAI, CharacterBase decisionMaker,
             bool debugMode = false)
         {
             this.world = world;
             this.decisionMaker = decisionMaker;
-            this.utilityAI = utility;
+            this.utilityAI = utilityAI;
             this.debugMode = debugMode;
 
             PathFinding pathfinding = new PathFinding(world);
@@ -47,52 +49,51 @@ namespace Tactics.AI
             //  Move Rule
             List<IScoreRule> moveTargetSubRules = new List<IScoreRule>()
             {
-                new TargetRule(this, utilityAI, null, utility.targeRuleScore,
+                new TargetRule(this, this.utilityAI, null, utilityAI.targeRuleScore,
                 RuleDebugContext.MoveTarget)
             };
-            moveToTargetRules.Add(new MoveTargetRule(this, utilityAI, moveTargetSubRules,
-                utility.moveTargetRuleScore, RuleDebugContext.MoveTarget));
+            moveToTargetRules.Add(new MoveTargetRule(this, this.utilityAI, moveTargetSubRules,
+                utilityAI.moveTargetRuleScore, RuleDebugContext.MoveTarget));
 
             List<IScoreRule> moveSubRules = new List<IScoreRule>()
             {
-                new SkillHarmRule(this, utilityAI, null, utility.harmRuleScore, RuleDebugContext.RiskMove),
-                new SkillTreatRule(this, utilityAI, null, utility.treatRuleScore, RuleDebugContext.RiskMove)
+                new SkillHarmRule(this, this.utilityAI, null, utilityAI.harmRuleScore, RuleDebugContext.RiskMove),
+                new SkillTreatRule(this, this.utilityAI, null, utilityAI.treatRuleScore, RuleDebugContext.RiskMove)
             };
-            moveRules.Add(new RiskMoveRule(this, utilityAI, moveSubRules, utility.riskMoveRuleScore,
+            moveRules.Add(new RiskMoveRule(this, this.utilityAI, moveSubRules, utilityAI.riskMoveRuleScore,
                 RuleDebugContext.RiskMove));
 
             List<IScoreRule> harmSubRules = new List<IScoreRule>()
             {
-                new FatalHitRule(this, utilityAI, null, utility.fatalHitRuleScore,
+                new FatalHitRule(this, this.utilityAI, null, utilityAI.fatalHitRuleScore,
                 RuleDebugContext.Origin_Harm)
             };
-            skillRules.Add(new SkillHarmRule(this, utilityAI, harmSubRules, utility.originHarmRuleScore,
+            skillRules.Add(new SkillHarmRule(this, this.utilityAI, harmSubRules, utilityAI.originHarmRuleScore,
                 RuleDebugContext.Origin_Harm));
             List<IScoreRule> treatSubRules = new List<IScoreRule>()
             {
             };
-            skillRules.Add(new SkillTreatRule(this, utilityAI, treatSubRules, utility.originTreatRuleScore,
+            skillRules.Add(new SkillTreatRule(this, this.utilityAI, treatSubRules, utilityAI.originTreatRuleScore,
                 RuleDebugContext.Origin_Treat));
 
             //  Move Skill Rule
             List<IScoreRule> moveHarmSubRules = new List<IScoreRule>()
             {
-                new FatalHitRule(this, utilityAI, null, utility.riskFatalHitRuleScore,
+                new FatalHitRule(this, this.utilityAI, null, utilityAI.riskFatalHitRuleScore,
                 RuleDebugContext.RiskMove_Harm)
             };
-            moveSkillRules.Add(new RiskMoveHarmRule(this, utilityAI, moveHarmSubRules,
-                utility.riskMoveHarmRuleScore, RuleDebugContext.RiskMove_Harm));
+            moveSkillRules.Add(new RiskMoveHarmRule(this, this.utilityAI, moveHarmSubRules,
+                utilityAI.riskMoveHarmRuleScore, RuleDebugContext.RiskMove_Harm));
 
             List<IScoreRule> moveTreatSubRules = new List<IScoreRule>()
             {
             };
-            moveSkillRules.Add(new RiskMoveTreatRule(this, utilityAI, moveTreatSubRules,
-                utility.riskMoveTreatRuleScore, RuleDebugContext.RiskMove_Treat));
+            moveSkillRules.Add(new RiskMoveTreatRule(this, this.utilityAI, moveTreatSubRules,
+                utilityAI.riskMoveTreatRuleScore, RuleDebugContext.RiskMove_Treat));
 
-            orientationRule.Add(new DefenseBackRule(this, utilityAI, null,
-                utility.defenseBackRuleScore, RuleDebugContext.DefenseBack));
+            orientationRule.Add(new DefenseBackRule(this, this.utilityAI, null,
+                utilityAI.defenseBackRuleScore, RuleDebugContext.DefenseBack));
         }
-
         public void MakeDecision(bool allowMove = true, bool allowSkill = true)
         {
             float startTime = Time.realtimeSinceStartup;
@@ -109,9 +110,9 @@ namespace Tactics.AI
             EvaluateMove(allowMove, allowSkill, out float moveBestScore,
                 out GameNode moveOnlyNode, out string sourceMove);
 
-            float ORIGIN_SKILL_BONUS = 0f;
-            float MOVE_SKILL_BONUS = 0f;
-            float MOVE_ONLY_BONUS = 0f;
+            float ORIGIN_SKILL_BONUS = utilityAI.ORIGIN_SKILL_BONUS;
+            float MOVE_SKILL_BONUS = utilityAI.MOVE_SKILL_BONUS;
+            float MOVE_ONLY_BONUS = utilityAI.MOVE_ONLY_BONUS;
 
             float finalOriginSkillScore = skillBestScore + ORIGIN_SKILL_BONUS;
             float finalMoveSkillScore = moveAndSkillBestScore + MOVE_SKILL_BONUS;
@@ -218,7 +219,7 @@ namespace Tactics.AI
         {
             moveAndSkillBestScore = float.MinValue;
             moveSkill = null;
-            moveSkillMoveNode = null;
+            moveSkillMoveNode = decisionMaker.currentNode;
             moveSkillTargetNode = null;
             source = null;
 
@@ -237,7 +238,7 @@ namespace Tactics.AI
             out string soure)
         {
             moveBestScore = float.MinValue;
-            moveOnlyNode = null;
+            moveOnlyNode = decisionMaker.currentNode;
             soure = null;
             orientation = decisionMaker.selfOrientation;
 
@@ -267,12 +268,15 @@ namespace Tactics.AI
                 Orientation.forward
             };
 
+            List<CharacterBase> mapCharacters = GetMapCharacters();
+            List<CharacterBase> opposites = GetOppositeCharacter(decisionMaker, mapCharacters);
+
             foreach (var orientation in orientations)
             {
                 float score = 0;
                 foreach (var rule in orientationRule)
                 {
-                    score += rule.CalculateOrientationScore(decisionMaker, originNode, orientation);
+                    score += rule.CalculateOrientationScore(decisionMaker, opposites, originNode, orientation);
                 }
 
                 if (score > bestOrientationScore)
@@ -537,9 +541,10 @@ namespace Tactics.AI
 
             float endTime = Time.realtimeSinceStartup;
 
-            Debug.Log($"<color=green>[Evaluate Move Option]</color> " +
-                $" completed in {endTime - startTime:F4} seconds, " +
-                $"score: {bestScore}");
+            if (debugMode)
+                Debug.Log($"<color=green>[Evaluate Move Option]</color> " +
+                    $" completed in {endTime - startTime:F4} seconds, " +
+                    $"score: {bestScore}");
         }
         #endregion
         public int CalculateBlockScore(CharacterBase character, CharacterBase opposite,

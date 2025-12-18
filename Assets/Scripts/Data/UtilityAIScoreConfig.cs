@@ -58,6 +58,11 @@ public class UtilityAIScoreConfig : ScriptableObject
     [Header("Opposite Risk formula parameter")]
     public float riskInfluenceFactor = 0.02f;
 
+    [Header("Decision Extra Bonus")]
+    public float ORIGIN_SKILL_BONUS = 0;
+    public float MOVE_SKILL_BONUS = 0;
+    public float MOVE_ONLY_BONUS = 0;
+
     [Header("General Mp formula parameter")]
     [Tooltip("parameter min mp reduction ratio (default = 0)")]
     public float mpMinReductionRatio = 0f;

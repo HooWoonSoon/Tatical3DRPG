@@ -32,6 +32,8 @@ public class TacticsMapEditor : EditorWindow
 
     private Vector2 scrollPos;
 
+    private Dictionary<string, MonoScript> scriptCache = new Dictionary<string, MonoScript>();
+
     [MenuItem("Tactics/Tactic Map Editor")]
     public static void ShowWindow()
     {
@@ -65,6 +67,9 @@ public class TacticsMapEditor : EditorWindow
 
             EditorGUILayout.Space(bannerHeight + 10f);
         }
+
+        EditorGUILayout.LabelField("Editor Script", EditorStyles.boldLabel);
+        EditorUtils.DrawScriptLink(typeof(TacticsMapEditor).FullName, scriptCache);
 
         scrollPos = EditorGUILayout.BeginScrollView(scrollPos);
 

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using Tactics.InputHelper;
+using System;
 
 public class CameraController : MonoBehaviour
 {
@@ -258,7 +259,7 @@ public class CameraController : MonoBehaviour
     /// <param name="transform">
     /// The Transform of the object that the camera should follow
     /// </param>
-    public void ChangeFollowTarget(Transform transform)
+    public void ChangeFollowTarget(Transform transform, Action onTargeted = null)
     {
         if (debugMode)
             Debug.Log($"Change target {transform.name}");

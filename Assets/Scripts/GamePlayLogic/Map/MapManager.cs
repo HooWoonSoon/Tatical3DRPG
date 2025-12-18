@@ -23,6 +23,7 @@ public class MapData
     public string mapDataPath;
     public GameObject mapModel;
     public bool requireDeployment;
+    public int maxDeployUnitCount;
     public PresetTeam[] presetTeams;
 }
 public class MapManager : MonoBehaviour

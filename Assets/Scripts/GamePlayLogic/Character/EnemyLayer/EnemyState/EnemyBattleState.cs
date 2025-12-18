@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections;
+using Tactics.AI;
+using UnityEngine;
 public enum AgentBattlePhase
 {
     Ready, Wait, Thinking, Move, SkillCast,
@@ -58,7 +61,7 @@ public class EnemyBattleState : EnemyBaseState
                 }
                 break;
             case AgentBattlePhase.Thinking:
-                if (phaseStartTime > 0.5f)
+                if (phaseStartTime > 0.5f && !freezeState)
                 {
                     if (character.pathRoute != null && character.pathRoute.pathNodeVectorList.Count > 0)
                         ChangePhase(AgentBattlePhase.Move);
@@ -69,7 +72,7 @@ public class EnemyBattleState : EnemyBaseState
                 }
                 break;
             case AgentBattlePhase.ReleaseMoveThinking:
-                if (phaseStartTime > 0.5f)
+                if (phaseStartTime > 0.5f && !freezeState)
                 {
                     if (character.pathRoute != null && character.pathRoute.pathNodeVectorList.Count > 0
                         )
@@ -147,24 +150,45 @@ public class EnemyBattleState : EnemyBaseState
                 skillCastConfirmed = false;
                 break;
             case AgentBattlePhase.Thinking:
-                CameraController.instance.ChangeFollowTarget(character.transform);
-                character.decisionSystem.MakeDecision();
-                character.decisionSystem.GetResult(out currentSkill, out confirmMoveNode, 
-                    out targetNode, out orientation);
-
-                if (confirmMoveNode != null)
+                try
                 {
-                    character.SetPathRoute(confirmMoveNode);
+                    freezeState = true;
+                    Thinking(true, true, () =>
+                    {
+                        CameraController.instance.ChangeFollowTarget(character.transform);
+                        character.decisionSystem.GetResult(out currentSkill, out confirmMoveNode,
+                        out targetNode, out orientation);
+
+                        if (confirmMoveNode != null)
+                        {
+                            character.SetPathRoute(confirmMoveNode);
+                        }
+                    });
+                }
+                finally
+                {
+                    freezeState = false;
                 }
                 break;
             case AgentBattlePhase.ReleaseMoveThinking:
-                character.decisionSystem.MakeDecision(true, false);
-                character.decisionSystem.GetResult(out currentSkill, out confirmMoveNode, 
-                    out targetNode, out orientation);
-
-                if (confirmMoveNode != null)
+                try
                 {
-                    character.SetPathRoute(confirmMoveNode);
+                    freezeState = true;
+                    Thinking(true, false, () =>
+                    {
+                        CameraController.instance.ChangeFollowTarget(character.transform);
+                        character.decisionSystem.GetResult(out currentSkill, out confirmMoveNode, 
+                            out targetNode, out orientation);
+
+                        if (confirmMoveNode != null)
+                        {
+                            character.SetPathRoute(confirmMoveNode);
+                        }
+                    });
+                }
+                finally
+                {
+                    freezeState = false;
                 }
                 break;
             case AgentBattlePhase.Move:
@@ -186,7 +210,7 @@ public class EnemyBattleState : EnemyBaseState
             case AgentBattlePhase.End:
                 freezeState = true;
                 character.ResetVisualTilemap();
-                BattleManager.instance.SetupOrientationArrow(character, confirmMoveNode);
+                BattleManager.instance.SetupOrientationArrow(character, character.currentNode);
                 BattleManager.instance.SwitchToOrientationWithArrow(character, orientation, 0.05f, 
                     () => { freezeState = false; });
                 break;
@@ -200,6 +224,12 @@ public class EnemyBattleState : EnemyBaseState
                 BattleManager.instance.HideOrientationArrow();
                 break;
         }
+    }
+
+    public void Thinking(bool allowMove = true, bool allowSkill = true, Action onFinish = null)
+    {
+        character.decisionSystem.MakeDecision(allowMove, allowSkill);
+        onFinish?.Invoke();
     }
 }
 

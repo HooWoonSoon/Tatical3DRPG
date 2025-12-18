@@ -84,6 +84,21 @@ public static class UtilityAIDrawer
             case Option.Parameters:
                 EditorGUILayout.BeginVertical("box");
 
+                EditorGUILayout.LabelField("Utility Decision Score Bonus Configuration", EditorStyles.boldLabel);
+
+                EditorGUILayout.BeginVertical("box");
+                utilityAI.ORIGIN_SKILL_BONUS =
+                    EditorGUILayout.FloatField("Origin Skill Bonus", utilityAI.ORIGIN_SKILL_BONUS);
+                utilityAI.MOVE_SKILL_BONUS =
+                    EditorGUILayout.FloatField("Move Skill Bonus", utilityAI.MOVE_SKILL_BONUS);
+                utilityAI.MOVE_ONLY_BONUS = 
+                    EditorGUILayout.FloatField("Move Only Bonus", utilityAI.MOVE_ONLY_BONUS);
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.EndVertical();
+
+                EditorGUILayout.BeginVertical("box");
+
                 EditorGUILayout.LabelField("Utility AI Formula Parameters Configuration", EditorStyles.boldLabel);
                 EditorGUILayout.BeginVertical("box");
 

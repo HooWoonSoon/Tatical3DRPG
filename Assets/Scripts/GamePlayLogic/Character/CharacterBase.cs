@@ -20,7 +20,7 @@ public abstract class CharacterBase : Entity
 
     public int currentHealth { get; set; }
     public int currentMental { get; set; }
-    public float moveSpeed = 5f;
+    public float moveSpeed = 6f;
 
     public GameNode currentNode { get; private set; }
     public PathRoute pathRoute { get; private set; }
@@ -149,9 +149,12 @@ public abstract class CharacterBase : Entity
     {
         if (currentNode == newNode) return;
 
-        currentNode?.SetUnitGridCharacter(null);
-        currentNode = newNode;
-        currentNode?.SetUnitGridCharacter(this);
+        if (newNode.character == null || newNode.character == this)
+        {
+            currentNode?.SetUnitGridCharacter(null);
+            currentNode = newNode;
+            currentNode?.SetUnitGridCharacter(this);
+        }
     }
     public void SetGridPos()
     {
@@ -184,9 +187,9 @@ public abstract class CharacterBase : Entity
     {
         Vector3 targetPos = targetNode.GetNodeVector();
         transform.position = targetPos + new Vector3(0, offsetY, 0);
-        //Debug.Log($"Set {this} to node {targetNode.GetVector()}");
-        targetNode.SetUnitGridCharacter(this);
-        SetGridPos();
+        currentNode?.SetUnitGridCharacter(null);
+        currentNode = targetNode;
+        currentNode.SetUnitGridCharacter(this);
     }
 
     public abstract void SetAStarMovePos(Vector3 targetPosition);
@@ -367,10 +370,17 @@ public abstract class CharacterBase : Entity
     }
     public void TakeDamage(int damage, bool isCritical = false)
     {
+        int targetHealth = currentHealth - damage;
+
+        CharacterBase ctUICharacter = CTTurnUIManager.instance.currentTargetCharacter;
+        if (this == ctUICharacter)
+            CTTurnUIManager.instance.ChangeUICurrentHealthTo(ctUICharacter, targetHealth);
+
         if (selfCanvasController != null)
             selfCanvasController.ExecuteHealthChange(this, -damage);
 
-        currentHealth -= damage;
+        currentHealth = targetHealth;
+
         string damageText = damage.ToString();
         if (isCritical)
             UniversalUIManager.instance.CreateCriticalCountText(this, damageText);
@@ -403,7 +413,18 @@ public abstract class CharacterBase : Entity
     
     public void TakeHeal(int heal)
     {
-        currentHealth += heal;
+        int missingHealth = data.health - currentHealth;
+        heal = Mathf.Min(heal, missingHealth);
+        int targetHealth = Mathf.Min(currentHealth + heal, data.health);
+
+        CharacterBase ctUICharacter = CTTurnUIManager.instance.currentTargetCharacter;
+        if (this == ctUICharacter)
+            CTTurnUIManager.instance.ChangeUICurrentHealthTo(ctUICharacter, targetHealth);
+
+        if (selfCanvasController != null)
+            selfCanvasController.ExecuteHealthChange(this, heal);
+
+        currentHealth = targetHealth;
         string healText = heal.ToString();
         UniversalUIManager.instance.CreateText(this, healText);
     }

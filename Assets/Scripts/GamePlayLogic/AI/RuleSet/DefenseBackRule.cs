@@ -11,15 +11,14 @@ public class DefenseBackRule : ScoreRuleBase
     protected override bool DebugMode => DebugManager.IsDebugEnabled(context);
 
     public override float CalculateOrientationScore(CharacterBase character, 
-        GameNode originNode, Orientation orientation)
+        List<CharacterBase> opposites, GameNode originNode, Orientation orientation)
     {
         float score = 0;
 
-        PathFinding pathFinding = decisionSystem.pathFinding;
-        List<Vector3Int> neighbourPosList = pathFinding.GetNeighbourPosCustomized(originNode.GetNodeVectorInt(), 1);
+        List<Vector3Int> neighbourPosList = decisionSystem.pathFinding.GetNeighbourPosCustomized(originNode.GetNodeVectorInt(), 1);
         string neighbourNodesMsg = string.Join(", ", neighbourPosList);
         Vector3Int orientationDir = character.GetOrientationDirection(orientation);
-        World world = pathFinding.world;
+        World world = decisionSystem.world;
 
         foreach (Vector3Int neighbourPos in neighbourPosList)
         {
@@ -37,6 +36,22 @@ public class DefenseBackRule : ScoreRuleBase
                 }
             }
         }
+
+        //  Tempo logic
+        foreach (CharacterBase opposite in opposites)
+        {
+            Vector3 selfPos = character.transform.position;
+            Vector3 oppositesPos = opposite.transform.position;
+
+            float distance = Vector3.Distance(oppositesPos, selfPos);
+            Vector3 direction = (oppositesPos - selfPos).normalized;
+            Vector3Int nodeOrientationDir = character.GetDirConvertOrientationDir(direction);
+            if (orientationDir == nodeOrientationDir)
+            {
+                score += 0.5f / Mathf.Max(distance, 1f); ;
+            }
+        }
+
 
         if (DebugMode)
             Debug.Log(

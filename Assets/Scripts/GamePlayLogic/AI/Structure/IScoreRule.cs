@@ -20,6 +20,6 @@ public interface IScoreRule
     float CalculateRiskMoveSkillScore(CharacterBase character, SkillData skill,
     DecisionSystem.CharacterSkillInfluenceNodes characterSkillInfluenceNodes,
     GameNode moveNode, GameNode targetNode, int highestHealthAmongCharacters);
-    float CalculateOrientationScore(CharacterBase character, GameNode originNode,
-        Orientation orientation);
+    float CalculateOrientationScore(CharacterBase character, List<CharacterBase> opposites,
+        GameNode originNode, Orientation orientation);
 }

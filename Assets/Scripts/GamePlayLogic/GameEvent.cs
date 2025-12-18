@@ -20,6 +20,8 @@ public static class GameEvent
     public static Action onBattleUIFinish;
 
     public static Action onMapSwitchedTrigger;
+    public static Action onEnterMap;
+    public static Action onEnterDeployMap;
 
     //  Deployment Related Event
     public static Action onDeploymentStart;

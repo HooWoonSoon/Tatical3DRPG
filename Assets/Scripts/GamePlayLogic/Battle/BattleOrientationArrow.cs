@@ -118,6 +118,11 @@ public class BattleOrientationArrow : MonoBehaviour
     }
     public void HideAll()
     {
+        if (arrows == null)
+        {
+            Debug.LogWarning("Missing arrows");
+            return;
+        }
         foreach (var arrow in arrows)
             arrow.SetActive(false);
         activateArrow = false;

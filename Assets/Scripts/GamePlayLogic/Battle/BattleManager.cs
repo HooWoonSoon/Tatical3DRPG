@@ -304,11 +304,10 @@ public class BattleManager : Entity
     {
         GameEvent.onBattleEnd?.Invoke();
         isBattleStarted = false;
-        battleTeams.Clear();
+        battleTeams = new List<TeamDeployment>();
         joinedBattleUnits.Clear();
         GridTilemapVisual.instance.SetAllTileSprite(GameNode.TilemapSprite.None);
         ActivateMoveCursorAndHide(false, true);
-        HideOrientationArrow();
     }
 
     #region Cursor Gizmos
@@ -577,22 +576,17 @@ public class BattleManager : Entity
             Debug.LogError("CastSkill failed: castAtNode is null");
             return;
         }
-
         if (currentSkill == null)
         {
             Debug.LogError("CastSkill failed: currentSkill is null");
             return;
         }
-
         if (targetNode == null)
         {
             Debug.LogError("CastSkill failed: targetNode is null");
             return;
         }
 
-        int costMP = currentSkill.MPAmount;
-        CTTurnUIManager.instance.ExecuteMentalChange(selfCharacter, -costMP);
-        selfCharacter.currentMental -= costMP;
         Vector3 direction = (targetNode.GetNodeVector() - selfCharacter.transform.position);
         selfCharacter.SetOrientation(direction);
 
@@ -603,6 +597,17 @@ public class BattleManager : Entity
         GameNode originNode, GameNode targetNode, Action onFinished)
     {
         bool isFinish = false;
+
+        int costMP = currentSkill.MPAmount;
+        int targetMental = selfCharacter.currentMental - costMP;
+
+        CharacterBase targetUICharacter = CTTurnUIManager.instance.currentTargetCharacter;
+
+        if (selfCharacter == targetUICharacter)
+            CTTurnUIManager.instance.ChangeUICurrentMentalTo(selfCharacter, targetMental);
+
+        selfCharacter.currentMental = targetMental;
+
         GameEvent.onSkillCastStart?.Invoke(currentSkill);
 
         if (currentSkill.isProjectile)

@@ -306,8 +306,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b55e3253a7e72c4fba9a0f0a74560ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  center: {x: 0, y: 0, z: -0.43}
-  size: {x: 0.1, y: 0.15, z: 1.2}
+  center: {x: 0, y: 0, z: -0.1}
+  size: {x: 0.1, y: 0.15, z: 0.5}
 --- !u!114 &13547933470921612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -322,3 +322,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gravity: -9.81
   terminateGravity: -60
+  debugMode: 0

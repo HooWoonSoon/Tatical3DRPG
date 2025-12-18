@@ -60,7 +60,10 @@ public class Parabola
         float rotationY = Mathf.Atan2(displacementXZ.x, displacementXZ.z) * Mathf.Rad2Deg;
         Vector3 forwardDir = Quaternion.Euler(0, rotationY, 0) * Vector3.forward;
 
-        int segments = Mathf.Clamp((int)(distanceXZ * 8f), 50, 800);
+        float minSize = Mathf.Min(projectileDetectable.size.x, projectileDetectable.size.y, projectileDetectable.size.z);
+        int segments = Mathf.CeilToInt(distanceXZ / (minSize * 0.5f));
+        segments = Mathf.Clamp(segments, 50, 1000);
+
         Vector3 previousPoint = start;
 
         for (int i = 0; i < segments; i++)

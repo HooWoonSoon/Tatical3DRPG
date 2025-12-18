@@ -20,7 +20,7 @@ public class PathFinding
     /// </summary>
     private List<GameNode> FindPath(int startWorldX, int startWorldY, int startWorldZ, 
         int endWorldX, int endWorldY, int endWorldZ,
-        CharacterBase pathFinder, int riseLimit, int lowerLimit)
+        CharacterBase pathfinder, int riseLimit, int lowerLimit)
     {
         float startTime = Time.realtimeSinceStartup;
         List<GameNode> ret = new List<GameNode>();
@@ -34,7 +34,7 @@ public class PathFinding
             return ret;
         }
 
-        if (pathFinder == null) { Debug.LogWarning("Non_character execute find path"); }
+        if (pathfinder == null) { Debug.LogWarning("Non_character execute find path"); }
 
         openList = new List<GameNode> { startNode };
         closedList = new HashSet<GameNode>();
@@ -75,10 +75,10 @@ public class PathFinding
                 }
 
                 CharacterBase neighbourCharacter = neighbourNode.GetUnitGridCharacter();
-                if (pathFinder != null && neighbourCharacter != null)
+                if (pathfinder != null && neighbourCharacter != null)
                 {
                     //  pathfinder has no team, cannot pass through any character
-                    if (pathFinder.currentTeam == null)
+                    if (pathfinder.currentTeam == null)
                     {
                         closedList.Add(neighbourNode);
                         continue;
@@ -92,23 +92,28 @@ public class PathFinding
                     }
 
                     //  cannot pass through different team character
-                    if (pathFinder.currentTeam.teamType != neighbourCharacter.currentTeam.teamType)
+                    if (pathfinder.currentTeam.teamType != neighbourCharacter.currentTeam.teamType)
                     {
                         closedList.Add(neighbourNode);
                         continue;
                     }
                 }
-
+                
                 Vector3Int offset = neighbourNode.GetNodeVectorInt() - currentNode.GetNodeVectorInt();
-                Vector3Int horizontalPos = new Vector3Int(neighbourNode.x + offset.x, neighbourNode.y, neighbourNode.z);
-                Vector3Int verticalPos = new Vector3Int(neighbourNode.x, neighbourNode.y, neighbourNode.z + offset.z);
+                bool isDiagnols = Mathf.Abs(offset.x) + Mathf.Abs(offset.z) > 1;
 
-                world.loadedNodes.TryGetValue(horizontalPos, out GameNode horizontalNode); 
-                world.loadedNodes.TryGetValue(verticalPos, out GameNode verticalNode);
-
-                if (horizontalNode != null && verticalNode != null)
+                if (isDiagnols)
                 {
-                    if (!horizontalNode.isWalkable && !verticalNode.isWalkable)
+                    Vector3Int horizontalPos = new Vector3Int(currentNode.x + offset.x, currentNode.y, currentNode.z);
+                    Vector3Int verticalPos = new Vector3Int(currentNode.x, currentNode.y, currentNode.z + offset.z);
+
+                    world.loadedNodes.TryGetValue(horizontalPos, out GameNode horizontalNode);
+                    world.loadedNodes.TryGetValue(verticalPos, out GameNode verticalNode);
+
+                    bool horizontalBlocked = CheckBlockNode(pathfinder, horizontalNode);
+                    bool verticalBlocked = CheckBlockNode(pathfinder, verticalNode);
+
+                    if (horizontalBlocked && verticalBlocked)
                     {
                         closedList.Add(neighbourNode);
                         continue;
@@ -225,6 +230,15 @@ public class PathFinding
             Vector3Int neighbourPos = new Vector3Int(currentNode.x, currentNode.y, currentNode.z) + direction;
             if (world.loadedNodes.TryGetValue(neighbourPos, out GameNode neighbourNode))
             {
+                if (direction.x != 0 && direction.z != 0)
+                {
+                    Vector3Int horizontalPos = currentNode.GetNodeVectorInt() + new Vector3Int(direction.x, 0, 0);
+                    Vector3Int verticalPos = currentNode.GetNodeVectorInt() + new Vector3Int(0, 0, direction.z);
+
+                    if (!world.loadedNodes.ContainsKey(horizontalPos) ||
+                        !world.loadedNodes.ContainsKey(verticalPos))
+                        continue;
+                }
                 neighbourList.Add(neighbourNode);
             }
         }
@@ -300,8 +314,6 @@ public class PathFinding
     {
         SetProcessPath(start, end, pathFinder, riseLimit, lowerLimit);
         if (processedPath.Count == 0) return null;
-        //string pathLog = string.Join(" -> ", processedPath.ConvertAll(p => p.GetVector().ToString()));
-        //Debug.Log(pathLog);
         return new PathRoute(processedPath, start);
     }
     public int GetNodesBetweenCost(GameNode startNode, GameNode endNode, 
@@ -447,7 +459,6 @@ public class PathFinding
         }
         return result;
     }
-
     public List<GameNode> GetCalculateDijkstraCostNodes(CharacterBase pathfinder, 
         int riseLimit, int lowerLimit, int seacrhTillCost = 200)
     {
@@ -457,8 +468,9 @@ public class PathFinding
         {
             CharacterBase unit = gameNode.GetUnitGridCharacter();
 
-            if (!gameNode.isWalkable) { continue; }
-            if (unit != null && unit.currentTeam.teamType != pathfinder.currentTeam.teamType) { continue; }
+            if (!gameNode.isWalkable) continue;
+            if (unit != null && unit.currentTeam.teamType 
+                != pathfinder.currentTeam.teamType) continue;
 
             gameNode.dijkstraCost = int.MaxValue;
             gameNode.cameFromNode = null;
@@ -478,6 +490,11 @@ public class PathFinding
             foreach (GameNode neighbourNode in neighbourNodes)
             {
                 if (!neighbourNode.isWalkable) { continue; }
+                if (neighbourNode.character != null && neighbourNode.character.currentTeam.teamType 
+                    != pathfinder.currentTeam.teamType) 
+                { 
+                    continue; 
+                }
 
                 if (!CheckIsStandableNode(neighbourNode, 2)) { continue; }
 
@@ -491,42 +508,10 @@ public class PathFinding
                     world.loadedNodes.TryGetValue(horizontalPos, out GameNode horizontalNode);
                     world.loadedNodes.TryGetValue(verticalPos, out GameNode verticalNode);
 
-                    if (horizontalNode == null && verticalNode == null) continue;
+                    bool horizontalBlocked = CheckBlockNode(pathfinder, horizontalNode);
+                    bool verticalBlocked = CheckBlockNode(pathfinder, verticalNode);
 
-                    CharacterBase horizontalCharacter = null;
-                    CharacterBase verticalCharacter = null;
-
-                    if (horizontalNode != null)
-                        horizontalCharacter = horizontalNode.GetUnitGridCharacter(); 
-                    if (verticalNode != null)
-                        verticalCharacter = verticalNode.GetUnitGridCharacter();
-
-                    bool horizontalBlocked = false;
-
-                    if (horizontalNode != null && !horizontalNode.isWalkable 
-                        || horizontalNode == null) 
-                    { 
-                        horizontalBlocked = true; 
-                    } 
-                    else if (horizontalCharacter != null) 
-                    {
-                        if (pathfinder.currentTeam.teamType != horizontalCharacter.currentTeam.teamType)
-                            horizontalBlocked = true; 
-                    }
-
-                    bool verticalBlocked = false;
-                    if (verticalNode != null && !verticalNode.isWalkable
-                        || verticalNode == null) 
-                    { 
-                        verticalBlocked = true; 
-                    }
-                    else if (verticalCharacter != null)
-                    {
-                        if (pathfinder.currentTeam.teamType != verticalCharacter.currentTeam.teamType)
-                            verticalBlocked = true;
-                    }
-                    
-                    if (horizontalBlocked && verticalBlocked) 
+                    if (horizontalBlocked && verticalBlocked)
                         continue;
                 }
 
@@ -578,6 +563,21 @@ public class PathFinding
             }
         }
         return true;
+    }
+    private bool CheckBlockNode(CharacterBase pathfinder, GameNode node)
+    {
+        if (node != null)
+        {
+            if (!node.isWalkable) return true;
+
+            CharacterBase nodeCharacter = node.GetUnitGridCharacter();
+            if (nodeCharacter == null)
+                return false;
+
+            if (pathfinder.currentTeam.teamType != nodeCharacter.currentTeam.teamType)
+                return true;
+        }
+        return false;
     }
     #endregion
 }
