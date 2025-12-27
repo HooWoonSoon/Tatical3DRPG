@@ -16,9 +16,9 @@ tile tool to generate the map data files.
 该项目利用了通过定制地图编辑工具生成的预制JSON地图数据，用于加载特定地图并释放多余的地图。
 The project utilized the prefabricated JSON map data that was crafted through a customized map editor tool to load the specific map also release unnecessary maps.
 
-## Game Mechanics (游戏机制)
+# Game Mechanics (游戏机制)
 
-# Character Tactic Timeline (角色战术时间轴）
+## Character Tactic Timeline (角色战术时间轴）
 这是一种独立设计的游戏机制，用于管理和确定角色行动的回合顺序。
 It is an independently designed game mechanic used to manage and determine the turn sequence of character actions. 
 
