@@ -16,4 +16,4 @@ tile tool to generate the map data files.
 该项目利用了通过定制地图编辑工具生成的预制JSON地图数据，用于加载特定地图并释放多余的地图。
 The project utilized the prefabricated JSON map data that was crafted through a customized map editor tool to load the specific map also release unnecessary maps.
 
-#Game Mechanics (游戏机制)
+# Game Mechanics (游戏机制)
