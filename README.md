@@ -1,4 +1,4 @@
-策略角色扮演游戏启发式智能体工具.... 目前开发用于完成学年毕设，还需进行多线程优化。并将在未来正式开源（虽然没什么用，更多是给自己用的工具，不是什么大不了的东西）
+策略角色扮演游戏启发式智能体工具.... 目前开发用于完成学年毕设，还需进行多线程优化。并将在未来正式开源（虽然没什么用，更多是给自己用的工具，不是什么大不了的东西，对找游戏工作有点摆烂了，就做做）
 Tactic RPG -TRPG/SRPG Heuristic Agent Tools.... Currently under development for completion of the final-year project, requiring further multithreading optimisation. 
 Will be formally open-sourced in the future (though it's not particularly useful, more like the toolkit for myself).
 
@@ -35,3 +35,21 @@ In addition to the CT Timeline principle of sorting character action turns, the 
 主要表现计算流程如下：
 The main calculation process in below figures:
 <img width="570" height="712" alt="image" src="https://github.com/user-attachments/assets/3edcb173-d05c-43f4-93c0-36c4d550092f" />
+
+# Skill Mechanics (技能机制）
+为确保战术多样性，技能机制的设计很大程度上决定了战术AI。
+To ensure tactical diversity, the design of skill mechanics largely determines an agent's tactical approach.
+
+## Skill Defination (技能定义)
+### Projectile and non-projectile (投射物与非投射物）
+投射物：技能可能被沿其飞行路径布置的地形特征或单位阻挡。这包括墙壁、地形起伏，以及根据技能碰撞逻辑判定为友军或敌军的单位。Projectile: Skills can be blocked by terrain features or units positioned along their path. This includes walls, elevation changes, and both allied and enemy units, depending on the skill's collision logic.
+非投射类：技能直接施加效果于目标，无需模拟飞行或碰撞。Non-projectile: Skills apply effects directly to targets without simulating travel or collision.
+
+### Skill range （技能范围）
+技能范围与战术瞄准镜机制相关联。在定义技能范围和遮挡范围时，实际范围将体现战术范围的特性：既从角色原点延伸直到可及范围，又从角色原点开始执行遮挡计算。通过这种方式实现技能范围的限制。
+The skill range is associated with the tactics scope mechanics. When defining skill range and obstruction range, the actual scope will reflect the characteristics of the tactical scope, extending the scope from the character's origin point while performing occlusion calculations starting from the character's origin point. Utilize this approach to limit the skill range.
+
+### Skill Conditions (技能条件）
+技能条件代表施放技能的要求。在技能设计中，该条件被设定为消耗MP点数，但根据游戏设计，这并非唯一可接受的条件。
+Skill conditions represent the requirements for casting skills. In skill design, this condition is set as consuming MP points, but according to game design, this is not the only acceptable condition.
+
