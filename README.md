@@ -43,6 +43,7 @@ To ensure tactical diversity, the design of skill mechanics largely determines a
 ## Skill Defination (技能定义)
 ### Projectile and non-projectile (投射物与非投射物）
 投射物：技能可能被沿其飞行路径布置的地形特征或单位阻挡。这包括墙壁、地形起伏，以及根据技能碰撞逻辑判定为友军或敌军的单位。Projectile: Skills can be blocked by terrain features or units positioned along their path. This includes walls, elevation changes, and both allied and enemy units, depending on the skill's collision logic.
+
 非投射类：技能直接施加效果于目标，无需模拟飞行或碰撞。Non-projectile: Skills apply effects directly to targets without simulating travel or collision.
 
 ### Skill range （技能范围）
