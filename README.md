@@ -1,5 +1,7 @@
 # Unity Tactic RPG Heuristic Artificial Intelligence Agent (Unity引擎战术启发式角色智能体）
 
+Notice: Art asset is copyright from SE
+
 Developer: Woon Soon
 
 Unity version: 6000.0.30f1
