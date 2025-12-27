@@ -2,8 +2,6 @@
 
 Notice: Art asset is copyright from SE
 
-Developer: Woon Soon
-
 Unity version: 6000.0.30f1
 
 The editor extension employs IMGUI rather than the UI Toolkit. (Everyone better use UI toolkit in your project)
@@ -13,7 +11,7 @@ The editor extension employs IMGUI rather than the UI Toolkit. (Everyone better 
 
 Tactic RPG -TRPG/SRPG Heuristic Agent Tools.... Currently under development for completion of the final-year project, requiring further multithreading optimisation. 
 Will be formally open-sourced in the future (though it's not particularly useful, more like the toolkit for myself).
-策略角色扮演游戏启发式智能体工具.... 目前开发用于完成学年毕设，还需进行多线程优化。并将在未来正式开源（虽然没什么用，更多是给自己用的工具，不是什么大不了的东西，不想做没有设计或技术感的demo，感觉对找工作或实习没什么帮助，吃过瘪了，蛮摆烂的）
+策略角色扮演游戏启发式智能体工具.... 目前开发用于完成学年毕设，还需进行多线程优化。并将在未来正式开源（虽然没什么用，更多是给自己用的工具，不是什么大不了的东西）
 
 This tool are aim to focus on implementing a scoring intelligent agent for grid-based tactics action - the agent behavior performance is grounded in the project's game mechanics design, 
 yet draws closer to three classic titles: Final Fantasy Tactics, Orge Reborn, and Triangle Strategy.
@@ -149,3 +147,5 @@ The Skill Editor facilitates intuitive configuration of skills and traits, curre
 <img width="940" height="496" alt="image" src="https://github.com/user-attachments/assets/935de1ac-b0ed-4fcb-94d1-a43587a91b19" />
 <img width="940" height="527" alt="image" src="https://github.com/user-attachments/assets/b58ec9b2-6c6e-4439-8934-ba77f30004e9" />
 
+（垃圾话）
+侮辱过，想证明自己，结果就想多了，谁在乎呢。生活中，不认识者的批评和他人的轻蔑倒是收到很多。不属于任何群体，也没资格归属任何群体。至少如今清静了不少。只需要提防骗子就好了。
