@@ -11,10 +11,12 @@ This project are implement in the three dimensional grid system, while the map d
 and all design aspects follow this constraint. It is also worth noting that map data must be configured using the project's rudimentary built-in map editor in conjunction with the 
 tile tool to generate the map data files.
 
-<img width="497" height="417" alt="image" src="https://github.com/user-attachments/assets/e937aaee-1af9-4e8b-8380-c3d6b64286ee" />
+## Tactics Map Editor - Not fully Encapsulate (战术地图编辑器 - 不完全封装）
+<img width="500" height="731" alt="image" src="https://github.com/user-attachments/assets/8fba9c06-d0e4-4896-ac71-ab76189dc841" />
 
 该项目利用了通过定制地图编辑工具生成的预制JSON地图数据，用于加载特定地图并释放多余的地图。
 The project utilized the prefabricated JSON map data that was crafted through a customized map editor tool to load the specific map also release unnecessary maps.
+<img width="497" height="417" alt="image" src="https://github.com/user-attachments/assets/e937aaee-1af9-4e8b-8380-c3d6b64286ee" />
 
 # Game Mechanics (游戏机制)
 
