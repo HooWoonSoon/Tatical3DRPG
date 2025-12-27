@@ -142,11 +142,12 @@ The Skill Editor facilitates intuitive configuration of skills and traits, curre
 <img width="1000" height="922" alt="image" src="https://github.com/user-attachments/assets/cd512539-7ece-4b7a-9062-b11ad5806881" />
 
 # Screenshot
+
 <img width="940" height="438" alt="image" src="https://github.com/user-attachments/assets/11fcaac4-d9e3-4552-b191-84e1972df70a" />
 <img width="940" height="528" alt="image" src="https://github.com/user-attachments/assets/0f1ff1bb-0144-4b39-8ab1-95f8a9e38312" />
 <img width="940" height="496" alt="image" src="https://github.com/user-attachments/assets/935de1ac-b0ed-4fcb-94d1-a43587a91b19" />
 <img width="940" height="527" alt="image" src="https://github.com/user-attachments/assets/b58ec9b2-6c6e-4439-8934-ba77f30004e9" />
 
-（垃圾话）
+无视下方垃圾话
 
 侮辱过，想证明自己，结果就想多了，谁在乎呢。生活中，不认识者的批评和他人的轻蔑倒是收到很多。不属于任何群体，也没资格归属任何群体。至少如今清静了不少。只需要提防骗子就好了。
