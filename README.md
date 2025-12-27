@@ -11,7 +11,7 @@ The editor extension employs IMGUI rather than the UI Toolkit. (Everyone better 
 
 Tactic RPG -TRPG/SRPG Heuristic Agent Tools.... Currently under development for completion of the final-year project, requiring further multithreading optimisation. 
 Will be formally open-sourced in the future (though it's not particularly useful, more like the toolkit for myself).
-策略角色扮演游戏启发式智能体工具.... 目前开发用于完成学年毕设，还需进行多线程优化。并将在未来正式开源（虽然没什么用，更多是给自己用的工具，不是什么大不了的东西）
+策略角色扮演游戏启发式智能体工具.... 目前开发用于完成学年毕设，还需进行多线程优化。并将在未来正式开源（虽然没什么用，更多是给自己用的工具）
 
 This tool are aim to focus on implementing a scoring intelligent agent for grid-based tactics action - the agent behavior performance is grounded in the project's game mechanics design, 
 yet draws closer to three classic titles: Final Fantasy Tactics, Orge Reborn, and Triangle Strategy.
