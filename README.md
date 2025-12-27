@@ -1,3 +1,7 @@
+# Unity Tactic RPG Heuristic Artificial Intelligence Agent (Unity引擎战术启发式角色智能体）
+Unity version: 6000.0.30f1
+The editor extension employs IMGUI rather than the UI Toolkit. (Everyone better use UI toolkit in your project)
+
 策略角色扮演游戏启发式智能体工具.... 目前开发用于完成学年毕设，还需进行多线程优化。并将在未来正式开源（虽然没什么用，更多是给自己用的工具，不是什么大不了的东西，对找游戏工作有点摆烂了，就做做）
 Tactic RPG -TRPG/SRPG Heuristic Agent Tools.... Currently under development for completion of the final-year project, requiring further multithreading optimisation. 
 Will be formally open-sourced in the future (though it's not particularly useful, more like the toolkit for myself).
@@ -55,4 +59,14 @@ The skill range is associated with the tactics scope mechanics. When defining sk
 ### Skill Conditions (技能条件）
 技能条件代表施放技能的要求。在技能设计中，该条件被设定为消耗MP点数，但根据游戏设计，这并非唯一可接受的条件。
 Skill conditions represent the requirements for casting skills. In skill design, this condition is set as consuming MP points, but according to game design, this is not the only acceptable condition.
+
+# Sundry (杂项）
+## Tactics Character Editor (战术角色编辑器)
+战术角色编辑器是组合了角色数据定义生成与AI调试的工具，此项目允许查看AI行为的积分，从而帮助进行扩展与调试
+The Tactical Role Editor is a tool combining character data definition generation and character AI debugging. This project enables the inspection of AI behaviour scores, thereby facilitating expansion and debugging.
+<img width="1002" height="955" alt="image" src="https://github.com/user-attachments/assets/b392616b-8b63-4dbd-900d-e4f1a34b1dd6" />
+<img width="1000" height="962" alt="image" src="https://github.com/user-attachments/assets/f9fc7447-8bbd-4f1f-a14d-5b7a20f65afb" />
+<img width="1001" height="952" alt="image" src="https://github.com/user-attachments/assets/f2e4e4c6-2dbd-4090-9086-f05e8ecddef1" />
+
+
 
