@@ -148,8 +148,8 @@ The Skill Editor facilitates intuitive configuration of skills and traits, curre
 <img width="940" height="496" alt="image" src="https://github.com/user-attachments/assets/935de1ac-b0ed-4fcb-94d1-a43587a91b19" />
 <img width="940" height="527" alt="image" src="https://github.com/user-attachments/assets/b58ec9b2-6c6e-4439-8934-ba77f30004e9" />
 
-There are two game projects I wish to undertake, neither of which is feasible given my current time and capabilities. The TRPG project could at least be simplified into a more generalised utility tool. However, due to the requirements of my graduation project's STG theme, selecting game mechanics design feels rather contrived, like forcing a square peg into a round hole. Hence, I do this.
-想做的游戏项目有两个，两者都不是当下的时间与能力能够做到的，TRPG项目至少能够简化成一个较为通用的小工具，同时由于毕设的STG课题要求，选择游戏机制的设计又很牵强，像是硬套，所以就做这个了。
+There are two game projects I wish to undertake, neither of which is feasible given my current time and capabilities. The TRPG project could at least be simplified into a more generalised utility tool. However, due to the requirements of my graduation project's STG theme, selecting game mechanics design feels rather contrived, like forcing a square peg into a round hole. Hence, I do this. At least it can train my programming level.
+想做的游戏项目有两个，两者都不是当下的时间与能力能够做到的，TRPG项目至少能够简化成一个较为通用的小工具，同时由于毕设的STG课题要求，选择游戏机制的设计又很牵强，像是硬套，所以就做这个了。至少能提升我的编程水平。
 
 无视下方垃圾话
 
