@@ -1,6 +1,8 @@
 # Unity Tactic RPG Heuristic Artificial Intelligence Agent (Unity引擎战术启发式角色智能体）
 Unity version: 6000.0.30f1
 The editor extension employs IMGUI rather than the UI Toolkit. (Everyone better use UI toolkit in your project)
+<img width="1492" height="788" alt="image" src="https://github.com/user-attachments/assets/41498334-798a-42e1-827f-48f234b7e545" />
+
 
 Tactic RPG -TRPG/SRPG Heuristic Agent Tools.... Currently under development for completion of the final-year project, requiring further multithreading optimisation. 
 Will be formally open-sourced in the future (though it's not particularly useful, more like the toolkit for myself).
