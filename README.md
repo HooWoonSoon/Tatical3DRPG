@@ -148,4 +148,5 @@ The Skill Editor facilitates intuitive configuration of skills and traits, curre
 <img width="940" height="527" alt="image" src="https://github.com/user-attachments/assets/b58ec9b2-6c6e-4439-8934-ba77f30004e9" />
 
 （垃圾话）
+
 侮辱过，想证明自己，结果就想多了，谁在乎呢。生活中，不认识者的批评和他人的轻蔑倒是收到很多。不属于任何群体，也没资格归属任何群体。至少如今清静了不少。只需要提防骗子就好了。
