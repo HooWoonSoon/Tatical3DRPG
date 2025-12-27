@@ -1,6 +1,8 @@
 # Unity Tactic RPG Heuristic Artificial Intelligence Agent (Unity引擎战术启发式角色智能体）
 Unity version: 6000.0.30f1
+
 The editor extension employs IMGUI rather than the UI Toolkit. (Everyone better use UI toolkit in your project)
+
 <img width="1492" height="788" alt="image" src="https://github.com/user-attachments/assets/41498334-798a-42e1-827f-48f234b7e545" />
 
 
@@ -18,10 +20,12 @@ tile tool to generate the map data files.
 此项目被实现在3维网格数据上，但地图在设计上仍需完善，目前只是支持int 数值的y轴高度，所有其余在设计上也是如此。同时值得注意的是地图的数据需要使用本项目内置的简陋地图编辑器配合tile工具进行配置同时生成地图数据文件。
 
 ## Tactics Map Editor - Not fully Encapsulate (战术地图编辑器 - 不完全封装）
+
 <img width="500" height="731" alt="image" src="https://github.com/user-attachments/assets/8fba9c06-d0e4-4896-ac71-ab76189dc841" />
 
 The project utilized the prefabricated JSON map data that was crafted through a customized map editor tool to load the specific map also release unnecessary maps.
 该项目利用了通过定制地图编辑工具生成的预制JSON地图数据，用于加载特定地图并释放多余的地图。
+
 <img width="497" height="417" alt="image" src="https://github.com/user-attachments/assets/e937aaee-1af9-4e8b-8380-c3d6b64286ee" />
 
 # Game Mechanics (游戏机制)
@@ -42,6 +46,7 @@ In addition to the CT Timeline principle of sorting character action turns, the 
 
 主要表现计算流程如下：
 The main calculation process in below figures:
+
 <img width="570" height="712" alt="image" src="https://github.com/user-attachments/assets/3edcb173-d05c-43f4-93c0-36c4d550092f" />
 
 # Skill Mechanics (技能机制）
@@ -69,11 +74,13 @@ TRPG智能代理的设计原则遵循去中心化、回合制战术，与项目�
 ## Structure（结构）
 The design of reliable intelligent agents and scoring mechanisms is inherently complex and prone to errors, particularly when involving extensive “if-else” conditional statements and loop structures. Spaghetti code frequently emerges during the development of scoring agents. Consequently, this implementation employs interface design and specific methodologies to circumvent these issue.
 可靠智能代理与评分机制的设计本质上复杂且易出错，尤其涉及大量“if-else”条件语句和循环结构时。评分代理开发过程中常出现意面代码。因此本实现采用接口设计与特定方法论来规避该问题。
+
 <img width="495" height="469" alt="image" src="https://github.com/user-attachments/assets/837cb2bf-eb8f-4907-9412-7526a4a72b2d" />
 
 ## Score Evaluation (评分评估)
 The agent's decision-making is governed by distinct evaluations, with certain evaluations being suppressed based on the agent's current circumstances. In the current agent assessment, three distinct evaluation principles can be distinguished, which include the assessment of purely cast skill actions. Move cast skill action or purely a movement action. Except for the above three evaluations, the orientation evaluation will certainly be executed last.
 智能体的决策受不同评估机制的约束，其中某些评估会根据智能体当前状态被抑制。在当前智能体评估中，可区分出三种独立的评估原则，包括纯技能施放动作的评估、移动技能施放动作或纯移动动作的评估。除上述三种评估外，定向评估必定在最后执行。
+
 <img width="544" height="834" alt="image" src="https://github.com/user-attachments/assets/e76d3a85-fe88-4a10-9616-e0c8f4838537" />
 
 ## Rules (规则）
@@ -120,6 +127,7 @@ Adjust the orientation appropriately based on the terrain and character's range.
 ## Tactics Character Editor (战术角色编辑器)
 The Tactical Role Editor is a tool combining character data definition generation and character AI debugging. This project enables the inspection of AI behaviour scores, thereby facilitating expansion and debugging.
 战术角色编辑器是组合了角色数据定义生成与AI调试的工具，此项目允许查看AI行为的积分，从而帮助进行扩展与调试
+
 <img width="1002" height="955" alt="image" src="https://github.com/user-attachments/assets/b392616b-8b63-4dbd-900d-e4f1a34b1dd6" />
 <img width="1000" height="962" alt="image" src="https://github.com/user-attachments/assets/f9fc7447-8bbd-4f1f-a14d-5b7a20f65afb" />
 <img width="1001" height="952" alt="image" src="https://github.com/user-attachments/assets/f2e4e4c6-2dbd-4090-9086-f05e8ecddef1" />
@@ -127,6 +135,12 @@ The Tactical Role Editor is a tool combining character data definition generatio
 ## Skill Editor (技能编辑器)
 The Skill Editor facilitates intuitive configuration of skills and traits, currently supporting projectiles and non-projectile abilities, though without visual effects.
 技能编辑器可帮助直观的进行技能与特性的配置，目前支持投射物与非投射物，但无特效。
+
 <img width="1000" height="922" alt="image" src="https://github.com/user-attachments/assets/cd512539-7ece-4b7a-9062-b11ad5806881" />
 
+# Screenshot
+<img width="940" height="438" alt="image" src="https://github.com/user-attachments/assets/11fcaac4-d9e3-4552-b191-84e1972df70a" />
+<img width="940" height="528" alt="image" src="https://github.com/user-attachments/assets/0f1ff1bb-0144-4b39-8ab1-95f8a9e38312" />
+<img width="940" height="496" alt="image" src="https://github.com/user-attachments/assets/935de1ac-b0ed-4fcb-94d1-a43587a91b19" />
+<img width="940" height="527" alt="image" src="https://github.com/user-attachments/assets/b58ec9b2-6c6e-4439-8934-ba77f30004e9" />
 
