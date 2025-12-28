@@ -1,6 +1,5 @@
 # Unity Tactic RPG Heuristic Artificial Intelligence Agent (Unity引擎战术启发式角色智能体）
-### SDG Goal 9 - Industry, Innovation and Infrastructure
-<img width="40" height="40" alt="image" src="https://github.com/user-attachments/assets/c277cb06-ddc4-49e6-ad21-6b5d564c94ba" />
+SDG Goal 9 - Industry, Innovation and Infrastructure <img width="100" height="100" alt="image" src="https://github.com/user-attachments/assets/c277cb06-ddc4-49e6-ad21-6b5d564c94ba" />
 
 Notice: Art asset is copyright from SE
 
