@@ -197,6 +197,8 @@ public class CTTurnUIManager : MonoBehaviour
             Destroy(child.gameObject);
         }
         turnUIImages.Clear();
+        roundPhaseUIObjects.Clear();
+        pastTurnUIImages.Clear();
     }
 
     public void AdjustTurnUIStartRound(int roundIndex)
