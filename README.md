@@ -153,7 +153,3 @@ The Skill Editor facilitates intuitive configuration of skills and traits, curre
 
 There are two game projects I wish to undertake, neither of which is feasible given my current time and capabilities. The TRPG project could at least be simplified into a more generalised utility tool. However, due to the requirements of my graduation project's Sustainable Development Goals theme, except making education game other make game demo feels rather contrived, like forcing a square peg into a round hole. I'd rather not form a team either, as it would be rather troublesome in terms of the results. Some decisions i make may not be to everyone's liking. Hence, I do this. At least it can train my programming and English level. This project falls under SDG 9, though I personally feel the argument for technological innovation is somewhat tenuous.
 想做的游戏项目有两个，两者都不是当下的时间与能力能够做到的，TRPG项目至少能够简化成一个较为通用的小工具，同时由于毕设的Sustainable Development Goals课题要求，除了做教育游戏反之游戏demo感觉就和SDG很牵强，像是硬套，我也不想组队，因为成果上会很麻烦，自己有些决定或许别人会不喜欢，所以就做这个了。至少能提升我的编程和英语水平。该项目为SDG 9课题，个人觉得论技术创新还还是有点脆弱。
-
-无视下方垃圾话
-
-想证明自己，结果就想多了，谁在乎呢。生活中，不认识者的批评和他人的轻蔑，侮辱倒是收到很多。不属于任何群体，也没资格也不想归属任何群体。无视无关者，至少如今只需要提防骗子就好了。
