@@ -66,6 +66,6 @@ public class UtilityAIScoreConfig : ScriptableObject
     [Header("General Mp formula parameter")]
     [Tooltip("parameter min mp reduction ratio (default = 0)")]
     public float mpMinReductionRatio = 0f;
-    [Tooltip("parameter max mp reduction ratio (default = 0.3)")]
-    public float mpMaxReductionRatio = 0.3f;
+    [Tooltip("parameter max mp reduction ratio (default = 0.2)")]
+    public float mpMaxReductionRatio = 0.2f;
 }

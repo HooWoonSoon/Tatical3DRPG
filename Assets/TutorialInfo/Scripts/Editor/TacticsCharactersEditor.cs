@@ -464,7 +464,7 @@ public class TacticsCharactersEditor : EditorWindow
         GUILayout.BeginVertical();
         GUILayout.BeginHorizontal();
         Texture2D icon;
-        if (data.turnUISprite != null)
+        if (data.isometricIcon != null)
             icon = data.isometricIcon.texture;
         else
             icon = Texture2D.grayTexture;

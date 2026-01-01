@@ -26,7 +26,7 @@ MonoBehaviour:
   projectTilePrefab: {fileID: 6351172539165178106, guid: cc2563b24ce269f44b26145380286a4d, type: 3}
   initialElevationAngle: 70
   MPIcon: {fileID: 0}
-  requireMP: 0
+  requireMP: 1
   MPAmount: 0
   damageAmount: 20
   healAmount: 0
