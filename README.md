@@ -5,6 +5,8 @@
 
 Notice: Art asset is copyright from SE
 
+Explain Video: 
+
 Unity version: 6000.0.30f1
 
 The editor extension employs IMGUI rather than the UI Toolkit. (Everyone better use UI toolkit in your project)
@@ -17,8 +19,8 @@ Will be formally open-sourced in the future (though it's not particularly useful
 策略角色扮演游戏启发式智能体工具.... 目前开发用于完成学年毕设，还需进行多线程优化。并将在未来正式开源（虽然没什么用，更多是给自己用的工具）
 
 This tool are aim to focus on implementing a scoring intelligent agent for grid-based tactics action - the agent behavior performance is grounded in the project's game mechanics design, 
-yet draws closer to three classic titles: Final Fantasy Tactics, Orge Reborn, and Triangle Strategy.
-该工具旨在实现基于网格战术行动的智能评分代理——其行为表现基于项目游戏机制设计，但更贴近三款经典游戏：《最终幻想战略版》《皇家骑士团重生》及《三角战略》。
+yet draws closer to three classic titles: Final Fantasy Tactics (only familiar through videos, never played) Tactics Orge Reborn (not completed; features numerous repetitive and time-consuming battles), and Triangle Strategy.
+该工具旨在实现基于网格战术行动的智能评分代理——其行为表现基于项目游戏机制设计，但更贴近三款经典游戏：《最终幻想战略版》（没玩过完全通过视频了解）《皇家骑士团重生》（未通关，有大量重复性高且花时间的战斗）及《三角战略》。
 
 This project are implement in the three dimensional grid system, while the map design requires further refinement, as it currently only supports integer values for the y-axis height, 
 and all design aspects follow this constraint. It is also worth noting that map data must be configured using the project's rudimentary built-in map editor in conjunction with the 
@@ -151,9 +153,11 @@ The Skill Editor facilitates intuitive configuration of skills and traits, curre
 <img width="940" height="496" alt="image" src="https://github.com/user-attachments/assets/935de1ac-b0ed-4fcb-94d1-a43587a91b19" />
 <img width="940" height="527" alt="image" src="https://github.com/user-attachments/assets/b58ec9b2-6c6e-4439-8934-ba77f30004e9" />
 
-There are two game projects I wish to undertake, neither of which is feasible given my current time and capabilities. The TRPG project could at least be simplified into a more generalised utility tool. However, due to the requirements of my graduation project's Sustainable Development Goals theme, except making education game other make game demo feels rather contrived, like forcing a square peg into a round hole. I'd rather not form a team either, as it would be rather troublesome in terms of the results. Some decisions i make may not be to everyone's liking. Hence, I do this. At least it can train my programming and English level. This project falls under SDG 9, though I personally feel the argument for technological innovation is somewhat tenuous.
-想做的游戏项目有两个，两者都不是当下的时间与能力能够做到的，TRPG项目至少能够简化成一个较为通用的小工具，同时由于毕设的Sustainable Development Goals课题要求，除了做教育游戏反之游戏demo感觉就和SDG很牵强，像是硬套，我也不想组队，因为成果上会很麻烦，自己有些决定或许别人会不喜欢，所以就做这个了。至少能提升我的编程和英语水平。该项目为SDG 9课题，个人觉得论技术创新还还是有点脆弱。
+There are two game projects I wish to undertake, neither of which is feasible given my current time and capabilities. The TRPG project could at least be simplified into a more generalised utility tool. However, due to the requirements of my graduation project's Sustainable Development Goals theme, except making education game other make game demo feels rather contrived, like forcing a square peg into a round hole. I'd rather not form a team either, as it would be rather troublesome in terms of the results. Some decisions i make may not be to everyone's liking. Hence, I do this. At least it can train my programming and English level. This project falls under SDG 9, though I personally feel the argument for technological innovation is somewhat tenuous, although degree is not the reason perform poorly.
+想做的游戏项目有两个，两者都不是当下的时间与能力能够做到的（搞不好两者在设计上就是没有人喜欢或是行不通的垃圾），TRPG项目至少能够简化成一个较为通用的小工具，同时由于毕设的Sustainable Development Goals课题要求，除了做教育游戏反之游戏demo感觉就和SDG很牵强，像是硬套，我也不想组队，因为成果上会很麻烦，自己有些决定或许别人会不喜欢，所以就做这个了。至少能提升我的编程和英语水平。该项目为SDG 9课题，个人觉得论技术创新还还是有点脆弱，虽然本科不是做的差的理由。
 
-无视下方垃圾话
+无视下方垃圾话（脑子热写的）
 
-想证明自己，结果就想多了，谁在乎呢。生活中，不认识者的批评和他人的轻蔑，侮辱倒是收到很多。不属于任何群体，也没资格也不想归属任何群体。无视无关者，至少如今只需要提防骗子就好了。
+无法也没资格属于或代表任何群体，总是携带虚伪的社会面具，一个暗藏的缩影。
+
+认为的艺术更多是未经世事的一厢情愿罢。所谓创意不过是天马行空的重复借鉴。
