@@ -5,7 +5,7 @@
 
 Notice: Art asset is copyright from SE
 
-Explain Video: 
+Explain Video:  https://drive.google.com/file/d/1ClaTPzSVq30dQOIRYz50U9cMCI8BFM0U/view?usp=drive_link
 
 Unity version: 6000.0.30f1
 
