@@ -230,9 +230,9 @@ public class TacticsCharactersEditor : EditorWindow
 
                 if (characterDatabase != null && characterDatabase.allCharacterDatas != null)
                 {
-                    var validList = characterDatabase.allCharacterDatas.Where(d => d != null && 
-                    (string.IsNullOrEmpty(searchFilter)) || d.name.ToLower().Contains(searchFilter.ToLower())).
-                    ToList();
+                    var validList = characterDatabase.allCharacterDatas.Where
+                    (c => c != null && (string.IsNullOrEmpty(searchFilter) ||
+                        c.name.ToLower().Contains(searchFilter.ToLower()))).ToList();
 
                     if (validList.Count == 0)
                     {
@@ -347,8 +347,8 @@ public class TacticsCharactersEditor : EditorWindow
 
         List<CharacterBase> allCharacterList = characterPool.allCharacter.ToList();
         List<CharacterBase> list = allCharacterList.Where
-            (c => c != null && (string.IsNullOrEmpty(searchFilter)) ||
-            c.name.ToLower().Contains(searchFilter.ToLower())).ToList();
+            (c => c != null && (string.IsNullOrEmpty(searchFilter) ||
+                c.name.ToLower().Contains(searchFilter.ToLower()))).ToList();
 
         if (list.Count == 0)
         {
